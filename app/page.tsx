@@ -1,8 +1,6 @@
-import { link } from "fs";
-import Image from "next/image";
-import Link from "next/link";
+
 import {NavbarDemo} from "@/app/components/navbar/navbar";
-import {PlaceholdersAndVanishInputDemo} from "@/app/hero/page";
+import {PlaceholdersAndVanishInputDemo} from "@/app/components/hero/PlaceholdersAndVanishInputDemo";
 import { AnimationWrapper } from '@/app/components/animation-wrapper';
 import { Suspense } from 'react';
 

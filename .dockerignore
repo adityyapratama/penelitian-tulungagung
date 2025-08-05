@@ -1,0 +1,36 @@
+# Node modules & cache
+node_modules
+.next
+.cache
+dist
+build
+out
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Editor / OS files
+.vscode
+.idea
+.DS_Store
+Thumbs.db
+
+# Git
+.git
+.gitignore
+
+# Docker sendiri
+.dockerignore
+
+# Environment files
+.env*
+.env
+
+# Testing/CI/others
+coverage
+*.tgz
+*.log
+
+# Optional
+README.md
+LICENSE
