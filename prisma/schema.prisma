@@ -88,12 +88,20 @@ model User {
   is_active        Boolean      @default(true)
   Guru             Guru?
   KategoriKuis     KategoriKuis[]
+  Session          Session[]
   Kuis             Kuis[]
   CeritaInteraktif CeritaInteraktif[]
   Puzzles          Puzzle[]
   Artikels         Artikel[]
   KategoriArtikels KategoriArtikel[]
   Member           Member?
+}
+
+model Session {
+  id        String   @id
+  userId    Int
+  expiresAt DateTime
+  user      User     @relation(references: [user_id], fields: [userId], onDelete: Cascade)
 }
 
 model Guru {
