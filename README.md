@@ -11,8 +11,8 @@ Ikuti langkah-langkah berikut untuk menjalankan project ini secara lokal:
 ### 1. Clone Repository
 
 ```bash
-git clone <repository-url>
-cd <nama-folder-proyek>
+git clone https://github.com/adityyapratama/penelitian-tulungagung
+cd penelitian-tulungagung
 ```
 
 ---
