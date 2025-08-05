@@ -1,7 +1,7 @@
 import { ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import dayjs from "dayjs";
-import bcrypt from "bcrypt"
+import bcrypt from "bcryptjs"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
