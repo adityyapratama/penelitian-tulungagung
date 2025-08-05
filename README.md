@@ -32,7 +32,7 @@ npm install
 Buat file `.env` di root project dan isi dengan koneksi database. Contoh:
 
 ```env
-DATABASE_URL="postgresql://user:password@localhost:5432/namadatabase"
+DATABASE_URL="mysql://root:@localhost:3306/namadatabase"
 ```
 
 ---
@@ -42,7 +42,7 @@ DATABASE_URL="postgresql://user:password@localhost:5432/namadatabase"
 Jalankan migrasi Prisma untuk membuat struktur tabel:
 
 ```bash
-npx prisma migrate dev
+npx prisma migrate dev --name init
 ```
 
 ---
