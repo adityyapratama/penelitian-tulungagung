@@ -9,7 +9,10 @@ import { comparePassword } from "./lib/utils"; // Import bcrypt di sini
 
 const prisma = new PrismaClient();
 
-async function getUserFromDb(email: string, password: string): Promise<User | null> {
+async function getUserFromDb(
+  email: string,
+  password: string
+): Promise<User | null> {
   try {
     const user = await prisma.user.findUnique({
       where: { email },
@@ -18,6 +21,7 @@ async function getUserFromDb(email: string, password: string): Promise<User | nu
     if (!user) return null;
 
     const passwordsMatch = await comparePassword(password, user.password_hash);
+
     if (!passwordsMatch) return null;
 
     return user;
@@ -33,18 +37,24 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       credentials: { email: {}, password: {} },
       authorize: async (credentials) => {
         try {
-          const validatedCredentials = await schemaSignIn.parseAsync(credentials);
-          const user = await getUserFromDb(validatedCredentials.email, validatedCredentials.password);
+          const validatedCredentials = await schemaSignIn.parseAsync(
+            credentials
+          );
+          const user = await getUserFromDb(
+            validatedCredentials.email,
+            validatedCredentials.password
+          );
 
-          if (!user) throw new Error("Invalid credentials.");
-
+          if (!user) return null;
           return user;
         } catch (error) {
           if (error instanceof ZodError) {
-            const errorMessage = error.issues.map(issue => issue.message).join(", ");
-            throw new Error(errorMessage);
+            console.error("Zod validation error:", error.issues);
+            return null;
           }
-          throw error;
+
+          console.error("Authorize error:", error);
+          return null;
         }
       },
     }),

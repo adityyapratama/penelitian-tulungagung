@@ -54,8 +54,6 @@ export async function saltAndHashPassword(password: string): Promise<string> {
  * @returns Promise yang akan menghasilkan true jika cocok, false jika tidak.
  */
 export async function comparePassword(password: string, hashedPassword: string): Promise<boolean> {
-  // `bcrypt.compare` akan mengambil salt dari hashed password
-  // dan membandingkan hasilnya.
   const isMatch = await bcrypt.compare(password, hashedPassword);
   return isMatch;
 }
