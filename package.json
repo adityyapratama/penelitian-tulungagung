@@ -15,15 +15,13 @@
     "@heroui/image": "^2.2.15",
     "@heroui/system": "^2.4.20",
     "@heroui/theme": "^2.4.20",
+    "@next/font": "^14.2.15",
     "@prisma/client": "^6.13.0",
     "@radix-ui/react-icons": "^1.3.2",
     "@radix-ui/react-slot": "^1.2.3",
     "@tabler/icons-react": "^3.34.1",
-
-    "class-variance-authority": "^0.7.1",
-
     "bcryptjs": "^3.0.2",
-
+    "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dayjs": "^1.11.13",
     "dotenv": "^17.2.1",
@@ -38,11 +36,8 @@
     "react-icons": "^5.5.0",
     "react-intersection-observer": "^9.16.0",
     "tailwind-merge": "^3.3.1",
-
-    "tailwindcss-animate": "^1.0.7"
-
+    "tailwindcss-animate": "^1.0.7",
     "zod": "^4.0.14"
-
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -55,11 +50,8 @@
     "eslint-config-next": "15.4.5",
     "prisma": "^6.13.0",
     "tailwindcss": "^4",
-
-    "tw-animate-css": "^1.3.6",
-
     "tsx": "^4.20.3",
-
+    "tw-animate-css": "^1.3.6",
     "typescript": "^5"
   }
 }
