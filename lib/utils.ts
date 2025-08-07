@@ -4,6 +4,8 @@ import { ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import dayjs from "dayjs";
 import bcrypt from "bcryptjs"
+import {User } from "./generated/prisma";
+import prisma from "./prisma";
 
 
 export function cn(...inputs: ClassValue[]) {
@@ -57,8 +59,29 @@ export async function saltAndHashPassword(password: string): Promise<string> {
  * @returns Promise yang akan menghasilkan true jika cocok, false jika tidak.
  */
 export async function comparePassword(password: string, hashedPassword: string): Promise<boolean> {
-  // `bcrypt.compare` akan mengambil salt dari hashed password
-  // dan membandingkan hasilnya.
-  const isMatch = await bcrypt.compare(password, hashedPassword);
-  return isMatch;
+  const res = bcrypt.compare(password,hashedPassword)
+  return res
 }
+
+export async function getUserFromDb(
+  email: string,
+  password: string
+): Promise<User | null> {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) return null;
+
+    const passwordsMatch = await comparePassword(password, user.password_hash);
+
+    if (!passwordsMatch) return null;
+    
+    return user;
+  } catch (error) {
+    console.error("Error during user authentication:", error);
+    return null;
+  }
+}
+

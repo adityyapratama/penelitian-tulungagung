@@ -1,29 +1,22 @@
-"use client"
+'use client'
 
-import { signInAction } from "../lib/action"
 import { useActionState } from "react"
+import { handleLogin } from "../lib/action"
 
 
-const initialState = { error: "" }
- 
-export default function Page() {
-  const [state, formAction] = useActionState(signInAction, initialState)
+export default function SignInPage() {
 
+  const [state, formAction] = useActionState(handleLogin, null)
+  
   return (
-    <form action={formAction} className="space-y-4">
-      <div>
-        <label>Email</label>
-        <input type="email" name="email" className="input" required />
-      </div>
+    <form action={formAction}>
+      <input type="text" name="email" placeholder="Email" />
+      <input type="password" name="password" placeholder="Password" />
+      <button type="submit">Login</button>
 
-      <div>
-        <label>Password</label>
-        <input type="password" name="password" className="input" required />
-      </div>
-
-      {state.error && <p className="text-red-500">{state.error}</p>}
-
-      <button type="submit" className="btn">Login</button>
+      {state?.message && (
+        <p style={{ color: 'red' }}>{state.message}</p>
+      )}
     </form>
   )
 }
