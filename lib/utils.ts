@@ -1,3 +1,5 @@
+
+
 import { ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import dayjs from "dayjs";
@@ -5,8 +7,9 @@ import bcrypt from "bcryptjs"
 import {User } from "./generated/prisma";
 import prisma from "./prisma";
 
+
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
+  return twMerge(clsx(inputs))
 }
 
 export function rupiahFormat(value: number) {
@@ -81,3 +84,4 @@ export async function getUserFromDb(
     return null;
   }
 }
+
