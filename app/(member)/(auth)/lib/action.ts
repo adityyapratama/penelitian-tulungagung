@@ -44,7 +44,7 @@ export async function handleRegister(_:unknown,formData:FormData):Promise <Actio
     password:formData.get("password")})
 
   if(!parse.success){
-    return {error: parse.error.errors[0].message}
+    return {error: parse.error.message}
   }
 
   const passwordHash = bcrypt.hashSync(parse.data.username,saltRounds)
