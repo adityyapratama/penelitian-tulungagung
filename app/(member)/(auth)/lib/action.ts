@@ -8,7 +8,7 @@ export async function handleLogin(_: unknown, formData: FormData) {
   const password = formData.get("password") as string
 
   try{
-  const result = await signIn("credentials", {
+   await signIn("credentials", {
     email,
     password,
     redirectTo:"/" ,
