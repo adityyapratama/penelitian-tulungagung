@@ -2,11 +2,16 @@
 
 import { useActionState } from "react"
 import { handleLogin } from "../lib/action"
+import { auth } from "@/auth"
+import { redirect } from "next/navigation"
 
 
-export default function SignInPage() {
+export default async function SignInPage() {
 
   const [state, formAction] = useActionState(handleLogin, null)
+  const session = await auth()
+
+  if (session?.user) redirect("/")
   
   return (
     <form action={formAction}>
