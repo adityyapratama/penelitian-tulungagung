@@ -50,7 +50,7 @@ export async function handleRegister(_:unknown,formData:FormData):Promise <Actio
   const passwordHash = bcrypt.hashSync(parse.data.username,saltRounds)
 
   try{
-    prisma.user.create({
+    await prisma.user.create({
       data:{
         username:parse.data.username,
         email:parse.data.email,

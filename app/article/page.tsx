@@ -2,8 +2,11 @@
 import { NavbarDemo } from "@/app/components/navbar/navbar";
 import ArticleGrid from "@/app/components/article/article";
 import { Suspense } from "react";
+import { getArticle } from "./lib/actions";
 
 export default function ArticlesPage() {
+  const data = getArticle()
+  console.log(data)
   return (
     <div className="min-h-screen overflow-x-hidden font-sans">
       <main className="max-w-full px-4 pt-20 sm:px-8 lg:px-20">
