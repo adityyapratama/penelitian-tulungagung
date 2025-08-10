@@ -20,11 +20,20 @@ export const metadata: Metadata = {
   description: "Pusaka Tulungagung Dashboard Admin",
 };
 
-export default function DashboardLayout({
+import { auth } from "@/auth"
+
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+
+  const session = await auth()
+
+  if(session?.user.role != "super_admin"){
+    return <p>You are not authorized to view this page!</p>;
+  }
+  
   return (
     <SidebarProvider>
       <AppSidebar />
