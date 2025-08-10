@@ -1,38 +1,31 @@
-"use server"
+'use server'
 
-import { schemaSignIn } from "@/lib/schema"
+import { signIn } from "@/auth"
 import { AuthError } from "next-auth"
-import { signIn as authSignIn } from "@/auth" // kalau pakai Auth.js v5+
-import { redirect } from "next/navigation"
-import { ActionResult } from "@/types"
 
-export async function signInAction(
-  _: unknown,
-  formData: FormData
-): Promise<ActionResult> {
-  const validate = schemaSignIn.safeParse({
-    email: formData.get("email"),
-    password: formData.get("password"),
+export async function handleLogin(_: unknown, formData: FormData) {
+  const email = formData.get("email") as string
+  const password = formData.get("password") as string
+
+  try{
+   await signIn("credentials", {
+    email,
+    password,
+    redirectTo:"/" ,
   })
-
-  if (!validate.success) {
-    return {
-      error: validate.error.message,
-    }
-  }
-
-  try {
-    await authSignIn("credentials", {
-      email: validate.data.email,
-      password: validate.data.password,
-      redirect: false,
-    })
-
-    return redirect("/")
-  } catch (err) {
-    if (err instanceof AuthError) {
-      return { error: "Invalid credentials" }
-    }
-    return { error: "Unexpected error" }
+  }catch(error){
+    if (error instanceof AuthError) {
+            switch (error.type) {
+                case 'CredentialsSignin':
+                    return {
+                        message: 'Invalid credentials',
+                    }
+                default:
+                    return {
+                        message: 'Something went wrong.',
+                    }
+            }
+        }
+        throw error;
   }
 }
