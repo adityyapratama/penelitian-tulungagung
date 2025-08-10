@@ -9,12 +9,13 @@
   --color-secondary: #8E1616;
   --color-third: #E8C999;
   --color-fourth: #F8EEDF;
+  --color-dashboard-hover: #f0f0f0;
 
   /* Map Tailwind theme colors to your custom colors */
   --primary: var(--color-primary); /* #000000 */
   --secondary: var(--color-secondary); /* #8E1616 */
-  --accent: var(--color-third); /* #E8C999 */
-  --muted: var(--color-fourth); /* #F8EEDF */
+  --accent: var(--color-fourth); /* #E8C999 */
+  --muted: var(--color-third); /* #F8EEDF */
 
   /* Keep other theme variables as needed */
   --animate-move: move 5s linear infinite;
@@ -108,7 +109,7 @@
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: var(--color-primary); /* #000000 */
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: var(--color-third); /* #E8C999 */
+  --sidebar-accent: var(--color-dashboard-hover); /* #E8C999 */
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
@@ -143,7 +144,7 @@
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: var(--color-primary); /* #000000 */
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: var(--color-third); /* #E8C999 */
+  --sidebar-accent: var(--color-dashboard-hover); /* #E8C999 */
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
