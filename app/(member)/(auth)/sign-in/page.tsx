@@ -1,27 +1,17 @@
-'use client'
-
-import { useActionState } from "react"
-import { handleLogin } from "../lib/action"
-import { auth } from "@/auth"
-import { redirect } from "next/navigation"
-
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
+import { SignInForm } from "@/app/components/signinform/signin-form";
 
 export default async function SignInPage() {
+  const session = await auth();
 
-  const [state, formAction] = useActionState(handleLogin, null)
-  const session = await auth()
+  if (session?.user) {
+    redirect("/");
+  }
 
-  if (session?.user) redirect("/")
-  
   return (
-    <form action={formAction}>
-      <input type="text" name="email" placeholder="Email" />
-      <input type="password" name="password" placeholder="Password" />
-      <button type="submit">Login</button>
-
-      {state?.message && (
-        <p style={{ color: 'red' }}>{state.message}</p>
-      )}
-    </form>
-  )
+    <div className="bg-gray-100 flex items-center justify-center min-h-screen font-sans">
+      <SignInForm />
+    </div>
+  );
 }
