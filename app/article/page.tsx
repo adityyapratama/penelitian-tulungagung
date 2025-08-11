@@ -1,21 +1,27 @@
-// app/artikel/page.tsx
-import { NavbarDemo } from "@/app/components/navbar/navbar";
-import ArticleGrid from "@/app/components/article/article";
-import { Suspense } from "react";
-import { getArticle } from "./lib/actions";
+// File: /app/artikel/page.tsx
 
-export default function ArticlesPage() {
-  const data = getArticle()
-  console.log(data)
+import { Suspense } from 'react';
+import { getArticles } from '@/app/lib/actions';
+import ArticleGridClient from '@/app/components/article/article';
+// 1. Impor komponen loading baru Anda
+import LoadingIndicator from '@/app/components/article/loader';
+
+// Komponen async untuk fetching data (tetap sama)
+async function Articles() {
+  const articles = await getArticles();
+  return <ArticleGridClient articles={articles} />;
+}
+
+export default function ArticlePage() {
   return (
-    <div className="min-h-screen overflow-x-hidden font-sans">
-      <main className="max-w-full px-4 pt-20 sm:px-8 lg:px-20">
-        <section id="all-articles" className="relative py-24 sm:py-32">
-          <Suspense fallback={<div className="w-full h-screen" />}>
-            <ArticleGrid /> {/* Panggil tanpa limit, jadi akan tampilkan semua artikel */}
-          </Suspense>
-        </section>
-      </main>
-    </div>
+    <main className="container py-8 mx-auto">
+      <h1 className="mb-8 text-4xl font-bold text-center">Semua Artikel</h1>
+
+      {/* 2. Gunakan LoadingIndicator sebagai fallback */}
+      <Suspense fallback={<LoadingIndicator />}>
+        <Articles />
+      </Suspense>
+      
+    </main>
   );
 }

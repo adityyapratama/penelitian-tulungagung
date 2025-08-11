@@ -70,7 +70,7 @@ export function NavbarDemo() {
                 <span className="block">{item.name}</span>
               </a>
             ))}
-            <div className="flex w-full flex-col gap-4">
+            <div className="flex flex-col w-full gap-4">
               <NavbarButton
                 onClick={() => setIsMobileMenuOpen(false)} 
                 variant="primary"
