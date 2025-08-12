@@ -1,27 +1,17 @@
-'use client'
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
+import { AdminSignInForm } from "@/components/login-form";
 
-import { useActionState } from "react"
-import { handleLogin } from "./lib/actions"
-import { auth } from "@/auth"
-import { redirect } from "next/navigation"
+export default async function AdminSignInPage() {
+  const session = await auth();
 
+  if (session?.user) redirect("/");
 
-export default async function SignInPage() {
-
-  const [state, formAction] = useActionState(handleLogin, null)
-  const session = await auth()
-
-  if (session?.user) redirect("/")
-  
   return (
-    <form action={formAction}>
-      <input type="text" name="email" placeholder="Email" />
-      <input type="password" name="password" placeholder="Password" />
-      <button type="submit">Login</button>
-
-      {state?.message && (
-        <p style={{ color: 'red' }}>{state.message}</p>
-      )}
-    </form>
-  )
+    <div className="bg-background flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
+      <div className="w-full max-w-sm">
+        <AdminSignInForm />
+      </div>
+    </div>
+  );
 }
