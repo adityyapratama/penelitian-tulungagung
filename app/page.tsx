@@ -8,7 +8,7 @@ import {MarqueeDemo} from "@/app/components/comment/comment";
 import OurFeature from "@/app/components/our-feature/our-feature";
 import ArticleGrid from "@/app/components/article/article";
 import Footer from "@/app/components/footer/footerPage";
-
+import ArticlePage from "@/app/components/article/article-card";
 
 
 export default function Home() {
@@ -51,23 +51,16 @@ export default function Home() {
           </Suspense>
         </section> */}
 
-         <section id="article" className="relative py-24 sm:py-32"> {/* Updated class for better spacing */}
+          <section id="hero-video" className="flex items-center justify-center min-h-screen">
           <Suspense fallback={<div className="w-full h-screen" />}>
             <AnimationWrapper>
-               <ArticleGrid limit={3} />
+              <ArticlePage />
             </AnimationWrapper>
           </Suspense>
         </section>
 
 
         
-          <section id="Footer" className="relative"> 
-          
-            <AnimationWrapper>
-               <Footer/>
-            </AnimationWrapper>
-  
-        </section>
       </main>
     </div>
   );

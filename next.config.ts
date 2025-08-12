@@ -5,11 +5,17 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'assets.aceternity.com',
+        hostname: 'assets.aceternity.com', // Domain yang sudah ada
         port: '',
         pathname: '/**',
       },
-      // You can add more patterns for other domains if needed
+      // 👇 Tambahkan pola baru untuk Unsplash di sini
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com', // Domain dari error sebelumnya
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
 };

@@ -11,6 +11,7 @@ import {
   MobileNavMenu,
 } from "@/app/components/ui/navbar";
 import { useState } from "react";
+import Link from "next/link";
 
 export function NavbarDemo() {
   const navItems = [
@@ -28,7 +29,6 @@ export function NavbarDemo() {
     },
   ];
 
-
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
@@ -37,9 +37,11 @@ export function NavbarDemo() {
         {/* Desktop Navigation */}
         <NavBody>
           <NavbarLogo />
-          <NavItems  items={navItems} />
+          <NavItems items={navItems} />
           <div className="flex items-center gap-4">
-            <NavbarButton variant="secondary">Login</NavbarButton>
+            <Link href="/sign-in" passHref>
+              <NavbarButton variant="secondary">Login</NavbarButton>
+            </Link>
             <NavbarButton variant="primary">Book a call</NavbarButton>
           </div>
         </NavBody>
@@ -68,13 +70,13 @@ export function NavbarDemo() {
                 <span className="block">{item.name}</span>
               </a>
             ))}
-            <div className="flex w-full flex-col gap-4">
+            <div className="flex flex-col w-full gap-4">
               <NavbarButton
-                onClick={() => setIsMobileMenuOpen(false)}
+                onClick={() => setIsMobileMenuOpen(false)} 
                 variant="primary"
                 className="w-full"
               >
-                Login
+                Masuk
               </NavbarButton>
               <NavbarButton
                 onClick={() => setIsMobileMenuOpen(false)}
@@ -87,11 +89,8 @@ export function NavbarDemo() {
           </MobileNavMenu>
         </MobileNav>
       </Navbar>
-      
 
       {/* Navbar */}
     </div>
   );
 }
-
-
