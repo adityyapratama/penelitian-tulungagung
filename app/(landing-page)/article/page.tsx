@@ -2,9 +2,9 @@
 
 import { Suspense } from 'react';
 import { getArticles } from '@/app/lib/actions';
-import ArticleGridClient from '@/components/article/article';
+import ArticleGridClient from '@/components/(landing-page)/article/article';
 // 1. Impor komponen loading baru Anda
-import LoadingIndicator from '@/components/article/loader';
+import LoadingIndicator from '@/components/(landing-page)/article/loader';
 
 // Komponen async untuk fetching data (tetap sama)
 async function Articles() {

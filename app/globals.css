@@ -15,7 +15,7 @@
   --primary: var(--color-primary); /* #000000 */
   --secondary: var(--color-secondary); /* #8E1616 */
   --accent: var(--color-fourth); /* #E8C999 */
-  --muted: var(--color-third); /* #F8EEDF */
+--muted: var(--color-third); /* #F8EEDF */
 
   /* Keep other theme variables as needed */
   --animate-move: move 5s linear infinite;
@@ -160,5 +160,21 @@
   }
   html {
     overflow-x: hidden;
+  }
+
+
+  
+}
+
+@theme inline {
+  --animate-grid: grid 15s linear infinite;
+ 
+  @keyframes grid {
+    0% {
+      transform: translateY(-50%);
+    }
+    100% {
+      transform: translateY(0);
+    }
   }
 }

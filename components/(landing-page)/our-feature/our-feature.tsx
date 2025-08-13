@@ -1,14 +1,17 @@
 "use client";
 
-import { BentoDemo } from "@/components/our-feature/card";
+import { BentoDemo } from "@/components/(landing-page)/our-feature/card";
 import Image from "next/image";
+import {Iphone15Pro} from "@/components/magicui/iphone-15-pro";
 
 export default function OurFeature() {
   return (
-    <div className="w-full min-h-screen bg-white">
+    <div className="w-full min-h-screen bg-white">\
+    
       {/* Container utama dengan padding dan lebar maksimum */}
-      <div className="px-4 py-16 mx-auto max-w-7xl sm:px-6 lg:px-8">
+      <div className="px-4 py-16 mx-auto max-w-7xl sm:px-6 lg:px-8 ">
         {/* Bagian Header */}
+        
         <div className="mb-16 text-center">
           <h2 className="mb-4 text-3xl font-bold text-gray-900 md:text-4xl lg:text-5xl dark:text-white">
             Fitur Unggulan Kami
@@ -31,14 +34,7 @@ export default function OurFeature() {
           {/* Menggunakan 3 kolom untuk gambar agar lebih kecil */}
           <div className="order-1 lg:col-span-3 lg:order-2">
             <div className="flex justify-center lg:justify-end">
-              <Image
-                src="/asset/quiz.png"
-                alt="Fitur Quiz"
-                width={1000}
-                height={1000}
-                className="transition-transform duration-300 rounded-4xl hover:scale-105"
-                priority
-              />
+              <Iphone15Pro className="transition-transform duration-300 rounded-4xl hover:scale-105" />
             </div>
           </div>
         </div>

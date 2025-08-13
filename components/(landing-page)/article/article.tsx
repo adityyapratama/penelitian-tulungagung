@@ -39,7 +39,7 @@ const ArticleCard: React.FC<{ article: Article }> = ({ article }) => {
         <p className="mt-2 text-gray-700">{article.excerpt}</p>
         <Link 
           href={`/artikel/${article.id}`} 
-          className="inline-block mt-4 font-semibold text-blue-600 transition hover:text-blue-600"
+          className="inline-block px-4 py-2 mt-4 mr-2 font-semibold text-white transition bg-blue-600 border-2 rounded-full back hover:text-blue-600 hover:bg-white hover:border-blue-600"
         >
           Read more &rarr;
         </Link>

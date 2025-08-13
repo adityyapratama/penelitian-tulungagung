@@ -5,7 +5,7 @@ import { PixelImage } from "@/components/magicui/pixel-image";
 
 import { cn } from "@/lib/utils";
 // import AnimatedBeamMultipleOutputDemo from "@/registry/example/animated-beam-multiple-outputs";
-import {AnimatedListDemo} from "@/components/our-feature/animates-list";
+import {AnimatedListDemo} from "@/components/(landing-page)/our-feature/animates-list";
 import { BentoCard, BentoGrid } from "@/components/magicui/bento-grid";
 import { Marquee } from "@/components/magicui/marquee";
 
