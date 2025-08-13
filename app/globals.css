@@ -6,16 +6,16 @@
 @theme inline {
   /* Define your custom colors */
   --color-primary: #000000;
-  --color-secondary: #8E1616;
-  --color-third: #E8C999;
-  --color-fourth: #F8EEDF;
+  --color-secondary: #8e1616;
+  --color-third: #e8c999;
+  --color-fourth: #f8eedf;
   --color-dashboard-hover: #f0f0f0;
 
   /* Map Tailwind theme colors to your custom colors */
   --primary: var(--color-primary); /* #000000 */
   --secondary: var(--color-secondary); /* #8E1616 */
   --accent: var(--color-fourth); /* #E8C999 */
-  --muted: var(--color-third); /* #F8EEDF */
+--muted: var(--color-third); /* #F8EEDF */
 
   /* Keep other theme variables as needed */
   --animate-move: move 5s linear infinite;
@@ -150,15 +150,44 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
+@layer components {
+  /* Tombol utama */
+  .btn-primary {
+    @apply inline-flex items-center gap-2 px-4 py-2 font-medium transition-colors duration-200 rounded-lg;
+    background-color: var(--primary);
+    color: var(--primary-foreground);
   }
-  body {
-    @apply bg-background text-foreground;
-    overflow-x: hidden;
+  .btn-primary:hover {
+    background-color: color-mix(in srgb, var(--primary) 90%, black);
   }
-  html {
-    overflow-x: hidden;
+
+  /* Tombol sekunder */
+  .btn-secondary {
+    @apply inline-flex items-center gap-2 px-4 py-2 font-medium transition-colors duration-200 rounded-lg;
+    background-color: var(--secondary);
+    color: var(--secondary-foreground);
+  }
+
+
+
+  
+}
+
+@theme inline {
+  --animate-grid: grid 15s linear infinite;
+ 
+  @keyframes grid {
+    0% {
+      transform: translateY(-50%);
+    }
+    100% {
+      transform: translateY(0);
+    }
   }
 }
+
+  .btn-secondary:hover {
+    background-color: color-mix(in srgb, var(--secondary) 90%, black);
+  }
+}
+

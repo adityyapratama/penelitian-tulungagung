@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
-import { Marquee } from "@/app/components/magicui/marquee";
-
+import { Marquee } from "@/components/magicui/marquee";
+import { RetroGrid } from "@/components/magicui/retro-grid";
 const reviews = [
   {
     name: "Jack",
@@ -80,7 +80,10 @@ const ReviewCard = ({
 
 export function MarqueeDemo() {
   return (
-    <div className="relative flex w-full flex-col items-center justify-center overflow-hidden">
+    
+    <div className="relative flex flex-col items-center justify-center w-full overflow-hidden ">
+    
+      
       <Marquee pauseOnHover className="[--duration:20s]">
         {firstRow.map((review) => (
           <ReviewCard key={review.username} {...review} />
@@ -91,8 +94,8 @@ export function MarqueeDemo() {
           <ReviewCard key={review.username} {...review} />
         ))}
       </Marquee>
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-background"></div>
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-1/4 bg-gradient-to-l from-background"></div>
+      <div className="absolute inset-y-0 left-0 w-1/4 pointer-events-none bg-gradient-to-r from-background"></div>
+      <div className="absolute inset-y-0 right-0 w-1/4 pointer-events-none bg-gradient-to-l from-background"></div>
     </div>
   );
 }

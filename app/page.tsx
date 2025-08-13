@@ -1,33 +1,40 @@
 
 
-import {NavbarDemo} from "@/app/components/navbar/navbar";
-import {PlaceholdersAndVanishInputDemo} from "@/app/components/hero/PlaceholdersAndVanishInputDemo";
-import { AnimationWrapper } from '@/app/components/animation-wrapper';
+import {NavbarDemo} from "@/components/(landing-page)/navbar/navbar";
+import HeroSection from "@/components/(landing-page)/hero/hero";
+import { AnimationWrapper } from '@/components/animation-wrapper';
 import { Suspense } from 'react';
-import {MarqueeDemo} from "@/app/components/comment/comment";
-import OurFeature from "@/app/components/our-feature/our-feature";
-import ArticleGrid from "@/app/components/article/article";
-import Footer from "@/app/components/footer/footerPage";
-import ArticlePage from "@/app/components/article/article-card";
+import {MarqueeDemo} from "@/components/(landing-page)/comment/comment";
+import OurFeature from "@/components/(landing-page)/our-feature/our-feature";
+import ArticleGrid from "@/components/(landing-page)/article/article";
+import Footer from "@/components/(landing-page)/footer/footerPage";
+import ArticlePage from "@/components/(landing-page)/article/article-card";
+import { TypingAnimation } from "@/components/magicui/typing-animation";
+import {AccordionDemo} from "@/components/(landing-page)/stacked/stacked";
+
+
+
+
 
 
 export default function Home() {
   return (
     <div className="min-h-screen overflow-x-hidden font-sans">
-      <NavbarDemo/>
+      <NavbarDemo/>   
       
-      <main className="max-w-full px-4 pt-20 sm:px-8 lg:px-20">
-        <section id="hero" className="flex items-center justify-center min-h-screen">
-          <Suspense fallback={<div className="w-full h-screen" />}>
+      <main className="">
+        <section id="hero">
+          <Suspense >
             <AnimationWrapper>
-              <PlaceholdersAndVanishInputDemo />
+              <HeroSection />
             </AnimationWrapper> 
           </Suspense>
         </section>
 
-        <section id="comments-reviews" className="w-full max-w-full py-16 ">
-          <h1 className="justify-center mb-10 text-4xl font-bold text-center text-blue-900 dark:text-white ">User Reviews</h1>
+        <section id="comments-reviews" className="w-full max-w-full py-16 bg-blue-">
+            <TypingAnimation startOnView={true}>Testimonial👋</TypingAnimation>
           <Suspense fallback={<div className="w-full h-32" />}>
+          
             <AnimationWrapper>
               <MarqueeDemo/>
             </AnimationWrapper> 
@@ -58,6 +65,34 @@ export default function Home() {
             </AnimationWrapper>
           </Suspense>
         </section>
+
+
+        <section id="stacked" className="w-full py-16 md:py-24">
+                <div className="container px-4 mx-auto">
+                  <div className="max-w-4xl mx-auto">
+                    <Suspense fallback={
+                      <div className="w-full">
+                        <div className="h-16 mb-2 bg-gray-200 rounded animate-pulse" />
+                        <div className="h-16 mb-2 bg-gray-200 rounded animate-pulse" />
+                        <div className="h-16 bg-gray-200 rounded animate-pulse" />
+                      </div>
+                    }>
+                      <AnimationWrapper>
+                        <AccordionDemo />
+                      </AnimationWrapper>
+                    </Suspense>
+                  </div>
+                </div>
+          </section>
+
+          <section id="Footer" className="Full-h-screen">
+          <Suspense fallback={<div className="w-full h-screen" />}>
+            <AnimationWrapper>
+              <Footer />
+            </AnimationWrapper>
+          </Suspense>
+        </section>
+
 
 
         
