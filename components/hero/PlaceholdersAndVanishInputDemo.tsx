@@ -1,6 +1,6 @@
 "use client";
 
-import { PlaceholdersAndVanishInput } from "@/app/components/ui/hero";
+import { PlaceholdersAndVanishInput } from "@/components/ui/hero";
 
 export function PlaceholdersAndVanishInputDemo() {
   const placeholders = [

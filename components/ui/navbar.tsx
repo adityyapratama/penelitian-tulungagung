@@ -136,7 +136,7 @@ export const NavItems = ({ items, className, onItemClick }: NavItemsProps) => {
           {hovered === idx && (
             <motion.div
               layoutId="hovered"
-              className="absolute inset-0 h-full w-full rounded-full bg-gray-100 dark:bg-neutral-800"
+              className="absolute inset-0 w-full h-full bg-gray-100 rounded-full dark:bg-neutral-800"
             />
           )}
           <span className="relative z-20">{item.name}</span>
@@ -234,7 +234,7 @@ export const NavbarLogo = () => {
   return (
     <a
       href="#"
-      className="relative z-20 mr-4 flex items-center space-x-2 px-2 py-1 text-sm font-normal text-black"
+      className="relative z-20 flex items-center px-2 py-1 mr-4 space-x-2 text-sm font-normal text-black"
     >
       <Image
         src="/asset/unair.png"

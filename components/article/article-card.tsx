@@ -1,7 +1,7 @@
 // File: /app/page.tsx atau /app/artikel/page.tsx (Ini adalah SERVER COMPONENT)
 
 import { getArticles } from '@/app/lib/actions'; // Panggil fungsi server Anda
-import ArticleGridClient from '@/app/components/article/article';
+import ArticleGridClient from '@/components/article/article';
 
 // Halaman ini adalah ASYNC function
 export default async function ArticlePage() {

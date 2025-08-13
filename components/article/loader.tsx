@@ -4,7 +4,7 @@
 
 import { useEffect, useState } from "react";
 // Pastikan path impor ini sesuai dengan struktur proyek Anda
-import { AnimatedCircularProgressBar } from "@/app/components/magicui/loader";
+import { AnimatedCircularProgressBar } from "@/components/magicui/loader";
 
 export default function LoadingIndicator() {
   const [progress, setProgress] = useState(0);

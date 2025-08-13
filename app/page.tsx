@@ -1,20 +1,20 @@
 
 
-import {NavbarDemo} from "@/app/components/navbar/navbar";
-import {PlaceholdersAndVanishInputDemo} from "@/app/components/hero/PlaceholdersAndVanishInputDemo";
-import { AnimationWrapper } from '@/app/components/animation-wrapper';
+import {NavbarDemo} from "@/components/navbar/navbar";
+import {PlaceholdersAndVanishInputDemo} from "@/components/hero/PlaceholdersAndVanishInputDemo";
+import { AnimationWrapper } from '@/components/animation-wrapper';
 import { Suspense } from 'react';
-import {MarqueeDemo} from "@/app/components/comment/comment";
-import OurFeature from "@/app/components/our-feature/our-feature";
-import ArticleGrid from "@/app/components/article/article";
-import Footer from "@/app/components/footer/footerPage";
-import ArticlePage from "@/app/components/article/article-card";
+import {MarqueeDemo} from "@/components/comment/comment";
+import OurFeature from "@/components/our-feature/our-feature";
+import ArticleGrid from "@/components/article/article";
+import Footer from "@/components/footer/footerPage";
+import ArticlePage from "@/components/article/article-card";
 
 
 export default function Home() {
   return (
     <div className="min-h-screen overflow-x-hidden font-sans">
-      <NavbarDemo/>
+      <NavbarDemo/>   
       
       <main className="max-w-full px-4 pt-20 sm:px-8 lg:px-20">
         <section id="hero" className="flex items-center justify-center min-h-screen">
