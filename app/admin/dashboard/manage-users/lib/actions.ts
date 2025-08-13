@@ -3,6 +3,7 @@ import { TColumn } from "./columns";
 import { SchemaUser } from "@/lib/schema";
 import bcrypt from "bcryptjs";
 import { redirect } from "next/navigation";
+import dayjs from "dayjs";
 
 const saltRounds = 10;
 
@@ -47,7 +48,7 @@ export async function CreateUser(_:unknown,formData:FormData){
         username:validate.data.username,
         email:validate.data.email,
         password_hash:passwordHash,
-        role:validate.data.role
+        role:validate.data.role,
       }
     })
   }catch(err){

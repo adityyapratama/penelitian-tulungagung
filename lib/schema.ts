@@ -20,3 +20,10 @@ export const SchemaUser = z.object({
 	password: z.string({message:"Password is required"}).min(8,{message:"Password shoul have min 8 characters"}),
 	role: z.enum(["member","guru","super_admin"])
 })
+
+export const SchemaArticle = z.object({
+	judul: z.string({message:"Judul is required"}).min(8,{message:"Judul should have min 8 characters"}),
+	konten: z.string({message:"Konten is required"}).min(100,{message:"Konten shoul have min 100 characters"}),
+	kategori:z.bigint({message:"Kategori is required"}),
+	thumbnail:z.instanceof(File)
+})
