@@ -24,3 +24,27 @@ export async function getArticleById(id:string){
         return null
     }
 }
+
+export async function GetArticleCategory() {
+    try {
+        const categories = await prisma.kategoriArtikel.findMany({})
+        return categories
+    } catch (error) {
+        console.log(error)
+        return []
+    }
+}
+
+export async function GetArticleCategoryById(id:string) {
+    try {
+        const category = await prisma.kategoriArtikel.findFirst({
+            where:{
+                KategoriArtikel_id:Number.parseInt(id)
+            }
+        })
+        return category
+    } catch (error) {
+        console.log(error)
+        return null
+    }
+}
