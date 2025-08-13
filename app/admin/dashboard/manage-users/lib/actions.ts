@@ -20,7 +20,6 @@ export async function getUsers(){
             }
         })
 
-        console.table(response)
         return response
     } catch (error) {
         console.log(error);
