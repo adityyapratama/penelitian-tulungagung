@@ -1,14 +1,30 @@
-// tailwind.config.js
-const {heroui} = require("@heroui/theme");
+import heroui from "@heroui/theme/plugin";
+import tailwindcssAnimate from "tailwindcss-animate";
 
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+const config = {
   content: [
-    "./node_modules/@heroui/theme/dist/components/(image|skeleton).js"
-],
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
+    "./node_modules/@heroui/theme/dist/components/**/*.{js,ts,jsx,tsx}",
+  ],
   theme: {
-    extend: {},
+    extend: {
+      borderColor: {
+        DEFAULT: 'hsl(var(--border))'
+      },
+      colors: {
+        border: 'hsl(var(--border))',
+      }
+    },
   },
   darkMode: "class",
-  plugins: [heroui()],
+  plugins: [
+    heroui(),
+    tailwindcssAnimate // Gunakan variabel yang sudah di-import
+  ],
 };
+
+export default config;
