@@ -189,5 +189,4 @@
   .btn-secondary:hover {
     background-color: color-mix(in srgb, var(--secondary) 90%, black);
   }
-}
 

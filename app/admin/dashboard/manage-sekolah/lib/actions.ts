@@ -74,6 +74,6 @@ export async function deleteSekolah(id:number) {
         return { success: true };
     } catch (error) {
         console.log(error);
-        return { error };
+        return { error:error };
     }
 }
