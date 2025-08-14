@@ -1,5 +1,8 @@
 import prisma from "@/lib/prisma";
 import dayjs from "dayjs";
+import { signOut } from "@/auth"
+import { redirect } from "next/navigation";
+
 
 interface DisplayArticle {
   id: number;
@@ -56,3 +59,17 @@ export async function getArticleById(id:string){
         return null
     }
 }
+
+export async function HandleLogout() {
+  try {
+    await signOut()
+
+    return redirect("/")
+  } catch (error) {
+    console.log(error)
+    return {error:error}
+  }
+}
+
+
+
