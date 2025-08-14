@@ -1,5 +1,6 @@
 import { ColumnDef } from "@tanstack/react-table";
 
+
 export type TColumn = {
   id: number;
   username: string;
@@ -13,6 +14,7 @@ export const columns: ColumnDef<TColumn, any>[] = [
     accessorKey: "username",
     header: "Username",
   },
+  
   {
     accessorKey: "email",
     header: "Email",
