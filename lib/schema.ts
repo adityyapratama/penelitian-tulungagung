@@ -27,3 +27,10 @@ export const SchemaArticle = z.object({
 	kategori:z.bigint({message:"Kategori is required"}),
 	thumbnail:z.instanceof(File)
 })
+
+export const SchemaSekolah = z.object({
+	nama_sekolah: z.string({message:"Nama Sekolah is required"}),
+	alamat_sekolah : z.string({
+		message:"Alamat Sekolah is required"
+	})
+})
