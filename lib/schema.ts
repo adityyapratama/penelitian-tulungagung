@@ -34,3 +34,25 @@ export const SchemaSekolah = z.object({
 		message:"Alamat Sekolah is required"
 	})
 })
+
+export const SchemaQuiz = z.object({
+	judul: z.string({message:"Judul is required"}).min(8,{message:"Judul should have min 8 characters"}),
+	deskripsi: z.string({message:"deskripsi is required"}),
+	kategori_id: z.number({message:"kategori is required"}).int().min(1),
+	xp_reward: z.number({message:"xp reward is required"}).int(),
+	is_publised: z.boolean({message:"published option is required"})
+})
+
+
+export const SchemaPilihan = z.object({
+  teks_jawaban: z.string().min(1, "Jawaban wajib diisi"),
+  score: z.number().int().default(0),
+});
+
+export const SchemaPertanyaan = z.object({
+  teks_pertanyaan: z.string().min(1, "Pertanyaan wajib diisi"),
+  tipe: z.enum(["pilihan_ganda","benar_salah"]),
+  poin: z.number().int().default(10),
+  urutan: z.number().int(),
+  pilihan: z.array(SchemaPilihan),
+});
