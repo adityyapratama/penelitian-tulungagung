@@ -1,6 +1,6 @@
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
-import { SchemaQuiz,SchemaPilihan,SchemaPertanyaan } from "@/lib/schema";
+import { SchemaQuiz,SchemaPilihan,SchemaPertanyaan, SchemaCategoryKuis } from "@/lib/schema";
 import z from "zod";
 
 
@@ -210,3 +210,72 @@ export async function DeletePertanyaan(
     return { error };
   }
 }
+
+export async function CreateQuizCategory(_:unknown,formData:FormData){
+  const session = await auth();
+  if (!session) return { error: "Not Authorized" };
+
+  const parse = SchemaCategoryKuis.safeParse({
+    nama_kategori : formData.get("nama_kategori"),
+    deskripsi : formData.get("deskripsi")
+  })
+
+  if (!parse.success) return { error: parse.error.message };
+
+  try {
+    await prisma.kategoriKuis.create({
+      data:{
+        nama_kategori:parse.data.nama_kategori,
+        created_by:parseInt(session.user.id!),
+        deskripsi:parse.data.deskripsi
+      }
+    })
+  } catch (error) {
+    console.log(error)
+    return {error:error}
+  }
+}
+
+export async function UpdateQuizCategory(id: string, formData: FormData) {
+  const session = await auth();
+  if (!session) return { error: "Not Authorized" };
+
+  const parse = SchemaCategoryKuis.safeParse({
+    nama_kategori: formData.get("nama_kategori"),
+    deskripsi: formData.get("deskripsi"),
+  });
+
+  if (!parse.success) return { error: parse.error.message };
+
+  try {
+    const updated = await prisma.kategoriKuis.update({
+      where: { kategori_id: parseInt(id) }, 
+      data: {
+        nama_kategori: parse.data.nama_kategori,
+        deskripsi: parse.data.deskripsi,
+      },
+    });
+
+    return { success: true, data: updated };
+  } catch (error: any) {
+    console.error("UpdateQuizCategory Error:", error);
+    return { error: error.message || "Failed to update category" };
+  }
+}
+
+export async function DeleteQuizCategory(id: string) {
+  const session = await auth();
+  if (!session) return { error: "Not Authorized" };
+
+  try {
+    await prisma.kategoriKuis.delete({
+      where: { kategori_id: parseInt(id) }, 
+    });
+
+    return { success: true, message: "Category deleted successfully" };
+  } catch (error: any) {
+    console.error("DeleteQuizCategory Error:", error);
+    return { error: error.message || "Failed to delete category" };
+  }
+}
+

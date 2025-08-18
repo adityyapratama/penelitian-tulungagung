@@ -56,3 +56,15 @@ export const SchemaPertanyaan = z.object({
   urutan: z.number().int(),
   pilihan: z.array(SchemaPilihan),
 });
+
+export const SchemaStory = z.object({
+	judul: z.string({message:"Judul is required"}).min(8,{message:"Judul should have min 8 characters"}),
+	thumbnail: z.instanceof(File),
+	deskripsi: z.string({message:"deskripsi is required"}),
+	xp_reward: z.number({message:"xp reward is required"}).int()
+})
+
+export const SchemaCategoryKuis = z.object({
+	nama_kategori : z.string({message:"nama kategori is required"}).min(8,{message:"Judul should have min 8 characters"}),
+	deskripsi : z.string({message:"deskripsi is required"})
+})
