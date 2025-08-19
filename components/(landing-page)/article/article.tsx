@@ -6,6 +6,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 
+
 // Type definition (sudah bagus)
 interface Article {
   id: number;
@@ -20,6 +21,7 @@ interface Article {
 const ArticleCard: React.FC<{ article: Article }> = ({ article }) => {
   // ... (kode card Anda tidak berubah)
   return (
+
     <div className="block overflow-hidden transition-shadow duration-300 rounded-lg shadow-lg group hover:shadow-xl">
       <Image
         alt={article.title}

@@ -43,10 +43,13 @@ const data = {
         {
           title: "Daftar Pengguna",
           url: "/admin/dashboard/manage-users",
+
+          
+
         },
         {
           title: "Tambah Pengguna",
-          url: "#",
+          url: "dashboard/manage-users",
         },
       ],
     },
