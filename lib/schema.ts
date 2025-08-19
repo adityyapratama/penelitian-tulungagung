@@ -68,3 +68,10 @@ export const SchemaCategoryKuis = z.object({
 	nama_kategori : z.string({message:"nama kategori is required"}).min(8,{message:"Judul should have min 8 characters"}),
 	deskripsi : z.string({message:"deskripsi is required"})
 })
+
+export const SchemaPuzzle = z.object({
+	judul: z.string({message:"Judul is required"}).min(8,{message:"Judul should have min 8 characters"}),
+	gambar: z.instanceof(File),
+	kategori:  z.enum(["Tempat_Wisata","Tokoh_Sejarah","Peta","Budaya","Lainnya"]),
+	xp_reward: z.number({message:"xp reward is required"}).int()
+})
