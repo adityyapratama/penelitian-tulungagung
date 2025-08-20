@@ -6,6 +6,7 @@ import {
   BookAudioIcon,
   LayoutDashboard,
   PersonStanding,
+  Puzzle,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -34,25 +35,16 @@ const data = {
       title: "Dashboard",
       url: "/admin/dashboard",
       icon: LayoutDashboard,
-    },
-    
+    }, 
     {
       title: "Manajemen Pengguna",
       url: "/admin/dashboard/manage-users",
       icon: PersonStanding,
-      items: [
-        {
-          title: "Daftar Pengguna",
-          url: "/admin/dashboard/manage-users",
-
-          
-
-        },
-        {
-          title: "Tambah Pengguna",
-          url: "dashboard/manage-users",
-        },
-      ],
+    },
+    {
+      title: "Manajemen Puzzle",
+      url: "/admin/dashboard/manage-puzzles",
+      icon: Puzzle,
     },
     {
       title: "Manajemen Cerita",
