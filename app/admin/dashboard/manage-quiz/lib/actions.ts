@@ -211,30 +211,57 @@ export async function DeletePertanyaan(
   }
 }
 
-export async function CreateQuizCategory(_:unknown,formData:FormData){
+export async function CreateQuizCategory(
+  _: unknown,
+  formData: FormData
+): Promise<{
+  message?: string;
+  error?: string;
+  errors?: { nama_kategori?: string[]; deskripsi?: string[] };
+}> {
   const session = await auth();
-  if (!session) return { error: "Not Authorized" };
+  if (!session) {
+    return { error: "Not Authorized" };
+  }
 
   const parse = SchemaCategoryKuis.safeParse({
-    nama_kategori : formData.get("nama_kategori"),
-    deskripsi : formData.get("deskripsi")
-  })
+    nama_kategori: formData.get("nama_kategori"),
+    deskripsi: formData.get("deskripsi"),
+  });
 
-  if (!parse.success) return { error: parse.error.message };
+  if (!parse.success) {
+    const errors = Object.entries(parse.error.flatten().fieldErrors).reduce(
+      (acc, [key, value]) => {
+        if (value && value.length > 0) {
+          acc[key as "nama_kategori" | "deskripsi"] = value.map((msg) =>
+            msg.replace(/String must contain at least \d+ character\(s\)/, "Minimal beberapa karakter")
+              .replace(/Required/, "Wajib diisi")
+          );
+        }
+        return acc;
+      },
+      {} as { nama_kategori?: string[]; deskripsi?: string[] }
+    );
+
+    return { errors };
+  }
 
   try {
     await prisma.kategoriKuis.create({
-      data:{
-        nama_kategori:parse.data.nama_kategori,
-        created_by:parseInt(session.user.id!),
-        deskripsi:parse.data.deskripsi
-      }
-    })
-  } catch (error) {
-    console.log(error)
-    return {error:error}
+      data: {
+        nama_kategori: parse.data.nama_kategori,
+        created_by: Number(session.user.id),
+        deskripsi: parse.data.deskripsi,
+      },
+    });
+
+    return { message: "Kategori kuis berhasil dibuat" };
+  } catch (err: any) {
+    console.error(err);
+    return { error: "Gagal membuat kategori kuis" };
   }
 }
+
 
 export async function UpdateQuizCategory(id: string, formData: FormData) {
   const session = await auth();
