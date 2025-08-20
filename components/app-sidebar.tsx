@@ -3,6 +3,7 @@
 import * as React from "react";
 import Image from "next/image";
 import {
+  BookAudioIcon,
   LayoutDashboard,
   PersonStanding,
 } from "lucide-react";
@@ -50,6 +51,24 @@ const data = {
         {
           title: "Tambah Pengguna",
           url: "dashboard/manage-users",
+        },
+      ],
+    },
+    {
+      title: "Manajemen Cerita",
+      url: "/admin/dashboard/manage-stories",
+      icon: BookAudioIcon,
+      items: [
+        {
+          title: "Daftar Cerita",
+          url: "/admin/dashboard/manage-stories",
+
+          
+
+        },
+        {
+          title: "Tambah Cerita",
+          url: "/admin/dashboard/manage-stories/create",
         },
       ],
     },
