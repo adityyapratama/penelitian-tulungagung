@@ -3,8 +3,10 @@
 import * as React from "react";
 import Image from "next/image";
 import {
+  BookAudioIcon,
   LayoutDashboard,
   PersonStanding,
+  Puzzle,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -33,16 +35,33 @@ const data = {
       title: "Dashboard", 
       url: "/admin/dashboard",
       icon: LayoutDashboard,
-    },
-    
+    }, 
     {
       title: "Manajemen Pengguna",
       url: "/admin/dashboard/manage-users",
       icon: PersonStanding,
+    },
+    {
+      title: "Manajemen Puzzle",
+      url: "/admin/dashboard/manage-puzzles",
+      icon: Puzzle,
+    },
+    {
+      title: "Manajemen Cerita",
+      url: "/admin/dashboard/manage-stories",
+      icon: BookAudioIcon,
       items: [
         {
           title: "Daftar Pengguna",
           url: "/admin/dashboard/manage-users",
+        },
+        {
+          title: "Daftar Cerita",
+          url: "/admin/dashboard/manage-stories",
+        },
+        {
+          title: "Tambah Cerita",
+          url: "/admin/dashboard/manage-stories/create",
         },
       ],
     },

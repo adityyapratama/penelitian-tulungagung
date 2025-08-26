@@ -215,34 +215,40 @@ export async function DeletePertanyaan(
   }
 }
 
-export async function CreateQuizCategory(_:unknown,formData:FormData): Promise<ActionResult> {
+export async function CreateQuizCategory(
+  _: unknown,
+  formData: FormData
+): Promise<ActionResult> {
   const session = await auth();
-  if (!session) return { error: "Not Authorized" };
+  if (!session) {
+    return { error: "Not Authorized" };
+  }
 
   const parse = SchemaCategoryKuis.safeParse({
-    nama_kategori : formData.get("nama_kategori"),
-    deskripsi : formData.get("deskripsi")
-  })
+    nama_kategori: formData.get("nama_kategori"),
+    deskripsi: formData.get("deskripsi"),
+  });
 
-  if (!parse.success){
-    return { error: parse.error.errors[0].message};
+  if (!parse.success) {
+    return { error: parse.error.errors[0].message };
   }
 
   try {
     await prisma.kategoriKuis.create({
-      data:{
-        nama_kategori:parse.data.nama_kategori,
-        created_by:parseInt(session.user.id!),
-        deskripsi:parse.data.deskripsi
-      }
-    })
-    console.log(success)
-    return { success: "Category Berhasil Dibuat" }; // Kategori berhasil dibuat, tidak ada error
+      data: {
+        nama_kategori: parse.data.nama_kategori,
+        created_by: parseInt(session.user.id!),
+        deskripsi: parse.data.deskripsi,
+      },
+    });
 
-    
+    // ⚠️ Bug: success tidak terdefinisi
+    // console.log(success);
+
+    return { success: "Category Berhasil Dibuat" };
   } catch (error) {
-    console.log(error)
-    return {error: "terjadi kesalahan :" + error}
+    console.log(error);
+    return { error: "terjadi kesalahan :" + error };
   }
 }
 
@@ -344,7 +350,7 @@ const SchemaCategoryKuis = z.object({
 
 export async function UpdateQuizCategory(
   id: string,
-  prevState: ActionResult, // prevState diperlukan untuk useActionState
+  prevState: ActionResult, // ⚠️ hanya dipakai untuk useActionState
   formData: FormData
 ): Promise<ActionResult> {
   const session = await auth();
@@ -370,15 +376,15 @@ export async function UpdateQuizCategory(
       },
     });
 
-    // Revalidasi path agar daftar kategori di halaman index ikut terupdate
     revalidatePath("/admin/dashboard/manage-quiz/categories");
-    
+
     return { success: "Kategori berhasil diperbarui!" };
   } catch (error: any) {
     console.error("UpdateQuizCategory Error:", error);
-    // Tangani error jika nama kategori duplikat
-    if (error.code === 'P2002') {
-      return { error: "Nama kategori ini sudah digunakan oleh kategori lain." };
+    if (error.code === "P2002") {
+      return {
+        error: "Nama kategori ini sudah digunakan oleh kategori lain.",
+      };
     }
     return { error: "Gagal memperbarui kategori." };
   }
