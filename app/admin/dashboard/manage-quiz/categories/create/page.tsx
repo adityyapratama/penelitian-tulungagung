@@ -51,7 +51,7 @@ export default function CreateCategoryPage() {
                   <CardTitle className="text-2xl font-bold">Tambah Kategori Quiz Baru</CardTitle>
                   <CardDescription>Isi detail di bawah ini untuk membuat kategori baru.</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6">
+               <CardContent className="space-y-6">
                   
                   {/* 3. Tampilkan alert HANYA JIKA ada pesan sukses ATAU error */}
                   {(state?.success || state?.error) && (
@@ -59,8 +59,12 @@ export default function CreateCategoryPage() {
                       color={state.error ? "danger" : "success"}
                       title={state.error || state.success} // Tampilkan pesan error atau sukses
                       suppressHydrationWarning 
+                      // TAMBAHKAN className di bawah ini untuk memberi jarak
+                      className="gap-x-3"
                     />
                   )}
+
+                  
 
                   <div className="space-y-2">
                     <Label htmlFor="nama_kategori" className="font-semibold">Nama Kategori</Label>

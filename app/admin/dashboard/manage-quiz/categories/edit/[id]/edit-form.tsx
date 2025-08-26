@@ -51,12 +51,15 @@ export function EditCategoryForm({ category }: { category: KategoriKuis }) {
           <CardDescription>Ubah detail di bawah ini dan simpan perubahan.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          {(state?.success || state?.error) && (
-            <Alert
-              color={state.error ? "danger" : "success"}
-              title={state.success || state.error}
-            />
-          )}
+           {(state?.success || state?.error) && (
+                              <Alert
+                                color={state.error ? "danger" : "success"}
+                                title={state.error || state.success} // Tampilkan pesan error atau sukses
+                                suppressHydrationWarning 
+                                // TAMBAHKAN className di bawah ini untuk memberi jarak
+                                className="gap-x-3"
+                              />
+                            )}
 
           <div className="space-y-2">
             <Label htmlFor="nama_kategori" className="font-semibold">Nama Kategori</Label>
