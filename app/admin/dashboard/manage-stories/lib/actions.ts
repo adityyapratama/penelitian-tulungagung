@@ -1,10 +1,14 @@
+'use server'
+
 import prisma from "@/lib/prisma"
 import { SchemaStory } from "@/lib/schema"
 import fs from 'fs'
 import path from 'path'
 import { auth } from "@/auth"
+import { ActionResult } from "@/lib/executeAction"
 
-export async function createStory(_: unknown, formData: FormData) {
+
+export async function createStory(_: unknown, formData: FormData):Promise<ActionResult> {
   const session = await auth();
   if (!session) return { error: "Not Authorized" };
 
@@ -34,7 +38,7 @@ export async function createStory(_: unknown, formData: FormData) {
   const relativePath = path.join("/story", file.name);
 
   try {
-    const newStory = await prisma.ceritaInteraktif.create({
+    await prisma.ceritaInteraktif.create({
       data: {
         judul: parse.data.judul,
         thumbnail: relativePath, 
@@ -44,14 +48,14 @@ export async function createStory(_: unknown, formData: FormData) {
       },
     });
 
-    return { success: true, data: newStory };
-  } catch (error: any) {
+    return { success: "berhasil", redirectTo: "/admin/dashboard/manage-stories" };
+  } catch (error: unknown) {
     console.error("createStory Error:", error);
-    return { error: error.message || "Something went wrong" };
+    return { error: "Gagal Membuat Cerita" };
   }
 }
 
-export async function UpdateStory(id: string, formData: FormData) {
+export async function UpdateStory(id: string, formData: FormData):Promise<ActionResult> {
   const session = await auth();
   if (!session) return { error: "Not Authorized" };
 
@@ -112,14 +116,14 @@ export async function UpdateStory(id: string, formData: FormData) {
       },
     });
 
-    return { success: true };
+    return { success: "berhasil", redirectTo: "/admin/dashboard/manage-stories" };
   } catch (error) {
     console.error("UpdateStory Error:", error);
     return { error: "Gagal update story" };
   }
 }
 
-export async function DeleteStory(id: string) {
+export async function DeleteStory(id: string):Promise<ActionResult> {
   const session = await auth();
   if (!session) return { error: "Not Authorized" };
 
@@ -141,10 +145,51 @@ export async function DeleteStory(id: string) {
       where: { cerita_id: parseInt(id) },
     });
 
-    return { success: true };
+    return { success: "Berhasil menghapus Story" };
   } catch (error) {
     console.error("DeleteStory Error:", error);
-    return { error:error };
+    return { error:"Terjadi Kesalahan" };
+  }
+}
+
+export async function DeleteMultipleStories(ids: string[]): Promise<ActionResult> {
+  const session = await auth()
+  if (!session) return { error: "Not Authorized" }
+
+  try {
+    // Get all stories to delete their thumbnails
+    const stories = await prisma.ceritaInteraktif.findMany({
+      where: {
+        cerita_id: {
+          in: ids.map((id) => Number.parseInt(id)),
+        },
+      },
+      select: { thumbnail: true },
+    })
+
+    // Delete thumbnail files
+    for (const story of stories) {
+      if (story.thumbnail) {
+        const oldPath = path.join(process.cwd(), "public", story.thumbnail)
+        if (fs.existsSync(oldPath)) {
+          fs.unlinkSync(oldPath)
+        }
+      }
+    }
+
+    // Delete from database
+    await prisma.ceritaInteraktif.deleteMany({
+      where: {
+        cerita_id: {
+          in: ids.map((id) => Number.parseInt(id)),
+        },
+      },
+    })
+
+    return { success: `Berhasil menghapus ${ids.length} story` }
+  } catch (error) {
+    console.error("DeleteMultipleStories Error:", error)
+    return { error: "Terjadi kesalahan saat menghapus stories" }
   }
 }
 

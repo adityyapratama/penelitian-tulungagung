@@ -5,9 +5,17 @@ import { SignInForm } from "@/components/(landing-page)/register/signin-form";
 export default async function SignInPage() {
   const session = await auth();
 
+
   if (session?.user) {
-    redirect("/");
+    if (session.user.role === "super_admin") {
+      redirect("/admin/dashboard");
+    } else if (session.user.role === "guru") {
+      redirect("/guru/dashboard");
+    } else {
+      redirect("/");
+    }
   }
+
 
   return (
     <div className="bg-gray-100 flex items-center justify-center min-h-screen font-sans">

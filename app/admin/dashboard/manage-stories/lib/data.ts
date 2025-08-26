@@ -23,6 +23,21 @@ export async function GetStories() {
     }
 }
 
+export async function GetStoryById(id:string){
+    try {
+        const story = await prisma.ceritaInteraktif.findFirst({
+            where:{
+                cerita_id:parseInt(id)
+            }
+        })
+
+        return story
+    } catch (error) {
+        console.log(error)
+        return {error:error}
+    }
+}
+
 export async function GetScenesByStoryId(id:string){
     try {
         const scenes = await prisma.scene.findMany({

@@ -21,7 +21,10 @@ export type StoryColumn = {
   created_at?: Date | null
 }
 
-export const columns: ColumnDef<StoryColumn>[] = [
+
+
+export const getColumns = (onDelete: (id: string) => void,
+  deletingIds: Set<string>): ColumnDef<StoryColumn>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -100,32 +103,12 @@ export const columns: ColumnDef<StoryColumn>[] = [
     },
   },
   {
-    accessorKey: "created_at",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        className="h-auto p-0 font-semibold hover:bg-transparent"
-      >
-        Dibuat Pada
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => {
-      const created = row.getValue("created_at") as Date | null
-      if (!created) return <span className="italic text-muted-foreground">Tidak ada</span>
-      return (
-        <div className="space-y-1">
-          <p className="text-sm font-medium">{dayjs(created).tz("Asia/Jakarta").format("DD MMM YYYY")}</p>
-          <p className="text-xs text-muted-foreground">{dayjs(created).tz("Asia/Jakarta").format("HH:mm")} WIB</p>
-        </div>
-      )
-    },
-  },
-  {
     id: "actions",
     header: "Aksi",
     cell: ({ row }) => {
+      const story = row.original
+      const id = story.cerita_id.toString()
+
       return (
         <div className="flex items-center space-x-2">
           <Button
@@ -136,9 +119,11 @@ export const columns: ColumnDef<StoryColumn>[] = [
             <Edit className="h-4 w-4" />
           </Button>
           <Button
-            variant="outline"
+            variant="destructive"
             size="sm"
-            className="h-8 px-2 bg-transparent hover:bg-primary hover:text-white"
+            className="h-8 px-2"
+            onClick={() => onDelete(id)}
+            disabled={deletingIds.has(id)}
           >
             <Trash2 className="h-4 w-4" />
           </Button>
