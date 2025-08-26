@@ -30,7 +30,7 @@ const data = {
   },
   navMain: [
     {
-      title: "Dashboard",
+      title: "Dashboard", 
       url: "/admin/dashboard",
       icon: LayoutDashboard,
     },
@@ -43,16 +43,26 @@ const data = {
         {
           title: "Daftar Pengguna",
           url: "/admin/dashboard/manage-users",
-
-          
-
-        },
-        {
-          title: "Tambah Pengguna",
-          url: "dashboard/manage-users",
         },
       ],
     },
+    
+    {
+      title: "Manajemen Kuis",
+      url: "/admin/dashboard/manage-quiz",
+      icon: PersonStanding,
+      items: [
+         {
+          title: "index  categories",
+          url: "/admin/dashboard/manage-quiz/categories",
+        },
+        {
+          title: "create categories",
+          url: "/admin/dashboard/manage-quiz/categories/create",
+        },
+      ],
+    },
+    
   ],
 };
 

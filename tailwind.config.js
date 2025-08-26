@@ -8,7 +8,7 @@ const config = {
     "./components/**/*.{ts,tsx}",
     "./app/**/*.{ts,tsx}",
     "./src/**/*.{ts,tsx}",
-    "./node_modules/@heroui/theme/dist/components/**/*.{js,ts,jsx,tsx}",
+    "./node_modules/@heroui/theme/dist/components/(image|input|form).js"
   ],
   theme: {
     extend: {
