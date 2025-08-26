@@ -14,6 +14,7 @@
   "dependencies": {
     "@auth/prisma-adapter": "^2.10.0",
     "@heroui/image": "^2.2.15",
+    "@heroui/input": "^2.4.25",
     "@heroui/react": "^2.8.2",
     "@heroui/system": "^2.4.20",
     "@heroui/theme": "^2.4.20",
@@ -52,6 +53,7 @@
     "react-hot-toast": "^2.6.0",
     "react-icons": "^5.5.0",
     "react-intersection-observer": "^9.16.0",
+    "sonner": "^2.0.7",
     "tailwind-merge": "^3.3.1",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.23.8"

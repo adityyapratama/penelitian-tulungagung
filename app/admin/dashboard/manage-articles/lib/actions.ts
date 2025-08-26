@@ -3,14 +3,16 @@
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
 import { SchemaArticle } from "@/lib/schema";
+import { ActionResult } from "@/lib/executeAction";
 import fs from 'fs'
 import path from 'path'
+import { redirect } from "next/navigation";
 
-export async function CreateArticle(_:unknown,formData:FormData) {
+export async function CreateArticle(_:unknown,formData:FormData):Promise<ActionResult> {
     const session = await auth();
 
     if(!session?.user){
-        throw new Error("Not authenticated");
+        return {error :"Not authenticated"};
     }
 
     const validate = SchemaArticle.safeParse({
@@ -47,15 +49,15 @@ export async function CreateArticle(_:unknown,formData:FormData) {
             }
         })
 
-        return { success: true };
+        return redirect("/admin/dashboard/manage-articles");
     } catch (error) {
         console.log(error);
-		return {error:error}
+		return {error:"Gagal Membuat Article"}
     }
 }
 
 
-export async function UpdateArticle(_:unknown,formData:FormData,id:string) {
+export async function UpdateArticle(_:unknown,formData:FormData,id:string):Promise<ActionResult> {
 
     const session = await auth();
 
@@ -100,14 +102,14 @@ export async function UpdateArticle(_:unknown,formData:FormData,id:string) {
             }
         });
 
-        return { success: true };
+        return redirect("/admin/dashboard/manage-articles");
     } catch (error) {
         console.error(error);
-        return { error: error };
+        return { error: "failed to update data" };
     }
 }
 
-export async function DeleteArticle(id: number) {
+export async function DeleteArticle(id: number):Promise<ActionResult> {
     try {
         const artikel = await prisma.artikel.findUnique({
             where: { artikel_id:id },
@@ -128,14 +130,14 @@ export async function DeleteArticle(id: number) {
             where: { artikel_id:id },
         });
 
-        return { success: true };
+        return redirect("/admin/dashboard/manage-articles");
     } catch (error) {
         console.log(error);
         return { error: "Gagal menghapus artikel" };
     }
 }
 
-export async function CreateArticleCategory(_:unknown,formData:FormData){
+export async function CreateArticleCategory(_:unknown,formData:FormData):Promise<ActionResult>{
     const session = await auth()
 
     if (!session?.user) {
@@ -152,15 +154,15 @@ export async function CreateArticleCategory(_:unknown,formData:FormData){
             }
         })
 
-        return {success:true}
+        return redirect("/admin/dashboard/manage-articles")
     } catch (error) {
         console.log(error)
-        return {error:error}
+        return {error:"Gagal Membuat Category"}
     }
 }
 
 
-export async function UpdateArticleCategory(_: unknown, formData: FormData) {
+export async function UpdateArticleCategory(_: unknown, formData: FormData):Promise<ActionResult> {
     const session = await auth();
 
     if (!session?.user) {
@@ -178,14 +180,14 @@ export async function UpdateArticleCategory(_: unknown, formData: FormData) {
             }
         });
 
-        return { success: true };
+        return redirect("/admin/dashboard/manage-articles");
     } catch (error) {
         console.log(error);
-        return { error };
+        return { error:"Gagal Update Category" };
     }
 }
 
-export async function DeleteArticleCategory(id: number) {
+export async function DeleteArticleCategory(id: number):Promise<ActionResult> {
     const session = await auth();
 
     if (!session?.user) {
@@ -197,9 +199,9 @@ export async function DeleteArticleCategory(id: number) {
             where: { KategoriArtikel_id:id }
         });
 
-        return { success: true };
+        return redirect("/admin/dashboard/manage-articles");
     } catch (error) {
         console.log(error);
-        return { error };
+        return { error:"Gagal Menghapus Category" };
     }
 }

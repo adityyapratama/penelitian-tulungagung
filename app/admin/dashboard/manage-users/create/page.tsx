@@ -4,7 +4,7 @@ import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import { CreateUser } from "@/app/admin/dashboard/manage-users/lib/actions";
 import {
-  Card,
+ 
   CardContent,
   CardDescription,
   CardFooter,
@@ -49,11 +49,11 @@ export default function CreateUserPage() {
 
   return (
     <div className="min-h-screen ">
-      <div className="container mx-auto px-4 py-8">
+      <div className="container px-4 py-8 mx-auto">
         <div className="flex justify-center">
-          <div className="w-full border-0 max-w-5xl">
+          <div className="w-full max-w-5xl border-0">
             <form action={formAction}>
-              <CardHeader className=" pb-6">
+              <CardHeader className="pb-6 ">
                 <CardTitle className="text-2xl font-bold">
                   Tambah User Baru
                 </CardTitle>
@@ -65,11 +65,11 @@ export default function CreateUserPage() {
 
               <CardContent className="space-y-6">
                 {state.message && (
-                  <div className="flex items-start gap-3 p-4 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive">
+                  <div className="flex items-start gap-3 p-4 border rounded-lg bg-destructive/10 border-destructive/20 text-destructive">
                     <CircleAlert className="w-5 h-5 mt-0.5 flex-shrink-0" />
                     <div>
                       <p className="font-medium">Terjadi Kesalahan</p>
-                      <p className="text-sm mt-1">{state.message}</p>
+                      <p className="mt-1 text-sm">{state.message}</p>
                     </div>
                   </div>
                 )}
@@ -79,7 +79,7 @@ export default function CreateUserPage() {
                   <div className="space-y-3">
                     <Label
                       htmlFor="username"
-                      className="text-sm font-medium flex items-center gap-2"
+                      className="flex items-center gap-2 text-sm font-medium"
                     >
                       <User className="w-4 h-4" />
                       Username
@@ -91,7 +91,7 @@ export default function CreateUserPage() {
                       className="h-11"
                     />
                     {state.errors?.username && (
-                      <p className="text-sm font-medium text-destructive flex items-center gap-2">
+                      <p className="flex items-center gap-2 text-sm font-medium text-destructive">
                         <CircleAlert className="w-4 h-4" />
                         {state.errors.username[0]}
                       </p>
@@ -102,7 +102,7 @@ export default function CreateUserPage() {
                   <div className="space-y-3">
                     <Label
                       htmlFor="email"
-                      className="text-sm font-medium flex items-center gap-2"
+                      className="flex items-center gap-2 text-sm font-medium"
                     >
                       <Mail className="w-4 h-4" />
                       Email
@@ -115,7 +115,7 @@ export default function CreateUserPage() {
                       className="h-11"
                     />
                     {state.errors?.email && (
-                      <p className="text-sm font-medium text-destructive flex items-center gap-2">
+                      <p className="flex items-center gap-2 text-sm font-medium text-destructive">
                         <CircleAlert className="w-4 h-4" />
                         {state.errors.email[0]}
                       </p>
@@ -126,7 +126,7 @@ export default function CreateUserPage() {
                   <div className="space-y-3">
                     <Label
                       htmlFor="password"
-                      className="text-sm font-medium flex items-center gap-2"
+                      className="flex items-center gap-2 text-sm font-medium"
                     >
                       <Lock className="w-4 h-4" />
                       Password
@@ -139,7 +139,7 @@ export default function CreateUserPage() {
                       className="h-11"
                     />
                     {state.errors?.password && (
-                      <p className="text-sm font-medium text-destructive flex items-center gap-2">
+                      <p className="flex items-center gap-2 text-sm font-medium text-destructive">
                         <CircleAlert className="w-4 h-4" />
                         {state.errors.password[0]}
                       </p>
@@ -154,7 +154,7 @@ export default function CreateUserPage() {
                   <div className="space-y-3">
                     <Label
                       htmlFor="role"
-                      className="text-sm font-medium flex items-center gap-2"
+                      className="flex items-center gap-2 text-sm font-medium"
                     >
                       <Shield className="w-4 h-4" />
                       Role
@@ -200,7 +200,7 @@ export default function CreateUserPage() {
                       </SelectContent>
                     </Select>
                     {state.errors?.role && (
-                      <p className="text-sm font-medium text-destructive flex items-center gap-2">
+                      <p className="flex items-center gap-2 text-sm font-medium text-destructive">
                         <CircleAlert className="w-4 h-4" />
                         {state.errors.role[0]}
                       </p>
