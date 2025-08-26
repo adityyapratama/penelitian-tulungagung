@@ -16,7 +16,7 @@ export async function GetStories() {
             }
         })
 
-        return stories
+        return response
     } catch (error) {
         console.log(error)
         return {error:error}
