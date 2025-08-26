@@ -1,31 +1,25 @@
-# syntax=docker/dockerfile:1
+# Stage 1: build
+FROM node:18 AS builder
+WORKDIR /app
 
-ARG NODE_VERSION=22.11.0
-FROM node:${NODE_VERSION}-alpine AS base
-WORKDIR /usr/src/app
+COPY package*.json ./
+RUN npm install
 
-# Stage 1: Install all dependencies including devDependencies
-FROM base AS deps
-COPY package.json package-lock.json ./
-RUN npm i
-
-# Stage 2: Build the app
-FROM deps AS build
 COPY . .
 RUN npm run build
 
-# Stage 3: Copy only what's needed for production
-FROM base AS final
+# Stage 2: run
+FROM node:18-alpine
+WORKDIR /app
 
-ENV NODE_ENV=production
-USER node
+COPY --from=builder /app/package*.json ./
+RUN npm install --only=production
 
-COPY package.json ./
-COPY --from=deps /usr/src/app/node_modules ./node_modules
-COPY --from=build /usr/src/app/.next ./.next
-COPY --from=build /usr/src/app/public ./public
-# Optional:
-COPY --from=build /usr/src/app/next.config.js ./ 
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/prisma ./prisma
 
 EXPOSE 3000
-CMD ["npm", "start"]
+
+# Jalankan migrasi Prisma dulu, lalu start
+CMD npx prisma migrate deploy && npm run start
