@@ -4,6 +4,7 @@ import prisma from "@/lib/prisma"
 import { StoryColumn } from "../columns"
 import { saveScenesToDatabase, loadScenesFromDatabase, type SceneData } from "./database"
 import { revalidatePath } from "next/cache"
+import { IScene } from "@/types"
 
 export async function GetStories() {
     try {
@@ -42,18 +43,16 @@ export async function GetStoryById(id:string){
     }
 }
 
-export async function GetScenesByStoryId(id:string){
-    try {
-        const scenes = await prisma.scene.findMany({
-            where:{
-                cerita_id:parseInt(id)
-            }
-        })
-        return scenes
-    } catch (error) {
-        console.log(error)
-        return {error:error}
-    }
+export async function GetScenesByStoryId(id: string): Promise<IScene[] | { error: string }> {
+  try {
+    const scenes = await prisma.scene.findMany({
+      where: { cerita_id: parseInt(id) },
+    })
+    return scenes
+  } catch (error) {
+    console.error(error)
+    return { error: String(error) }
+  }
 }
 
 
