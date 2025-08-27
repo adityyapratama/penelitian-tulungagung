@@ -1,5 +1,5 @@
 import { GetStoryById } from "../../lib/data"
-import { UpdateStoryForm } from "../../components/update-story"
+import { UpdateStoryForm } from "../../_components/update-story"
 import { notFound } from "next/navigation"
 
 interface UpdateStoryPageProps {
