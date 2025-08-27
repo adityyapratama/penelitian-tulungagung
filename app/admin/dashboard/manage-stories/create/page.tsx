@@ -76,7 +76,7 @@ export default function CreateStoryForm() {
       if (result?.redirectTo) {
         router.push(result.redirectTo);
       }
-    } catch (err) {
+    } catch {
       setError("Terjadi kesalahan saat membuat cerita")
     }
   }

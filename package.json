@@ -37,6 +37,7 @@
     "@simplewebauthn/server": "^9.0.3",
     "@tabler/icons-react": "^3.34.1",
     "@tanstack/react-table": "^8.21.3",
+    "@xyflow/react": "^12.8.4",
     "bcryptjs": "^3.0.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
