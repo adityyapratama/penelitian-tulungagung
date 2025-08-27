@@ -18,7 +18,7 @@ export async function CreateArticle(_:unknown,formData:FormData):Promise<ActionR
     const validate = SchemaArticle.safeParse({
         judul:formData.get("judul"),
         konten:formData.get("konten"),
-        kategori:formData.get("kategori"),
+        kategori:Number(formData.get("kategori")),
         thumbnail:formData.get("thumbnail")
     })
 
@@ -67,7 +67,7 @@ export async function UpdateArticle(_:unknown,formData:FormData,id:string):Promi
     const validate = SchemaArticle.safeParse({
         judul: formData.get("judul"),
         konten: formData.get("konten"),
-        kategori: formData.get("kategori"),
+        kategori: Number(formData.get("kategori")),
         thumbnail: formData.get("thumbnail")
     });
 
