@@ -21,6 +21,9 @@ declare module "next-auth" {
        */
     } & DefaultSession["user"]
   }
+  interface User {
+    role: string;
+  }
 }
  
 export const { handlers, signIn, signOut, auth } = NextAuth({
@@ -79,6 +82,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }
     return session;
   },
+ 
   },
   pages:{
     signIn:"/sign-in",

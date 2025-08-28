@@ -61,7 +61,7 @@ export default async function DashboardLayout({
             </Breadcrumb>
           </div>
         </header>
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+        <div className="flex flex-col flex-1 gap-4 p-4 pt-0">
           <Toaster position="top-right" />
           {children}
         </div>

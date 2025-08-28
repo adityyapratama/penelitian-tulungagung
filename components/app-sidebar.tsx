@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Image from "next/image";
+import { FileQuestion } from "lucide-react";
 import {
   BookAudioIcon,
   LayoutDashboard,
@@ -25,7 +26,7 @@ import {
 const data = {
   navMain: [
     {
-      title: "Dashboard",
+      title: "Dashboard", 
       url: "/admin/dashboard",
       icon: LayoutDashboard,
     }, 
@@ -45,6 +46,10 @@ const data = {
       icon: BookAudioIcon,
       items: [
         {
+          title: "Daftar Pengguna",
+          url: "/admin/dashboard/manage-users",
+        },
+        {
           title: "Daftar Cerita",
           url: "/admin/dashboard/manage-stories",
         },
@@ -54,6 +59,23 @@ const data = {
         },
       ],
     },
+    
+    {
+      title: "Manajemen Kuis",
+      url: "/admin/dashboard/manage-quiz",
+      icon: FileQuestion,
+      items: [
+         {
+          title: "index kuis kategori",
+          url: "/admin/dashboard/manage-quiz/categories",
+        },
+        {
+          title: "Tambah pertanyaan",
+          url: "/admin/dashboard/manage-quiz/quiz",
+        },
+      ],
+    },
+    
   ],
 };
 

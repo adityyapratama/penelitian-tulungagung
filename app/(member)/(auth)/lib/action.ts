@@ -18,7 +18,6 @@ export async function handleLogin(_: unknown, formData: FormData) {
    await signIn("credentials", {
     email,
     password,
-    redirectTo:"/" ,
   })
   }catch(error){
     if (error instanceof AuthError) {

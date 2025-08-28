@@ -29,3 +29,9 @@ const executeAction = async <T>({
 };
 
 export { executeAction };
+
+export type ActionResult = {
+  error?: string;
+  success?: string;
+  redirectTo? : string;
+};
