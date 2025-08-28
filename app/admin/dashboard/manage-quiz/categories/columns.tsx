@@ -10,10 +10,14 @@ import timezone from "dayjs/plugin/timezone"
 import Link from "next/link"
 import { CellActions } from "./cell-actions"
 
+
+
+
 dayjs.extend(utc)
 dayjs.extend(timezone)
 
 // 1. Definisikan tipe data sesuai dengan hasil query Prisma
+
 export type TCategoryColumn = {
   kategori_id: number
   nama_kategori: string
@@ -23,6 +27,7 @@ export type TCategoryColumn = {
     username: string
   } | null
 }
+
 
 export const columns: ColumnDef<TCategoryColumn>[] = [
   {
@@ -78,6 +83,7 @@ export const columns: ColumnDef<TCategoryColumn>[] = [
       return username ? <span>{username}</span> : <span className="italic text-muted-foreground">N/A</span>
     },
   },
+  
   {
     accessorKey: "created_at",
     header: ({ column }) => (
@@ -98,21 +104,6 @@ export const columns: ColumnDef<TCategoryColumn>[] = [
   },
    {
     id: "actions",
-    cell: ({ row }) => {
-      const category = row.original;
-      return (
-        <div className="flex items-center justify-end space-x-2">
-          {/* Arahkan ke halaman edit dengan ID yang sesuai */}
-          <Button asChild variant="outline" size="icon" className="w-8 h-8">
-            <Link href={`/admin/dashboard/manage-quiz/categories/edit/${category.kategori_id}`}>
-              <Edit className="w-4 h-4" />
-            </Link>
-          </Button>
-          <Button variant="destructive" size="icon" className="w-8 h-8">
-            <Trash2 className="w-4 h-4" />
-          </Button>
-        </div>
-      );
-    },
+    cell: ({ row }) => <CellActions row={row} />, // Tidak ada perubahan di sini
   },
 ]

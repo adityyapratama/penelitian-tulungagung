@@ -16,16 +16,19 @@ export async function CreateQuiz(_:unknown,formData:FormData): Promise<ActionRes
         return {error: "Not Authorized"}
     }
 
+    
     const parse = SchemaQuiz.safeParse({
             judul : formData.get("judul"),
             deskripsi : formData.get("deskripsi"),
-            kategori_id : formData.get("kategori_id"),
-            xp_reward : formData.get("xp_reward"),
-            is_published : formData.get("is_published")
+            kategori_id : Number(formData.get("kategori_id")),
+            xp_reward : Number(formData.get("xp_reward")),
+            is_published : formData.get("is_published") === "1"
         })
 
     if(!parse.success){
-        return {error:parse.error.message}
+        
+        console.error(parse.error.flatten().fieldErrors);
+        return {error:"Data yang dikirim tidak valid."}
     }
 
     try {
@@ -33,13 +36,13 @@ export async function CreateQuiz(_:unknown,formData:FormData): Promise<ActionRes
             data:{
                 judul:parse.data.judul,
                 deskripsi:parse.data.deskripsi,
-                kategori_id:parse.data.kategori_id,
-                xp_reward:parse.data.xp_reward,
+                kategori_id:parse.data.kategori_id, 
+                xp_reward:parse.data.xp_reward,       
                 created_by: parseInt(session.user.id!),
-                is_published:parse.data.is_publised
+                is_published:parse.data.is_published  
             }
         })
-
+    revalidatePath("/admin/dashboard/manage-quiz/quiz");
         return {success : "Kuis berhasil dibuat"}
     } catch (error) {
         console.log(error)
@@ -47,16 +50,17 @@ export async function CreateQuiz(_:unknown,formData:FormData): Promise<ActionRes
     }
 }
 
+
 export async function UpdateQuiz(id: string, formData: FormData): Promise<ActionResult> {
   const session = await auth();
   if (!session) return { error: "Not Authorized" };
 
   const parse = SchemaQuiz.safeParse({
-    judul: formData.get("judul"),
-    deskripsi: formData.get("deskripsi"),
-    kategori_id: formData.get("kategori_id"),
-    xp_reward: formData.get("xp_reward"),
-    is_published: formData.get("is_published"),
+    judul : formData.get("judul"),
+            deskripsi : formData.get("deskripsi"),
+            kategori_id : Number(formData.get("kategori_id")),
+            xp_reward : Number(formData.get("xp_reward")),
+            is_published : formData.get("is_published") === "1"
   });
 
   if (!parse.success) {
@@ -71,7 +75,7 @@ export async function UpdateQuiz(id: string, formData: FormData): Promise<Action
         deskripsi: parse.data.deskripsi,
         kategori_id: parse.data.kategori_id,
         xp_reward: parse.data.xp_reward,
-        is_published: parse.data.is_publised ,
+        is_published: parse.data.is_published ,
       },
     });
 
@@ -96,6 +100,8 @@ export async function DeleteQuiz(id: string) {
     return { error: "Gagal menghapus kuis" };
   }
 }
+
+
 
 
 export async function CreatePertanyaan(id:string, formData: FormData): Promise<ActionResult> {
@@ -140,6 +146,9 @@ export async function CreatePertanyaan(id:string, formData: FormData): Promise<A
     return { error: "Gagal membuat pertanyaan" };
   }
 }
+
+
+
 
 export async function UpdatePertanyaan(
   quizId: string,
@@ -215,10 +224,17 @@ export async function DeletePertanyaan(
   }
 }
 
+
+
+
 export async function CreateQuizCategory(
   _: unknown,
   formData: FormData
-): Promise<ActionResult> {
+): Promise<{
+  message?: string;
+  error?: string;
+  errors?: { nama_kategori?: string[]; deskripsi?: string[] };
+}> {
   const session = await auth();
   if (!session) {
     return { error: "Not Authorized" };
@@ -230,156 +246,63 @@ export async function CreateQuizCategory(
   });
 
   if (!parse.success) {
-    return { error: parse.error.errors[0].message };
+    const errors = Object.entries(parse.error.flatten().fieldErrors).reduce(
+      (acc, [key, value]) => {
+        if (value && value.length > 0) {
+          acc[key as "nama_kategori" | "deskripsi"] = value.map((msg) =>
+            msg.replace(/String must contain at least \d+ character\(s\)/, "Minimal beberapa karakter")
+              .replace(/Required/, "Wajib diisi")
+          );
+        }
+        return acc;
+      },
+      {} as { nama_kategori?: string[]; deskripsi?: string[] }
+    );
+
+    return { errors };
   }
 
   try {
     await prisma.kategoriKuis.create({
       data: {
         nama_kategori: parse.data.nama_kategori,
-        created_by: parseInt(session.user.id!),
+        created_by: Number(session.user.id),
         deskripsi: parse.data.deskripsi,
       },
     });
 
-    // ⚠️ Bug: success tidak terdefinisi
-    // console.log(success);
-
-    return { success: "Category Berhasil Dibuat" };
-  } catch (error) {
-    console.log(error);
-    return { error: "terjadi kesalahan :" + error };
+    return { message: "Kategori kuis berhasil dibuat" };
+  } catch (err: any) {
+    console.error(err);
+    return { error: "Gagal membuat kategori kuis" };
   }
 }
 
-// 1. Definisikan tipe state agar konsisten dengan frontend
 
-
-// 2. Buat skema validasi menggunakan Zod
-
-
-// export async function CreateQuizCategory(
-//   prevState: FormState | null,
-//   formData: FormData
-// ): Promise<FormState> {
-//   // 3. Autentikasi: Periksa sesi pengguna
-//   const session = await auth();
-  
-//   // Anda juga bisa menambahkan pengecekan role di sini, misalnya:
-//   // if (session.user.role !== 'guru' && session.user.role !== 'super_admin') {
-//   //   return { success: false, message: "Anda tidak memiliki izin untuk membuat kategori." };
-//   // }
-
-//   // 4. Validasi Input: Gunakan Zod untuk memvalidasi data dari form
-//   const validatedFields = SchemaCategoryKuis.safeParse({
-//     nama_kategori: formData.get("nama_kategori"),
-//     deskripsi: formData.get("deskripsi"),
-//   });
-
-//   if (!validatedFields.success) {
-//     // Jika validasi gagal, kirim pesan error pertama
-//     return {
-//       success: false,
-//       message: validatedFields.error.errors[0].message,
-//     };
-//   }
-  
-//   // 5. Operasi Database: Coba buat data baru
-//   try {
-//     await prisma.kategoriKuis.create({
-//       data: {
-//         nama_kategori: validatedFields.data.nama_kategori,
-//         deskripsi: validatedFields.data.deskripsi,
-//         created_by: parseInt(session.user.id),
-//       },
-//     });
-
-//     // 6. Revalidasi Path: Bersihkan cache agar daftar kategori terupdate
-//     revalidatePath("/admin/dashboard/manage-quiz/categories");
-    
-//     // 7. Kirim Respons Sukses
-//     return { success: true, message: "Kategori baru berhasil ditambahkan!" };
-
-//   } catch (error: any) {
-//     // 8. Penanganan Error Database
-//     console.error("Database Error:", error);
-//     // Cek jika error karena nama kategori sudah ada (unique constraint)
-//     if (error.code === 'P2002') {
-//       return { success: false, message: "Nama kategori ini sudah ada. Silakan gunakan nama lain." };
-//     }
-//     // Error umum lainnya
-//     return { success: false, message: "Terjadi kesalahan pada server. Gagal membuat kategori." };
-//   }
-// }
-
-
-
-
-// export async function UpdateQuizCategory(id: string, formData: FormData): Promise<ActionResult> {
-//   const session = await auth();
-//   if (!session) return { error: "Not Authorized" };
-
-//   const parse = SchemaCategoryKuis.safeParse({
-//     nama_kategori: formData.get("nama_kategori"),
-//     deskripsi: formData.get("deskripsi"),
-//   });
-
-//   if (!parse.success) return { error: parse.error.message };
-
-//   try {
-//      await prisma.kategoriKuis.update({
-//       where: { kategori_id: parseInt(id) }, 
-//       data: {
-//         nama_kategori: parse.data.nama_kategori,
-//         deskripsi: parse.data.deskripsi,
-//       },
-//     });
-
-//     return { success: "Kategori berhasil diperbarui" };
-//   } catch (error: unknown
-//   ) {
-//     console.error("UpdateQuizCategory Error:", error);
-//     return { error:  "Failed to update category" };
-//   }
-// }
-
-
-
-export async function UpdateQuizCategory(
-  id: string,
-  prevState: ActionResult, // ⚠️ hanya dipakai untuk useActionState
-  formData: FormData
-): Promise<ActionResult> {
+export async function UpdateQuizCategory(id: string, formData: FormData) {
   const session = await auth();
-  if (!session) {
-    return { error: "Tidak terautentikasi" };
-  }
+  if (!session) return { error: "Not Authorized" };
 
   const parse = SchemaCategoryKuis.safeParse({
     nama_kategori: formData.get("nama_kategori"),
     deskripsi: formData.get("deskripsi"),
   });
 
-  if (!parse.success) {
-    return { error: parse.error.errors[0].message };
-  }
+  if (!parse.success) return { error: parse.error.message };
 
   try {
-    await prisma.kategoriKuis.update({
-      where: { kategori_id: parseInt(id) },
+    const updated = await prisma.kategoriKuis.update({
+      where: { kategori_id: parseInt(id) }, 
       data: {
         nama_kategori: parse.data.nama_kategori,
         deskripsi: parse.data.deskripsi,
       },
     });
 
-    revalidatePath("/admin/dashboard/manage-quiz/categories");
-
-    return { success: "Kategori berhasil diperbarui!" };
-  } catch (error: unknown) {
+    return { success: true, data: updated };
+  } catch (error: any) {
     console.error("UpdateQuizCategory Error:", error);
-  
-    return { error: "Gagal memperbarui kategori." };
+    return { error: error.message || "Failed to update category" };
   }
 }
 
@@ -387,46 +310,27 @@ export async function UpdateQuizCategory(
 
 
 
-// export async function DeleteQuizCategory(id: string): Promise<ActionResult> {
-//   const session = await auth();
-//   if (!session) return { error: "Not Authorized" };
 
-//   try {
-//     await prisma.kategoriKuis.delete({
-//       where: { kategori_id: parseInt(id) }, 
-//     });
-
-//     return { success: "Category deleted successfully" };
-//   } catch (error: unknown) {
-//     console.error("DeleteQuizCategory Error:", error);
-//     return { error: "Failed to delete category" };
-//   }
-// }
-
-export async function DeleteQuizCategory(id: string): Promise<ActionResult> {
+export async function DeleteQuizCategory(id: string) {
   const session = await auth();
-  if (!session) return { error: "Tidak terautentikasi" };
+  if (!session) return { error: "Not Authorized" };
 
   try {
     await prisma.kategoriKuis.delete({
-      where: { kategori_id: parseInt(id) },
+      where: { kategori_id: parseInt(id) }, 
     });
 
-    // PENTING: Revalidasi path agar tabel di-refresh secara otomatis
-    revalidatePath("/admin/dashboard/manage-quiz/categories");
-
-    return { success: "Kategori berhasil dihapus." };
-  } catch (error: unknown) {
+    return { success: true, message: "Category deleted successfully" };
+  } catch (error: any) {
     console.error("DeleteQuizCategory Error:", error);
-    
-    
-    return { error: "Gagal menghapus kategori." };
-  }
+    return { error: error.message || "Failed to delete category" };
+}
 }
 
-// lib/actions.ts
 
-// ...impor dan action lainnya...
+
+
+
 
 export async function DeleteMultipleQuizCategories(ids: string[]): Promise<ActionResult> {
   const session = await auth();
@@ -461,3 +365,34 @@ export async function DeleteMultipleQuizCategories(ids: string[]): Promise<Actio
   }
 }
 
+export async function DeleteMultipleQuizzes(ids: string[]): Promise<ActionResult> {
+  const session = await auth();
+  if (!session) {
+    return { error: "Tidak terautentikasi" };
+  }
+
+  const numericIds = ids.map(id => parseInt(id)).filter(id => !isNaN(id));
+
+  if (numericIds.length === 0) {
+    return { error: "Tidak ada ID valid yang dipilih." };
+  }
+
+  try {
+    const deleteResult = await prisma.kuis.deleteMany({
+      where: {
+        
+        kuis_id: {
+          in: numericIds,
+        },
+      },
+    });
+
+  
+    revalidatePath("/admin/dashboard/manage-quiz/quiz");
+
+    return { success: `${deleteResult.count} kuis berhasil dihapus.` };
+  } catch (error: any) {
+    console.error("Bulk Delete Error:", error);
+    return { error: "Gagal menghapus kuis yang dipilih." };
+  }
+}

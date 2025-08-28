@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { useActionState } from "react";      // useActionState dari 'react'
-import { useFormStatus } from "react-dom";    // useFormStatus dari 'react-dom'
+import { useActionState } from "react";
+import { useFormStatus } from "react-dom";
 import { UpdateQuizCategory } from "@/app/admin/dashboard/manage-quiz/lib/actions";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { Alert } from "@heroui/react";
-import {ActionResult} from "@/lib/executeAction";
+import { ActionResult } from "@/lib/executeAction";
 import { KategoriKuis } from "@prisma/client";
 import { useRouter } from "next/navigation";
 
@@ -24,42 +24,44 @@ function SubmitButton() {
   );
 }
 
-// Ini adalah Client Component karena menggunakan hook
+
 export function EditCategoryForm({ category }: { category: KategoriKuis }) {
   const router = useRouter();
   const initialState: ActionResult = {};
+  async function updateActionWrapper(prevState: ActionResult, formData: FormData) {  
+    const result = await UpdateQuizCategory(category.kategori_id.toString(), formData);
+    return result;
+  }
   
-  // Gunakan .bind untuk membuat action baru yang sudah terisi dengan ID kategori
-  const updateCategoryWithId = UpdateQuizCategory.bind(null, category.kategori_id.toString());
   
-  const [state, formAction] = useActionState(updateCategoryWithId, initialState);
+  
+  const [state, formAction] = useActionState(updateActionWrapper, initialState);
 
-  // Jika berhasil, kembali ke halaman daftar setelah beberapa saat
+  
   useEffect(() => {
     if (state?.success) {
       setTimeout(() => {
         router.push("/admin/dashboard/manage-quiz/categories");
-      }, 1500); // Tunggu 1.5 detik
+      }, 1000); 
     }
   }, [state, router]);
 
   return (
+    
     <form action={formAction}>
       <Card>
+        
         <CardHeader>
           <CardTitle className="text-2xl font-bold">Edit Kategori: {category.nama_kategori}</CardTitle>
           <CardDescription>Ubah detail di bawah ini dan simpan perubahan.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-           {(state?.success || state?.error) && (
-                              <Alert
-                                color={state.error ? "danger" : "success"}
-                                title={state.error || state.success} // Tampilkan pesan error atau sukses
-                                suppressHydrationWarning 
-                                // TAMBAHKAN className di bawah ini untuk memberi jarak
-                                className="gap-x-3"
-                              />
-                            )}
+          {(state?.success || state?.error) && (
+            <Alert
+              color={state.error ? "danger" : "success"}
+              title={state.success ? "Perubahan berhasil disimpan!" : state.error}
+            />
+          )}
 
           <div className="space-y-2">
             <Label htmlFor="nama_kategori" className="font-semibold">Nama Kategori</Label>
@@ -77,7 +79,7 @@ export function EditCategoryForm({ category }: { category: KategoriKuis }) {
               id="deskripsi"
               name="deskripsi"
               defaultValue={category.deskripsi || ""}
-              className="w-full px-3 py-2 text-sm border rounded-md shadow-sm ..."
+              className="w-full px-3 py-2 text-sm border rounded-md shadow-sm border-input bg-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             />
           </div>
         </CardContent>

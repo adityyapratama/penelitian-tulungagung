@@ -30,15 +30,18 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { DeleteMultipleQuizCategories } from "@/app/admin/dashboard/manage-quiz/lib/actions"; // Sesuaikan path
+import { DeleteMultipleQuizzes } from "@/app/admin/dashboard/manage-quiz/lib/actions"; // Sesuaikan path
 import { toast } from "sonner";
 
-export type TCategoryColumn = {
-  kategori_id: number
-  nama_kategori: string
-  deskripsi: string | null
-  created_at: Date | null
-  User: {
+export type TQuizColumn = {
+  kuis_id: number
+  judul: string
+  is_published: boolean 
+  created_at: Date
+  KategoriKuis: { 
+    nama_kategori: string
+  } | null
+  User: { 
     username: string
   } | null
 }
@@ -55,7 +58,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [globalFilter, setGlobalFilter] = useState("");
 
-  // -- BARU: State untuk logika hapus massal --
+  // State untuk logika hapus massal 
   const [isPending, startTransition] = useTransition();
   const [isBulkDeleteDialogOpen, setIsBulkDeleteDialogOpen] = useState(false);
 
@@ -92,9 +95,9 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
   const handleBulkDelete = () => {
     startTransition(async () => {
       const selectedRows = table.getFilteredSelectedRowModel().rows;
-      const selectedIds = selectedRows.map(row => (row.original as TCategoryColumn).kategori_id.toString());
+      const selectedIds = selectedRows.map(row => (row.original as TQuizColumn).kuis_id.toString());
       
-      const result = await DeleteMultipleQuizCategories(selectedIds);
+      const result = await DeleteMultipleQuizzes(selectedIds);
 
       if (result.success) {
         toast.success(result.success);
@@ -223,13 +226,14 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
       
 
       {/* -- BARU: Dialog Konfirmasi untuk Hapus Massal -- */}
-      <AlertDialog open={isBulkDeleteDialogOpen} onOpenChange={setIsBulkDeleteDialogOpen}>
+       <AlertDialog open={isBulkDeleteDialogOpen} onOpenChange={setIsBulkDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Apakah Anda Benar-Benar Yakin?</AlertDialogTitle>
             <AlertDialogDescription>
               Tindakan ini tidak dapat dibatalkan. Ini akan menghapus
-              <span className="font-semibold"> {selectedRowsCount} kategori </span>
+              {/* 5. UBAH: Sesuaikan teks dialog */}
+              <span className="font-semibold"> {selectedRowsCount} kuis </span>
               secara permanen dari server.
             </AlertDialogDescription>
           </AlertDialogHeader>

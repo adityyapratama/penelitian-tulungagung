@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/navbar";
 import { useState } from "react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
+
 
 export function NavbarDemo() {
   const navItems = [
@@ -30,18 +32,22 @@ export function NavbarDemo() {
   ];
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { data: session } = useSession();
 
   return (
     <div className="fixed top-0 left-0 right-0 z-50 w-full">
+      
       <Navbar>
         {/* Desktop Navigation */}
         <NavBody>
           <NavbarLogo />
           <NavItems items={navItems} />
           <div className="flex items-center gap-4">
+             {!session && (
             <Link href="/sign-in" passHref>
               <NavbarButton variant="secondary">Login</NavbarButton>
             </Link>
+          )}
             <NavbarButton variant="primary">Book a call</NavbarButton>
           </div>
         </NavBody>
@@ -71,6 +77,8 @@ export function NavbarDemo() {
               </a>
             ))}
             <div className="flex flex-col w-full gap-4">
+              {!session && (
+                <Link href="/sign-in" passHref>
               <NavbarButton
                 onClick={() => setIsMobileMenuOpen(false)} 
                 variant="primary"
@@ -78,6 +86,8 @@ export function NavbarDemo() {
               >
                 Masuk
               </NavbarButton>
+            </Link>
+              )}
               <NavbarButton
                 onClick={() => setIsMobileMenuOpen(false)}
                 variant="primary"
@@ -94,3 +104,4 @@ export function NavbarDemo() {
     </div>
   );
 }
+

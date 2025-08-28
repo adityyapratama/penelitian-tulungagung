@@ -40,7 +40,7 @@ export const SchemaQuiz = z.object({
 	deskripsi: z.string({message:"deskripsi is required"}),
 	kategori_id: z.number({message:"kategori is required"}).int().min(1),
 	xp_reward: z.number({message:"xp reward is required"}).int(),
-	is_publised: z.boolean({message:"published option is required"})
+	is_published: z.boolean({message:"published option is required"})
 })
 
 

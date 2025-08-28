@@ -1,6 +1,10 @@
 import prisma from "@/lib/prisma"
 
 
+
+
+
+
 export async function getQuizzes() {
     try {
         const quizzes = await prisma.kuis.findMany({
@@ -17,64 +21,63 @@ export async function getQuizzes() {
     }
 }
 
-// export async function getCategoryQuiz(){
-//     try {
-//         const categories = await prisma.kuis.findMany({
-//             include:{
-//                 User:true
-//             }
-//         })
+export async function getQuizById(id: string) {
+  try {
+    const quizId = parseInt(id);
+    if (isNaN(quizId)) {
+      return null;
+    }
 
-//         return categories
-//     } catch (error) {
-//         console.log(error)
-//         return error;
-//     }
-// }
+    const quiz = await prisma.kuis.findUnique({
+      where: {
+        kuis_id: quizId,
+      },
+    });
+
+   return quiz
+     } catch (error) {
+         console.log(error)
+         return error;
+     }
+}
 
 
 export async function getCategoryQuiz() {
   try {
-    // FIX: Mengambil data dari prisma.kategoriKuis, bukan prisma.kuis
+
     const categories = await prisma.kategoriKuis.findMany({
       include: {
-        // Sertakan data User yang berelasi melalui 'created_by'
+
         User: true, 
       },
       orderBy: {
-        // Urutkan berdasarkan yang terbaru
+
         created_at: 'desc',
       },
     });
-
-    return categories;
-  } catch (error) {
-    console.error("Failed to fetch quiz categories:", error);
-    // Di Server Component, lebih baik melempar error agar bisa ditangani oleh error boundary
-    throw new Error("Gagal mengambil data kategori kuis.");
-  }
+     return categories
+     } catch (error) {
+         console.log(error)
+         return error;
+     }
 }
 
-// for update categories
+
+
 export async function getCategoryQuizById(id: string) {
   try {
     const categoryId = parseInt(id);
-    // Validasi sederhana untuk memastikan ID adalah angka
-    if (isNaN(categoryId)) {
-      return null;
-    }
-
     const category = await prisma.kategoriKuis.findUnique({
       where: {
         kategori_id: categoryId,
       },
     });
 
-    return category;
-  } catch (error) {
-    console.error("Gagal mengambil kategori berdasarkan ID:", error);
-    return null; // Kembalikan null jika terjadi error
-  }
+    return category
+     } catch (error) {
+         console.log(error)
+         return error;
+     }
 }
 
 
@@ -83,7 +86,10 @@ export async function getQuizQuestionByQuizId(id:string){
         const questions = await prisma.pertanyaanKuis.findMany({
             where:{
                 kuis_id:parseInt(id)
-            }
+             },
+      include: { 
+        PilihanKuis: true,
+      }, 
         })
         return questions;
     } catch (error) {
