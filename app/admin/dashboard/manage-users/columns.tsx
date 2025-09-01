@@ -189,30 +189,4 @@ export const columns: ColumnDef<TColumn>[] = [
       )
     },
   },
-  {
-    id: "actions",
-    header: "Aksi",
-    cell: ({ row }) => {
-      const user = row.original
-
-      return (
-        <div className="flex items-center space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-8 px-2 bg-transparent hover:bg-primary hover:text-white"
-          >
-            <Edit className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-8 px-2 bg-transparent hover:bg-primary hover:text-white"
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </div>
-      )
-    },
-  },
 ]
