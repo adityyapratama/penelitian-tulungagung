@@ -4,6 +4,7 @@ import * as React from "react";
 import Image from "next/image";
 import { FileQuestion } from "lucide-react";
 import {
+  BookA,
   BookAudioIcon,
   LayoutDashboard,
   PersonStanding,
@@ -39,6 +40,11 @@ const data = {
       title: "Manajemen Puzzle",
       url: "/admin/dashboard/manage-puzzles",
       icon: Puzzle,
+    },
+        {
+      title: "Manajemen Article",
+      url: "/admin/dashboard/manage-articles",
+      icon: BookA,
     },
     {
       title: "Manajemen Cerita",
