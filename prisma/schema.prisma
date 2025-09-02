@@ -78,14 +78,14 @@ enum QuestionType {
 }
 
 model User {
-  user_id          Int          @id @default(autoincrement())
-  username         String       @unique @db.VarChar(50)
-  email            String       @unique @db.VarChar(100)
-  password_hash    String       @db.VarChar(255)
+  user_id          Int                @id @default(autoincrement())
+  username         String             @unique @db.VarChar(50)
+  email            String             @unique @db.VarChar(100)
+  password_hash    String             @db.VarChar(255)
   role             UserRole
-  created_at       DateTime     @default(now()) @db.Timestamp(0)
-  last_login       DateTime?    @db.Timestamp(0)
-  is_active        Boolean      @default(true)
+  created_at       DateTime           @default(now()) @db.Timestamp(0)
+  last_login       DateTime?          @db.Timestamp(0)
+  is_active        Boolean            @default(true)
   Guru             Guru?
   KategoriKuis     KategoriKuis[]
   Session          Session[]
@@ -105,14 +105,14 @@ model Session {
 }
 
 model Guru {
-  guru_id     Int     @id
-  user_id     Int?    @unique // user_id di Guru adalah foreign key dan juga unique
+  guru_id     Int      @id
+  user_id     Int?     @unique // user_id di Guru adalah foreign key dan juga unique
   sekolah_id  Int?
-  nip         String? @unique @db.VarChar(20)
-  bidang_ajar String? @db.VarChar(100)
-  User    User?    @relation(fields: [user_id], references: [user_id])
-  Sekolah Sekolah? @relation(fields: [sekolah_id], references: [sekolah_id])
-  Groups  Group[]
+  nip         String?  @unique @db.VarChar(20)
+  bidang_ajar String?  @db.VarChar(100)
+  User        User?    @relation(fields: [user_id], references: [user_id])
+  Sekolah     Sekolah? @relation(fields: [sekolah_id], references: [sekolah_id])
+  Groups      Group[]
 }
 
 model Group {
@@ -125,14 +125,14 @@ model Group {
   updated_at      DateTime? @db.Timestamp(0)
 
   // Relasi
-  Guru        Guru?         @relation(fields: [created_by], references: [guru_id])
-  GroupMember GroupMember[]
+  Guru          Guru?           @relation(fields: [created_by], references: [guru_id])
+  GroupMember   GroupMember[]
   ProgresMember ProgresMember[]
 }
 
 model GroupMember {
-  group_id        Int
-  member_id       Int
+  group_id          Int
+  member_id         Int
   tanggal_bergabung DateTime @db.Timestamp(0)
 
   // Relasi
@@ -143,37 +143,37 @@ model GroupMember {
 }
 
 model Member {
-  member_id         Int       @id
-  user_id           Int?      @unique // user_id di Member adalah foreign key dan juga unique
-  sekolah_id        Int?
-  nis               String?   @db.VarChar(20)
-  total_xp          Int       @default(0)
-  level             Int       @default(1)
-  foto_profil       String?   @db.VarChar(255)
-  bio               String?   @db.Text
-  tanggal_lahir     DateTime? @db.Date
-  jenis_kelamin     JenisKelamin?
-  minat             String?   @db.Text
-  last_active       DateTime? @db.Timestamp(0)
+  member_id     Int           @id
+  user_id       Int?          @unique // user_id di Member adalah foreign key dan juga unique
+  sekolah_id    Int?
+  nis           String?       @db.VarChar(20)
+  total_xp      Int           @default(0)
+  level         Int           @default(1)
+  foto_profil   String?       @db.VarChar(255)
+  bio           String?       @db.Text
+  tanggal_lahir DateTime?     @db.Date
+  jenis_kelamin JenisKelamin?
+  minat         String?       @db.Text
+  last_active   DateTime?     @db.Timestamp(0)
 
   // Relasi
-  User              User?               @relation(fields: [user_id], references: [user_id])
-  Sekolah           Sekolah?            @relation(fields: [sekolah_id], references: [sekolah_id])
-  GroupMember       GroupMember[]
-  ProgresMember     ProgresMember[]
-  MemberSocialLinks MemberSocialLink[]
+  User               User?               @relation(fields: [user_id], references: [user_id])
+  Sekolah            Sekolah?            @relation(fields: [sekolah_id], references: [sekolah_id])
+  GroupMember        GroupMember[]
+  ProgresMember      ProgresMember[]
+  MemberSocialLinks  MemberSocialLink[]
   MemberActivityLogs MemberActivityLog[]
-  MemberAchievement MemberAchievement[]
+  MemberAchievement  MemberAchievement[]
 }
 
 model ProgresMember {
-  progres_id    Int         @id @default(autoincrement())
-  member_id     Int?
-  group_id      Int?
-  content_type  ContentType
-  content_id    Int
-  skor          Int?
-  completed_at  DateTime?   @db.Timestamp(0)
+  progres_id   Int         @id @default(autoincrement())
+  member_id    Int?
+  group_id     Int?
+  content_type ContentType
+  content_id   Int
+  skor         Int?
+  completed_at DateTime?   @db.Timestamp(0)
 
   // Relasi
   Member Member? @relation(fields: [member_id], references: [member_id])
@@ -181,21 +181,21 @@ model ProgresMember {
 }
 
 model Sekolah {
-  sekolah_id   Int    @id @default(autoincrement())
-  nama_sekolah String? @db.Text
+  sekolah_id     Int     @id @default(autoincrement())
+  nama_sekolah   String? @db.Text
   alamat_sekolah String? @db.Text
 
   // Relasi
-  Gurus  Guru[]
+  Gurus   Guru[]
   Members Member[]
 }
 
 model MemberSocialLink {
-  social_id  Int          @id @default(autoincrement())
+  social_id  Int            @id @default(autoincrement())
   member_id  Int?
   platform   SocialPlatform
-  url        String       @db.VarChar(255)
-  created_at DateTime     @default(now()) @db.Timestamp(0)
+  url        String         @db.VarChar(255)
+  created_at DateTime       @default(now()) @db.Timestamp(0)
 
   // Relasi
   Member Member? @relation(fields: [member_id], references: [member_id])
@@ -220,78 +220,87 @@ model KategoriKuis {
   deskripsi     String?   @db.Text
 
   // Relasi
-  User User? @relation(fields: [created_by], references: [user_id])
+  User User?  @relation(fields: [created_by], references: [user_id])
   Kuis Kuis[]
 }
 
 model Kuis {
-  kuis_id      Int       @id @default(autoincrement())
-  judul        String    @db.VarChar(100)
-  deskripsi    String?   @db.Text
+  kuis_id      Int      @id @default(autoincrement())
+  judul        String   @db.VarChar(100)
+  deskripsi    String?  @db.Text
   kategori_id  Int?
-  xp_reward    Int       @default(100)
+  xp_reward    Int      @default(100)
   created_by   Int?
-  created_at   DateTime  @default(now()) @db.Timestamp(0)
-  is_published Boolean   @default(false)
+  created_at   DateTime @default(now()) @db.Timestamp(0)
+  is_published Boolean  @default(false)
 
   // Relasi
-  KategoriKuis     KategoriKuis?    @relation(fields: [kategori_id], references: [kategori_id])
-  User             User?            @relation(fields: [created_by], references: [user_id])
+  KategoriKuis   KategoriKuis?    @relation(fields: [kategori_id], references: [kategori_id])
+  User           User?            @relation(fields: [created_by], references: [user_id])
   PertanyaanKuis PertanyaanKuis[]
 }
 
 // ... kode lainnya di atas ...
 
 model PertanyaanKuis {
-  pertanyaan_id Int        @id @default(autoincrement())
-  kuis_id       Int?
-  teks_pertanyaan String     @db.Text
-  tipe          QuestionType
-  poin          Int        @default(10)
-  urutan        Int
-  Kuis        Kuis?        @relation(fields: [kuis_id], references: [kuis_id])
-  PilihanKuis PilihanKuis[] 
+  pertanyaan_id   Int           @id @default(autoincrement())
+  kuis_id         Int?
+  teks_pertanyaan String        @db.Text
+  tipe            QuestionType
+  poin            Int           @default(10)
+  urutan          Int
+  Kuis            Kuis?         @relation(fields: [kuis_id], references: [kuis_id])
+  PilihanKuis     PilihanKuis[]
 }
 
 model PilihanKuis {
-  jawaban_id    Int     @id @default(autoincrement())
-  pertanyaan_id Int?
-  teks_jawaban  String  @db.Text
-  score         Int     @default(0) @map("Score")
+  jawaban_id     Int             @id @default(autoincrement())
+  pertanyaan_id  Int?
+  teks_jawaban   String          @db.Text
+  score          Int             @default(0) @map("Score")
   PertanyaanKuis PertanyaanKuis? @relation(fields: [pertanyaan_id], references: [pertanyaan_id])
 
   @@map("pilihanKuis")
 }
 
+model KategoriCerita {
+  KategoriId   Int    @id @default(autoincrement()) @map("KategoriId")
+  NamaKategori String @db.VarChar(100)
+
+  // Relasi ke CeritaInteraktif
+  CeritaInteraktif CeritaInteraktif[]
+}
 
 model CeritaInteraktif {
-  cerita_id   Int       @id @default(autoincrement()) @map("cerita_id") // serial maps to Int @id @default(autoincrement())
-  judul       String    @db.VarChar(100)
-  thumbnail   String?   @db.VarChar(200)
-  deskripsi   String?   @db.Text
-  xp_reward   Int       @default(150)
-  created_by  Int?
-  created_at  DateTime? @db.Timestamp(0)
+  cerita_id  Int       @id @default(autoincrement()) @map("cerita_id")
+  judul      String    @db.VarChar(100)
+  thumbnail  String?   @db.VarChar(200)
+  deskripsi  String?   @db.Text
+  kategori   Int       @default(1) 
+  xp_reward  Int       @default(150)
+  created_by Int?
+  created_at DateTime? @db.Timestamp(0)
 
   // Relasi
-  User  User?   @relation(fields: [created_by], references: [user_id])
-  Scene Scene[]
+  User           User?           @relation(fields: [created_by], references: [user_id])
+  KategoriCerita KategoriCerita @relation(fields: [kategori], references: [KategoriId])
+  Scene          Scene[]
 
-  @@map("cerita_interaktif") // Map to original table name
+  @@map("cerita_interaktif")
 }
 
 model Scene {
-  scene_id    Int       @id @default(autoincrement()) @map("scene_id") // serial maps to Int @id @default(autoincrement())
-  cerita_id   Int?
-  scene_key   String    @db.VarChar(50)
-  scene_text  String    @db.Text
+  scene_id      Int     @id @default(autoincrement()) @map("scene_id") // serial maps to Int @id @default(autoincrement())
+  cerita_id     Int?
+  scene_key     String  @db.VarChar(50)
+  scene_text    String  @db.Text
   scene_choices Json?   @db.Json // jsonb maps to Json in Prisma
-  condition   Json?     @db.Json // jsonb maps to Json in Prisma
-  effect      Json?     @db.Json // jsonb maps to Json in Prisma
-  is_ending   Boolean   @default(false)
-  ending_point Int      @default(0)
-  ending_type String?   @db.VarChar(50)
-  urutan      Int?
+  condition     Json?   @db.Json // jsonb maps to Json in Prisma
+  effect        Json?   @db.Json // jsonb maps to Json in Prisma
+  is_ending     Boolean @default(false)
+  ending_point  Int     @default(0)
+  ending_type   String? @db.VarChar(50)
+  urutan        Int?
 
   // Relasi
   CeritaInteraktif CeritaInteraktif? @relation(fields: [cerita_id], references: [cerita_id])
@@ -300,26 +309,26 @@ model Scene {
 }
 
 model Puzzle {
-  puzzle_id  Int          @id @default(autoincrement())
-  judul      String       @db.VarChar(100)
-  gambar     String       @db.VarChar(255)
+  puzzle_id  Int            @id @default(autoincrement())
+  judul      String         @db.VarChar(100)
+  gambar     String         @db.VarChar(255)
   kategori   PuzzleCategory
-  xp_reward  Int          @default(80)
+  xp_reward  Int            @default(80)
   created_by Int?
-  created_at DateTime     @default(now()) @db.Timestamp(0)
+  created_at DateTime       @default(now()) @db.Timestamp(0)
 
   // Relasi
   User User? @relation(fields: [created_by], references: [user_id])
 }
 
 model Artikel {
-  artikel_id      Int       @id @default(autoincrement())
-  judul           String    @db.VarChar(100)
-  konten          String    @db.Text
-  kategori        Int?
-  created_by      Int?
-  created_at      DateTime  @default(now()) @db.Timestamp(0)
-  thumbnail       String?   @db.VarChar(255)
+  artikel_id Int      @id @default(autoincrement())
+  judul      String   @db.VarChar(100)
+  konten     String   @db.Text
+  kategori   Int?
+  created_by Int?
+  created_at DateTime @default(now()) @db.Timestamp(0)
+  thumbnail  String?  @db.VarChar(255)
 
   // Relasi
   KategoriArtikel KategoriArtikel? @relation(fields: [kategori], references: [KategoriArtikel_id])
@@ -334,17 +343,17 @@ model KategoriArtikel {
   deskripsi          String?   @db.Text
 
   // Relasi
-  User    User?     @relation(fields: [created_by], references: [user_id])
+  User     User?     @relation(fields: [created_by], references: [user_id])
   Artikels Artikel[]
 }
 
 model Achievement {
-  achievement_id    Int           @id @default(autoincrement())
-  nama              String        @db.VarChar(50)
-  deskripsi         String?       @db.Text
-  badge_icon        String        @db.VarChar(255)
-  xp_required       Int
-  tier              AchievementTier
+  achievement_id Int             @id @default(autoincrement())
+  nama           String          @db.VarChar(50)
+  deskripsi      String?         @db.Text
+  badge_icon     String          @db.VarChar(255)
+  xp_required    Int
+  tier           AchievementTier
 
   // Relasi
   MemberAchievement MemberAchievement[]
@@ -356,9 +365,8 @@ model MemberAchievement {
   unlocked_at    DateTime @default(now()) @db.Timestamp(0)
 
   // Relasi
-  Member    Member    @relation(fields: [member_id], references: [member_id])
+  Member      Member      @relation(fields: [member_id], references: [member_id])
   Achievement Achievement @relation(fields: [achievement_id], references: [achievement_id])
 
   @@id([member_id, achievement_id]) // Composite primary key
 }
-

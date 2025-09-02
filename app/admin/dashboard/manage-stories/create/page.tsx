@@ -46,7 +46,6 @@ export default function CreateStoryForm() {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file) {
-      // Validate file size (5MB max)
       if (file.size > 5 * 1024 * 1024) {
         setError("File terlalu besar. Maksimal 5MB.")
         return

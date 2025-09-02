@@ -8,6 +8,7 @@ import { auth } from "@/auth"
 import { ActionResult } from "@/lib/executeAction"
 
 
+
 export async function createStory(_: unknown, formData: FormData):Promise<ActionResult> {
   const session = await auth();
   if (!session) return { error: "Not Authorized" };
@@ -15,6 +16,7 @@ export async function createStory(_: unknown, formData: FormData):Promise<Action
   const parse = SchemaStory.safeParse({
     judul: formData.get("judul"),
     thumbnail: formData.get("thumbnail"),
+    category: formData.get("kategori"),
     deskripsi: formData.get("deskripsi"),
     xp_reward: Number(formData.get("xp_reward")), // convert string → number
   });
@@ -45,6 +47,7 @@ export async function createStory(_: unknown, formData: FormData):Promise<Action
         deskripsi: parse.data.deskripsi,
         xp_reward: parse.data.xp_reward,
         created_by: parseInt(session.user.id!),
+        kategori : parseInt(parse.data.category)
       },
     });
 
@@ -63,6 +66,7 @@ export async function UpdateStory(id: string, formData: FormData):Promise<Action
     judul: formData.get("judul"),
     thumbnail: formData.get("thumbnail"),
     deskripsi: formData.get("deskripsi"),
+    category : formData.get("category"),
     xp_reward: Number(formData.get("xp_reward")),
   });
 
@@ -112,6 +116,7 @@ export async function UpdateStory(id: string, formData: FormData):Promise<Action
         judul: parse.data.judul,
         deskripsi: parse.data.deskripsi,
         xp_reward: parse.data.xp_reward,
+        kategori : parseInt(parse.data.category),
         ...(relativePath && { thumbnail: relativePath }),
       },
     });
