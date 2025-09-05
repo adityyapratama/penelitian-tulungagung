@@ -4,12 +4,12 @@ import * as React from "react";
 import Image from "next/image";
 import { FileQuestion } from "lucide-react";
 import {
+  BookA,
   BookAudioIcon,
   LayoutDashboard,
   PersonStanding,
   Puzzle,
 } from "lucide-react";
-
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
 
@@ -24,13 +24,7 @@ import {
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
 
-// This is sample data.
 const data = {
-  user: {
-    name: "Administrator",
-    email: "adminpusakatulungagung@gmail.com",
-    avatar: "/asset/avatars/avatar-image-1.jpg",
-  },
   navMain: [
     {
       title: "Dashboard", 
@@ -46,6 +40,11 @@ const data = {
       title: "Manajemen Puzzle",
       url: "/admin/dashboard/manage-puzzles",
       icon: Puzzle,
+    },
+        {
+      title: "Manajemen Article",
+      url: "/admin/dashboard/manage-articles",
+      icon: BookA,
     },
     {
       title: "Manajemen Cerita",
@@ -86,7 +85,21 @@ const data = {
   ],
 };
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
+  user: {
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+  };
+}
+
+export function AppSidebar({ user, ...props }: AppSidebarProps) {
+  const loggedInUser = {
+    name: user.name ?? "User", 
+    email: user.email ?? "",
+    avatar: user.image, 
+  };
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -114,9 +127,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <NavMain items={data.navMain} />
       </SidebarContent>
+
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={loggedInUser} />
       </SidebarFooter>
+
       <SidebarRail />
     </Sidebar>
   );

@@ -10,7 +10,7 @@ import { Switch } from "@/components/ui/switch"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Trash2, Plus } from "lucide-react"
-import type { StoryScene } from "../configuration/[id]/page"
+import type { StoryScene } from "@/app/[id]/page"
 
 interface SceneEditorProps {
   scene: StoryScene
@@ -23,6 +23,11 @@ export function SceneEditor({ scene, onSave, onDelete, onClose }: SceneEditorPro
   const [editedScene, setEditedScene] = useState<StoryScene>({ ...scene })
 
   const handleSave = () => {
+    if (editedScene.scene_key.trim() === "") {
+      alert("Scene key cannot be empty!")
+      return
+    }
+
     onSave(editedScene)
   }
 
@@ -67,7 +72,9 @@ export function SceneEditor({ scene, onSave, onDelete, onClose }: SceneEditorPro
                 id="scene_key"
                 value={editedScene.scene_key}
                 onChange={(e) => setEditedScene({ ...editedScene, scene_key: e.target.value })}
+                placeholder="Enter unique scene key"
               />
+              <p className="text-sm text-gray-500 mt-1">Changing this will update all references in other scenes</p>
             </div>
 
             <div>
@@ -102,10 +109,15 @@ export function SceneEditor({ scene, onSave, onDelete, onClose }: SceneEditorPro
                   <Input
                     id="ending_point"
                     type="number"
-                    value={editedScene.ending_point || 0}
-                    onChange={(e) =>
-                      setEditedScene({ ...editedScene, ending_point: Number.parseInt(e.target.value) || 0 })
-                    }
+                    value={editedScene.ending_point?.toString() || ""}
+                    onChange={(e) => {
+                      const value = e.target.value
+                      setEditedScene({
+                        ...editedScene,
+                        ending_point: value === "" ? 0 : Number.parseInt(value) || 0,
+                      })
+                    }}
+                    placeholder="Enter ending points"
                   />
                 </div>
 
