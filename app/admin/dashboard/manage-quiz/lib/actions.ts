@@ -307,10 +307,6 @@ export async function UpdateQuizCategory(id: string, formData: FormData) {
 }
 
 
-
-
-
-
 export async function DeleteQuizCategory(id: string) {
   const session = await auth();
   if (!session) return { error: "Not Authorized" };
@@ -326,6 +322,16 @@ export async function DeleteQuizCategory(id: string) {
     return { error: error.message || "Failed to delete category" };
 }
 }
+
+
+
+
+
+
+
+
+
+
 
 
 
