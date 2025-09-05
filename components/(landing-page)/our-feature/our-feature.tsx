@@ -6,7 +6,7 @@ import {Iphone15Pro} from "@/components/magicui/iphone-15-pro";
 
 export default function OurFeature() {
   return (
-    <div className="w-full min-h-screen bg-white">\
+    <div className="w-full min-h-screen bg-white">
     
       {/* Container utama dengan padding dan lebar maksimum */}
       <div className="px-4 py-16 mx-auto max-w-7xl sm:px-6 lg:px-8 ">

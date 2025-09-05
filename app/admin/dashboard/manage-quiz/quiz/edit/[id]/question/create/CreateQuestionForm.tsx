@@ -9,22 +9,31 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Plus, Trash2, X, Save, HelpCircle } from "lucide-react";
+import { Plus, Trash2, X, Save } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import type { PertanyaanKuis, PilihanKuis } from "@prisma/client";
-import { CreatePertanyaan } from "@/app/admin/dashboard/manage-quiz/lib/actions";
-
-
+import { CreatePertanyaan, DeletePertanyaan } from "@/app/admin/dashboard/manage-quiz/lib/actions";
 
 // --- TIPE DATA & FUNGSI BANTUAN ---
-interface Option { id: string; text: string; }
-interface Question { id: string; type: "pilihan_ganda" | "benar_salah"; questionText: string; options: Option[]; correctAnswer: string; score: number; }
+interface Option { id: string; text: string; score: number; }
+interface Question {
+  id: string;
+  type: "pilihan_ganda" | "benar_salah";
+  questionText: string;
+  options: Option[];
+  correctAnswer: string;
+}
 const STORAGE_KEY_PREFIX = "quiz-draft-";
 const createNewQuestion = (): Question => ({
-  id: `q_${Date.now()}`, type: "pilihan_ganda", questionText: "",
-  options: [{ id: `o_${Date.now() + 1}`, text: "" }, { id: `o_${Date.now() + 2}`, text: "" }],
-  correctAnswer: "", score: 10,
+  id: `q_${Date.now()}`,
+  type: "pilihan_ganda",
+  questionText: "",
+  options: [
+    { id: `o_${Date.now() + 1}`, text: "", score: 0 },
+    { id: `o_${Date.now() + 2}`, text: "", score: 0 }
+  ],
+  correctAnswer: "",
 });
 
 // --- PROPS ---
@@ -41,48 +50,78 @@ export default function DynamicQuestionBuilder({ quizId, initialQuestions, quizT
   const [isPending, startTransition] = useTransition();
   const STORAGE_KEY = `${STORAGE_KEY_PREFIX}${quizId}`;
 
-
-  
   // State Tunggal untuk semua pertanyaan
   const [questions, setQuestions] = useState<Question[]>(() => {
-    // ... Logika inisialisasi state (tidak berubah)
     if (initialQuestions && initialQuestions.length > 0) {
-        return initialQuestions.map(q => {
-            const correctOption = q.PilihanKuis.find(opt => opt.score > 0);
-            return {
-              id: q.pertanyaan_id.toString(), type: q.tipe, questionText: q.teks_pertanyaan, score: q.poin,
-              options: q.PilihanKuis.map(opt => ({ id: opt.jawaban_id.toString(), text: opt.teks_jawaban })) || [],
-              correctAnswer: q.tipe === 'benar_salah' ? (correctOption?.teks_jawaban.toLowerCase() === 'benar' ? 'true' : 'false') : (correctOption?.jawaban_id.toString() || ""),
-            };
-          });
+      return initialQuestions.map(q => {
+        const correctOption = q.PilihanKuis.find(opt => opt.score > 0);
+        return {
+          id: q.pertanyaan_id.toString(),
+          type: q.tipe,
+          questionText: q.teks_pertanyaan,
+          options: q.PilihanKuis.map(opt => ({
+            id: opt.jawaban_id.toString(),
+            text: opt.teks_jawaban,
+            score: opt.score ?? 0,
+          })) || [],
+          correctAnswer: q.tipe === 'benar_salah'
+            ? (correctOption?.teks_jawaban.toLowerCase() === 'benar' ? 'true' : 'false')
+            : (correctOption?.jawaban_id.toString() || ""),
+        };
+      });
     }
     if (typeof window !== "undefined") {
-        const savedDraft = sessionStorage.getItem(STORAGE_KEY);
-        if (savedDraft) return JSON.parse(savedDraft);
+      const savedDraft = sessionStorage.getItem(STORAGE_KEY);
+      if (savedDraft) return JSON.parse(savedDraft);
     }
     return [createNewQuestion()];
   });
 
-
-
-  
   // Efek untuk menyimpan draft ke sessionStorage
   useEffect(() => {
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(questions));
   }, [questions, STORAGE_KEY]);
 
-
-
-  
   // Handler function
-  const addQuestion = (index: number) => { const newQ = [...questions]; newQ.splice(index + 1, 0, createNewQuestion()); setQuestions(newQ); };
-  const removeQuestion = (id: string) => { if (questions.length > 1) { setQuestions(questions.filter(q => q.id !== id)); }};
+  const addQuestion = (index: number) => {
+    const newQ = [...questions];
+    newQ.splice(index + 1, 0, createNewQuestion());
+    setQuestions(newQ);
+  };
+
+  // Hapus pertanyaan: jika baru, hapus dari state; jika lama, hapus dari DB dan state
+  const removeQuestion = (id: string) => {
+    if (id.startsWith("q_")) {
+      if (questions.length > 1) {
+        setQuestions(questions.filter(q => q.id !== id));
+      }
+    } else {
+      startTransition(async () => {
+        const res = await DeletePertanyaan(id);
+        if (res?.error) {
+          toast.error("Gagal menghapus soal!");
+        } else {
+          toast.success("Soal berhasil dihapus!");
+          setQuestions(questions.filter(q => q.id !== id));
+        }
+      });
+    }
+  };
+
   const updateQuestion = (id: string, field: keyof Question, value: any) => {
     setQuestions(questions.map(q => {
       if (q.id === id) {
         const updatedQuestion = { ...q, [field]: value };
         if (field === "type") {
-          updatedQuestion.options = value === "pilihan_ganda" ? [{ id: `o_${Date.now()}`, text: "" }] : [];
+          updatedQuestion.options = value === "pilihan_ganda"
+            ? [
+                { id: `o_${Date.now() + 1}`, text: "", score: 0 },
+                { id: `o_${Date.now() + 2}`, text: "", score: 0 }
+              ]
+            : [
+                { id: `o_${Date.now() + 1}`, text: "Benar", score: 0 },
+                { id: `o_${Date.now() + 2}`, text: "Salah", score: 0 }
+              ];
           updatedQuestion.correctAnswer = value === "benar_salah" ? "true" : "";
         }
         return updatedQuestion;
@@ -91,18 +130,35 @@ export default function DynamicQuestionBuilder({ quizId, initialQuestions, quizT
     }));
   };
 
+  const updateOptionText = (qId: string, oId: string, text: string) => {
+    setQuestions(questions.map(q =>
+      q.id === qId
+        ? { ...q, options: q.options.map(opt => opt.id === oId ? { ...opt, text } : opt) }
+        : q
+    ));
+  };
+  const updateOptionScore = (qId: string, oId: string, score: number) => {
+    setQuestions(questions.map(q =>
+      q.id === qId
+        ? { ...q, options: q.options.map(opt => opt.id === oId ? { ...opt, score } : opt) }
+        : q
+    ));
+  };
+  const addOption = (qId: string) => {
+    setQuestions(questions.map(q =>
+      q.id === qId
+        ? { ...q, options: [...q.options, { id: `o_${Date.now()}`, text: "", score: 0 }] }
+        : q
+    ));
+  };
+  const removeOption = (qId: string, oId: string) => {
+    setQuestions(questions.map(q =>
+      q.id === qId
+        ? { ...q, options: q.options.filter(opt => opt.id !== oId) }
+        : q
+    ));
+  };
 
-
-  
-  const updateOptionText = (qId: string, oId: string, text: string) => { setQuestions(questions.map(q => q.id === qId ? { ...q, options: q.options.map(opt => opt.id === oId ? { ...opt, text } : opt) } : q)); };
-  const addOption = (qId: string) => { setQuestions(questions.map(q => q.id === qId ? { ...q, options: [...q.options, { id: `o_${Date.now()}`, text: "" }] } : q)); };
-  const removeOption = (qId: string, oId: string) => { setQuestions(questions.map(q => q.id === qId ? { ...q, options: q.options.filter(opt => opt.id !== oId) } : q)); };
-  
-
-
-
-
-  
   // handler sumbit
   const handleSaveAllQuestions = () => {
     startTransition(async () => {
@@ -110,25 +166,20 @@ export default function DynamicQuestionBuilder({ quizId, initialQuestions, quizT
       const newQuestions = questions.filter(q => q.id.startsWith("q_"));
       if (newQuestions.length === 0) {
         toast.info("Tidak ada pertanyaan baru untuk disimpan.");
+        router.push("/admin/dashboard/manage-quiz/quiz"); // Redirect meski tidak ada pertanyaan baru
         return;
       }
       const questionPromises = newQuestions.map((question, index) => {
         const formData = new FormData();
         formData.append("teks_pertanyaan", question.questionText);
         formData.append("tipe", question.type);
-        formData.append("poin", question.score.toString());
         formData.append("urutan", (initialQuestions.length + index + 1).toString());
         let pilihanData = [];
-        if (question.type === "pilihan_ganda") {
+        if (question.type === "pilihan_ganda" || question.type === "benar_salah") {
           pilihanData = question.options.map(opt => ({
             teks_jawaban: opt.text,
-            score: opt.id === question.correctAnswer ? question.score : 0,
+            score: opt.score,
           }));
-        } else {
-          pilihanData = [
-            { teks_jawaban: "Benar", score: question.correctAnswer === 'true' ? question.score : 0 },
-            { teks_jawaban: "Salah", score: question.correctAnswer === 'false' ? question.score : 0 },
-          ];
         }
         formData.append("pilihan", JSON.stringify(pilihanData));
         return CreatePertanyaan(quizId.toString(), formData);
@@ -140,27 +191,20 @@ export default function DynamicQuestionBuilder({ quizId, initialQuestions, quizT
       } else {
         toast.success(`${results.length} pertanyaan baru berhasil disimpan!`);
         sessionStorage.removeItem(STORAGE_KEY);
-        router.refresh();
+        router.push("/admin/dashboard/manage-quiz/quiz"); // Redirect setelah submit sukses
       }
     });
   };
 
   return (
-    
-
-
-
-
-    
-    
     <TooltipProvider>
       <div className="space-y-6">
-        {/* Quiz Header Card (Sekarang hanya menampilkan info, tidak bisa diedit di sini) */}
-        <Card className="overflow-hidden bg-white border border-gray-200 rounded-lg shadow-sm">
-          <div className="h-3 bg-gradient-to-r from-blue-500 to-purple-600"></div>
+        {/* Quiz Header Card */}
+        <Card className="overflow-hidden bg-gray-900 border border-gray-200 rounded-lg shadow-sm">
+          <div className="h-3 bg-gradient-to-r from-white to-gray-200"></div>
           <CardContent className="p-8">
-            <h2 className="text-3xl font-bold text-gray-900">{quizTitle}</h2>
-            <p className="mt-2 text-base text-gray-700">{quizDescription}</p>
+            <h2 className="text-3xl font-bold text-white">{quizTitle}</h2>
+            <p className="mt-2 text-base text-white">{quizDescription}</p>
           </CardContent>
         </Card>
 
@@ -175,7 +219,13 @@ export default function DynamicQuestionBuilder({ quizId, initialQuestions, quizT
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex items-center flex-1 gap-3">
                         <div className="flex items-center justify-center w-8 h-8 text-sm font-medium text-gray-600 bg-gray-100 rounded-full">{index + 1}</div>
-                        <Textarea placeholder="Tulis pertanyaan Anda..." value={q.questionText} onChange={(e) => updateQuestion(q.id, 'questionText', e.target.value)} className="flex-1 text-lg font-medium border-none p-0 bg-transparent focus-visible:ring-0 resize-none text-gray-900 placeholder:text-gray-400 min-h-[32px]" rows={1} />
+                        <Textarea
+                          placeholder="Tulis pertanyaan Anda..."
+                          value={q.questionText}
+                          onChange={(e) => updateQuestion(q.id, 'questionText', e.target.value)}
+                          className="flex-1 text-lg font-medium border-none p-0 bg-transparent focus-visible:ring-0 resize-none text-gray-900 placeholder:text-gray-400 min-h-[32px]"
+                          rows={1}
+                        />
                       </div>
                       <div className="flex items-center gap-2">
                         <Select value={q.type} onValueChange={(value: "pilihan_ganda" | "benar_salah") => updateQuestion(q.id, 'type', value)}>
@@ -197,7 +247,20 @@ export default function DynamicQuestionBuilder({ quizId, initialQuestions, quizT
                           {q.options.map((opt, optIndex) => (
                             <div key={opt.id} className="flex items-center gap-3 group">
                               <RadioGroupItem value={opt.id} id={opt.id} className="flex-shrink-0 mt-1 text-blue-600 border-gray-300"/>
-                              <Input value={opt.text} onChange={(e) => updateOptionText(q.id, opt.id, e.target.value)} placeholder={`Opsi ${optIndex + 1}`} className="flex-1 px-0 pb-2 transition-colors border-b border-gray-200 border-none rounded-none focus-visible:ring-0 focus-visible:border-blue-500"/>
+                              <Input
+                                value={opt.text}
+                                onChange={(e) => updateOptionText(q.id, opt.id, e.target.value)}
+                                placeholder={`Opsi ${optIndex + 1}`}
+                                className="flex-1 px-0 pb-2 transition-colors border-b border-gray-200 border-none rounded-none focus-visible:ring-0 focus-visible:border-blue-500"
+                              />
+                              <Input
+                                type="number"
+                                value={opt.score}
+                                min={0}
+                                onChange={(e) => updateOptionScore(q.id, opt.id, Number(e.target.value))}
+                                placeholder="Nilai"
+                                className="w-20 h-8 text-sm border-gray-300"
+                              />
                               {q.options.length > 1 && (
                                 <Button variant="ghost" size="icon" className="w-8 h-8 text-gray-400 transition-opacity opacity-0 group-hover:opacity-100 hover:text-red-500 hover:bg-red-50" onClick={() => removeOption(q.id, opt.id)}>
                                   <X className="w-4 h-4" />
@@ -213,19 +276,27 @@ export default function DynamicQuestionBuilder({ quizId, initialQuestions, quizT
                     )}
                     {q.type === 'benar_salah' && (
                       <RadioGroup value={q.correctAnswer} onValueChange={(val) => updateQuestion(q.id, 'correctAnswer', val)} className="space-y-3">
-                        <div className="flex items-center space-x-3"><RadioGroupItem value="true" id={`${q.id}-true`} className="text-blue-600 border-gray-300"/><Label htmlFor={`${q.id}-true`} className="font-medium text-gray-700">Benar</Label></div>
-                        <div className="flex items-center space-x-3"><RadioGroupItem value="false" id={`${q.id}-false`} className="text-blue-600 border-gray-300"/><Label htmlFor={`${q.id}-false`} className="font-medium text-gray-700">Salah</Label></div>
+                        {q.options.map((opt, optIndex) => (
+                          <div key={opt.id} className="flex items-center gap-3 group">
+                            <RadioGroupItem value={opt.text.toLowerCase() === "benar" ? "true" : "false"} id={opt.id} className="text-blue-600 border-gray-300"/>
+                            <Label htmlFor={opt.id} className="font-medium text-gray-700">{opt.text}</Label>
+                            <Input
+                              type="number"
+                              value={opt.score}
+                              min={0}
+                              onChange={(e) => updateOptionScore(q.id, opt.id, Number(e.target.value))}
+                              placeholder="Nilai"
+                              className="w-20 h-8 text-sm border-gray-300"
+                            />
+                          </div>
+                        ))}
                       </RadioGroup>
                     )}
                   </div>
 
-                  {/* Footer Pertanyaan (Skor & Hapus) */}
+                  {/* Footer Pertanyaan (Hapus) */}
                   <div className="px-6 py-4 border-t border-gray-100 bg-gray-50">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <Label htmlFor={`score-${q.id}`} className="text-sm text-gray-600">Nilai:</Label>
-                        <Input id={`score-${q.id}`} type="number" value={q.score} onChange={(e) => updateQuestion(q.id, 'score', Number(e.target.value))} className="w-20 h-8 text-sm border-gray-300" min="1"/>
-                      </div>
+                    <div className="flex items-center justify-end">
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Button variant="ghost" size="icon" onClick={() => removeQuestion(q.id)} disabled={questions.length <= 1} className="text-gray-500 w-9 h-9 hover:text-red-600 hover:bg-red-50">
@@ -251,16 +322,12 @@ export default function DynamicQuestionBuilder({ quizId, initialQuestions, quizT
 
         {/* Tombol Simpan Final */}
         <div className="flex justify-center pt-8">
-          <Button size="lg" onClick={handleSaveAllQuestions} disabled={isPending} className="px-8 py-3 font-medium text-white bg-blue-600 rounded-lg shadow-sm hover:bg-blue-700">
+          <Button size="lg" onClick={handleSaveAllQuestions} disabled={isPending} className="px-8 py-3 font-medium text-white bg-black rounded-lg shadow-sm hover:bg-gray-700">
             <Save className="w-5 h-5 mr-2" />
             {isPending ? "Menyimpan..." : "Simpan Semua Pertanyaan"}
           </Button>
         </div>
       </div>
     </TooltipProvider>
-
-
-
-
   );
-};
+}
