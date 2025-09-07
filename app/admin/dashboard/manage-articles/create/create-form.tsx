@@ -7,10 +7,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { CreateArticle } from "../lib/actions";
 import { Loader2, Save } from "lucide-react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SchemaArticle } from "@/lib/schema";
 import { z } from "zod";
+import { useRouter } from "next/navigation";
 
 type FormData = z.infer<typeof SchemaArticle>;
 
@@ -21,6 +22,7 @@ interface CreateArticleFormProps {
 export function CreateArticleForm({ categories }: CreateArticleFormProps) {
   const [isPending, startTransition] = useTransition();
   const [success, setSuccess] = useState<string | null>(null);
+  const router = useRouter();
 
   const form = useForm<FormData>({
     resolver: zodResolver(SchemaArticle),
@@ -54,13 +56,14 @@ export function CreateArticleForm({ categories }: CreateArticleFormProps) {
         const result = await CreateArticle(null, formData);
         console.log("📥 Respons dari server:", result);
 
-        if ("error" in result) {
+        if (result?.error) {
           console.error("❌ Error dari server:", result.error);
           form.setError("judul", { message: result.error });
-        } else {
-          console.log("✅ Artikel berhasil disimpan!");
-          setSuccess("Artikel berhasil disimpan!");
+          return;
         }
+
+        setSuccess("Artikel berhasil disimpan!");
+        router.push("/admin/dashboard/manage-articles");
       } catch (err) {
         console.error("🔥 Terjadi error saat memanggil CreateArticle:", err);
       }
@@ -68,7 +71,14 @@ export function CreateArticleForm({ categories }: CreateArticleFormProps) {
   };
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        console.log("🔥 FORM DIKIRIM!");
+        form.handleSubmit(onSubmit)(e);
+      }}
+      className="space-y-6"
+    >
       {success && (
         <div className="bg-green-100 text-green-700 p-3 rounded-md">
           {success}
@@ -102,13 +112,25 @@ export function CreateArticleForm({ categories }: CreateArticleFormProps) {
       {/* Thumbnail */}
       <div className="space-y-2">
         <Label htmlFor="thumbnail">Thumbnail *</Label>
-        <Input
+        <Controller
+          name="thumbnail"
+          control={form.control}
+          render={({ field }) => (
+            <Input
+              type="file"
+              accept="image/*"
+              onChange={(e) => field.onChange(e.target.files?.[0])}
+              required
+            />
+          )}
+        />
+        {/* <Input
           id="thumbnail"
           type="file"
           accept="image/*"
           {...form.register("thumbnail")}
           required
-        />
+        /> */}
       </div>
 
       {/* Konten */}
