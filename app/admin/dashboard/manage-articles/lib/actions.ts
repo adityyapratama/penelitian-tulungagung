@@ -32,7 +32,7 @@ export async function CreateArticle(_:unknown,formData:FormData):Promise<ActionR
     const uploadDir = path.join(process.cwd(), 'public', 'uploads')
     if (!fs.existsSync(uploadDir)) {
         fs.mkdirSync(uploadDir, { recursive: true })
-    }
+    }                                                                                                                                                                                                                                                                                                                                                                                                         
 
     const filePath = path.join(uploadDir, validate.data.thumbnail.name)
 
