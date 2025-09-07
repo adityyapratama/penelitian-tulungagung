@@ -115,3 +115,20 @@ export const SchemaPuzzle = z.object({
     })
     .int({ message: "xp reward harus berupa bilangan bulat" }),
 });
+
+export const SchemaMember = z.object(
+  {
+    sekolah_id: z.string({message:"sekolah is required"}),
+    nis: z.string({message:"nis is required"}),
+    foto_profile: z.instanceof(File),
+    bio: z.string({message: "bio is required"}),
+    tanggal_lahir : z.string()
+    .refine((val) => !isNaN(Date.parse(val)), {
+      message: "Format tanggal tidak valid",
+    })
+    .transform((val) => new Date(val)),
+    jenis_kelamin: z.enum(["L","P","Lainnya"]),
+    minat: z.string({message:"message:required"}),
+  }
+)
+  

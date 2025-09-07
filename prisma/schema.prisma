@@ -143,7 +143,7 @@ model GroupMember {
 }
 
 model Member {
-  member_id     Int           @id
+  member_id     Int           @id     @default(autoincrement())
   user_id       Int?          @unique // user_id di Member adalah foreign key dan juga unique
   sekolah_id    Int?
   nis           String?       @db.VarChar(20)
