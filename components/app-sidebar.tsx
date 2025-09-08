@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Image from "next/image";
-import { FileQuestion } from "lucide-react";
+import { FileEdit, FileQuestion } from "lucide-react";
 import {
   BookAudioIcon,
   LayoutDashboard,
@@ -33,14 +33,19 @@ const data = {
   },
   navMain: [
     {
-      title: "Dashboard", 
+      title: "Dashboard",
       url: "/admin/dashboard",
       icon: LayoutDashboard,
-    }, 
+    },
     {
       title: "Manajemen Pengguna",
       url: "/admin/dashboard/manage-users",
       icon: PersonStanding,
+    },
+    {
+      title: "Manajemen Artikel",
+      url: "/admin/dashboard/manage-articles",
+      icon: FileEdit,
     },
     {
       title: "Manajemen Puzzle",
@@ -66,13 +71,13 @@ const data = {
         },
       ],
     },
-    
+
     {
       title: "Manajemen Kuis",
       url: "/admin/dashboard/manage-quiz",
       icon: FileQuestion,
       items: [
-         {
+        {
           title: "index kuis kategori",
           url: "/admin/dashboard/manage-quiz/categories",
         },
@@ -82,7 +87,6 @@ const data = {
         },
       ],
     },
-    
   ],
 };
 
@@ -100,11 +104,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <Image
                   alt="logo-dashboard"
                   src={"/asset/unair.png"}
-                  width={24} 
+                  width={24}
                   height={24}
                   className="!size-5"
                 />
-                <span className="text-base font-semibold">Pusaka Tulungagung</span>
+                <span className="text-base font-semibold">
+                  Pusaka Tulungagung
+                </span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>

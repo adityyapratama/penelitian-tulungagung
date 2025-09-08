@@ -42,17 +42,26 @@ export function NavMain({ items }: NavMainProps) {
     <SidebarGroup>
       <SidebarGroupLabel>Main Menu</SidebarGroupLabel>
       <SidebarMenu>
-        {items.map((item) =>
-          item.items && item.items.length > 0 ? (
+        {items.map((item) => {
+          const active =
+            item.url === "/dashboard"
+              ? pathname === item.url
+              : pathname.startsWith(item.url);
+
+          return item.items && item.items.length > 0 ? (
             <Collapsible
               key={item.title}
-              defaultOpen={item.items.some((sub) => pathname === sub.url)}
+              defaultOpen={item.items.some((sub) =>
+                pathname.startsWith(sub.url)
+              )}
               className="group/collapsible"
             >
               <SidebarMenuItem>
                 <CollapsibleTrigger asChild>
                   <SidebarMenuButton
-                    isActive={item.items.some((sub) => pathname === sub.url)}
+                    isActive={item.items.some((sub) =>
+                      pathname.startsWith(sub.url)
+                    )}
                     tooltip={item.title}
                   >
                     {item.icon && <item.icon />}
@@ -62,35 +71,31 @@ export function NavMain({ items }: NavMainProps) {
                 </CollapsibleTrigger>
                 <CollapsibleContent>
                   <SidebarMenuSub>
-                    {item.items.map((subItem) => (
-                      <SidebarMenuSubItem key={subItem.title}>
-                        <SidebarMenuSubButton
-                          asChild
-                          isActive={pathname === subItem.url}
-                        >
-                          <Link href={subItem.url}>{subItem.title}</Link>
-                        </SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
-                    ))}
+                    {item.items.map((subItem) => {
+                      const subActive = pathname.startsWith(subItem.url);
+                      return (
+                        <SidebarMenuSubItem key={subItem.title}>
+                          <SidebarMenuSubButton asChild isActive={subActive}>
+                            <Link href={subItem.url}>{subItem.title}</Link>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      );
+                    })}
                   </SidebarMenuSub>
                 </CollapsibleContent>
               </SidebarMenuItem>
             </Collapsible>
           ) : (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname === item.url}
-                tooltip={item.title}
-              >
+              <SidebarMenuButton asChild isActive={active} tooltip={item.title}>
                 <Link href={item.url}>
                   {item.icon && <item.icon />}
                   <span>{item.title}</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
-          )
-        )}
+          );
+        })}
       </SidebarMenu>
     </SidebarGroup>
   );
