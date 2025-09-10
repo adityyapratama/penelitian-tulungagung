@@ -174,7 +174,7 @@ model ProgresMember {
   content_id   Int
   skor         Int?
   completed_at DateTime?   @db.Timestamp(0)
-
+  duration     Int
   // Relasi
   Member Member? @relation(fields: [member_id], references: [member_id])
   Group  Group?  @relation(fields: [group_id], references: [group_id])
@@ -266,8 +266,6 @@ model PilihanKuis {
 model KategoriCerita {
   KategoriId   Int    @id @default(autoincrement()) @map("KategoriId")
   NamaKategori String @db.VarChar(100)
-
-  // Relasi ke CeritaInteraktif
   CeritaInteraktif CeritaInteraktif[]
 }
 
@@ -280,6 +278,7 @@ model CeritaInteraktif {
   xp_reward  Int       @default(150)
   created_by Int?
   created_at DateTime? @db.Timestamp(0)
+  is_published Boolean  @default(false)
 
   // Relasi
   User           User?           @relation(fields: [created_by], references: [user_id])
@@ -316,6 +315,7 @@ model Puzzle {
   xp_reward  Int            @default(80)
   created_by Int?
   created_at DateTime       @default(now()) @db.Timestamp(0)
+  is_published Boolean      @default(false)
 
   // Relasi
   User User? @relation(fields: [created_by], references: [user_id])

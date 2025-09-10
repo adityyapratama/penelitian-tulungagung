@@ -15,3 +15,11 @@ export interface IScene {
   ending_type?: string | null
   urutan?: number | null
 }
+
+export interface ProgressData {
+  memberId: number;
+  contentId: number;
+  skor: number;
+  startedAt: Date;
+  contentType: "kuis" | "cerita" | "puzzle"
+}
