@@ -5,6 +5,7 @@ import fs from 'fs'
 import path from 'path'
 import { v4 as uuidv4 } from "uuid"
 import {ProgressData} from "@/types/index"
+import { ContentType } from "@/lib/generated/prisma";
 
 
 export async function GetMemberData(){
@@ -210,5 +211,36 @@ export async function CreateProgress(_:unknown,data : ProgressData){
     return null;
   }
 }
+
+export async function GetLeaderboard(id: string, content_type: ContentType) {
+  try {
+    const progressList = await prisma.progresMember.findMany({
+      where: {
+        content_type,
+        content_id: parseInt(id)
+      },
+      select: {
+        member_id: true,
+        skor: true,
+        duration: true
+      }
+    });
+
+    const leaderboard = progressList
+      .map(p => ({
+        member_id: p.member_id,
+        skor: p.skor ?? 0,
+        duration: p.duration ?? 1, 
+        ratio: (p.skor ?? 0) / (p.duration ?? 1)
+      }))
+      .sort((a, b) => b.ratio - a.ratio);
+
+    return leaderboard;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
+
 
 
