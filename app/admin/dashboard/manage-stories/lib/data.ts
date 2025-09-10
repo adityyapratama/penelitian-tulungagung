@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma"
 import { StoryColumn } from "../columns"
 import { saveScenesToDatabase, loadScenesFromDatabase, type SceneData } from "./database"
 import { revalidatePath } from "next/cache"
-import { IScene } from "@/types"
+
 
 export async function GetStories() {
     try {
