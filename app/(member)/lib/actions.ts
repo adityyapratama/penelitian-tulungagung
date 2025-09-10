@@ -4,6 +4,7 @@ import { SchemaMember } from "@/lib/schema";
 import fs from 'fs'
 import path from 'path'
 import { v4 as uuidv4 } from "uuid"
+import {ProgressData} from "@/types/index"
 
 
 export async function GetMemberData(){
@@ -146,4 +147,68 @@ export async function UpdateMember(_: unknown, formData: FormData, id:string) {
     return { error: "Failed to update member" }
   }
 }
+
+export async function GetExpMember(id : string) {
+  try {
+    const progress = await prisma.progresMember.aggregate({
+      where:{
+        member_id:parseInt(id)
+      },
+      _sum:{
+        skor:true
+      }
+    })
+
+    return progress._sum.skor
+  } catch (error) {
+    console.log(error)
+    return 0;
+  }
+}
+
+export async function CreateProgress(_:unknown,data : ProgressData){
+  const session = await auth()
+  if (!session){
+    return {error:"Not Authorized"}
+  }
+
+  let id
+  try {
+    const user = await prisma.member.findFirst({
+      where:{
+        user_id: parseInt(session.user.id!)
+      }
+    })
+
+    id = user?.member_id
+    if (!id) return { error: "User is not a member" };
+  } catch (error) {
+    console.log(error)
+    return {error:"User is not a member"}
+  }
+
+  try {
+    const completedAt = new Date(); 
+    const duration = Math.floor(
+      (completedAt.getTime() - data.startedAt.getTime()) / 1000
+    );
+
+    const progress = await prisma.progresMember.create({
+      data: {
+        member_id: id,
+        content_id: data.contentId,
+        content_type: data.contentType,
+        skor: data.skor,
+        completed_at: completedAt,
+        duration: duration,
+      },
+    });
+
+    return progress;
+  } catch (error) {
+    console.error("CreateProgress error:", error);
+    return null;
+  }
+}
+
 
