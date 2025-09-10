@@ -1,6 +1,7 @@
 import { Handle, Position } from "@xyflow/react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import Image from "next/image"
 import type { StoryScene } from "../configuration/[id]/page"
 
 interface StorySceneNodeProps {
@@ -14,6 +15,21 @@ export function StorySceneNode({ data }: StorySceneNodeProps) {
         <CardTitle className="text-sm font-medium text-blue-700">{data.scene_key}</CardTitle>
       </CardHeader>
       <CardContent className="pt-0">
+        {data.scene_image && (
+          <div className="mb-3">
+            <Image
+              src={data.scene_image || "/placeholder.svg"}
+              alt={`Scene ${data.scene_key}`}
+              width={256}
+              height={96}
+              className="w-full h-24 object-cover rounded-md"
+              onError={() => {
+                // Image component handles errors internally
+              }}
+            />
+          </div>
+        )}
+
         <p className="text-sm text-gray-700 mb-3 line-clamp-3">{data.scene_text}</p>
 
         {data.scene_choices.length > 0 && (
