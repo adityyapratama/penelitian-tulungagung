@@ -4,7 +4,7 @@ import type { ColumnDef } from "@tanstack/react-table"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Edit, Trash2, ArrowUpDown, Star } from "lucide-react"
+import { Edit, Trash2, ArrowUpDown, Star, CircleCheck, CircleX } from "lucide-react"
 import dayjs from "dayjs"
 import utc from "dayjs/plugin/utc"
 import timezone from "dayjs/plugin/timezone"
@@ -21,6 +21,7 @@ export type TPuzzle = {
   gambar: string
   kategori: string 
   xp_reward: number
+  is_published: boolean
   created_by: number
   created_at: Date
 }
@@ -101,18 +102,11 @@ export const columns: ColumnDef<TPuzzle>[] = [
   },
   {
     accessorKey: "judul",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="h-auto p-0 font-semibold hover:bg-transparent"
-        >
-          Judul Puzzle
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+    header: ({ column }) => (
+        <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")} className="h-auto p-0 font-semibold hover:bg-transparent">
+          Judul Puzzle <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
-    },
+    ),
     cell: ({ row }) => {
       const puzzle = row.original
       return (
@@ -215,4 +209,34 @@ export const columns: ColumnDef<TPuzzle>[] = [
       )
     },
   },
+  {
+    accessorKey: "is_published",
+    header: ({ column }) => (
+        <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")} className="h-auto p-0 font-semibold hover:bg-transparent">
+          Status <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+    ),
+    cell: ({ row }) => {
+      const isPublished = row.getValue("is_published") as boolean
+
+      
+      return isPublished ? (
+        <Badge variant="default" className="bg-green-500 hover:bg-green-600">
+          <CircleCheck className="w-3.5 h-3.5 mr-1.5" />
+          Published
+        </Badge> 
+      ) : (
+        <Badge variant="secondary">
+          <CircleX className="w-3.5 h-3.5 mr-1.5" />
+          {isPublished }
+          Draft
+        </Badge>  
+      )
+    },
+    // Menambahkan fungsi filter di sini
+    filterFn: (row, id, value) => {
+      // Jika value 'all', tampilkan semua. Jika tidak, cocokkan nilainya.
+      return value === "all" ? true : value === String(row.getValue(id));
+    },
+  }
 ]
