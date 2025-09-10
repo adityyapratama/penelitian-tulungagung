@@ -18,7 +18,7 @@ export async function createStory(_: unknown, formData: FormData): Promise<Actio
     category: formData.get("kategori"),
     deskripsi: formData.get("deskripsi"),
     xp_reward: Number(formData.get("xp_reward") ?? 0), // safe conversion
-    is_published: formData.get("is_published") === "1"
+    is_published: formData.get("is_published")
   });
 
   if (!parse.success) {
@@ -75,7 +75,7 @@ export async function UpdateStory(id: string, formData: FormData): Promise<Actio
     deskripsi: formData.get("deskripsi"),
     category: formData.get("category"),
     xp_reward: Number(formData.get("xp_reward") ?? 0), // safe conversion
-    is_published: formData.get("is_published") === "1"
+    is_published: formData.get("is_published")
   });
 
   if (!parse.success) {
