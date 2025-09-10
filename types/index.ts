@@ -17,7 +17,6 @@ export interface IScene {
 }
 
 export interface ProgressData {
-  memberId: number;
   contentId: number;
   skor: number;
   startedAt: Date;
