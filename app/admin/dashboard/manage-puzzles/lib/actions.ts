@@ -35,7 +35,7 @@ export async function createPuzzle(
     gambar: formData.get("gambar"),
     kategori: formData.get("kategori"),
     xp_reward: formData.get("xp_reward"),
-    is_published: formData.get("is_published") === "1"
+    is_published: formData.get("is_published")
   });
 
   if (!parse.success) {
