@@ -15,6 +15,15 @@ CREATE TABLE `User` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
+CREATE TABLE `Session` (
+    `id` VARCHAR(191) NOT NULL,
+    `userId` INTEGER NOT NULL,
+    `expiresAt` DATETIME(3) NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `Guru` (
     `guru_id` INTEGER NOT NULL,
     `user_id` INTEGER NULL,
@@ -51,7 +60,7 @@ CREATE TABLE `GroupMember` (
 
 -- CreateTable
 CREATE TABLE `Member` (
-    `member_id` INTEGER NOT NULL,
+    `member_id` INTEGER NOT NULL AUTO_INCREMENT,
     `user_id` INTEGER NULL,
     `sekolah_id` INTEGER NULL,
     `nis` VARCHAR(20) NULL,
@@ -77,6 +86,7 @@ CREATE TABLE `ProgresMember` (
     `content_id` INTEGER NOT NULL,
     `skor` INTEGER NULL,
     `completed_at` TIMESTAMP(0) NULL,
+    `duration` INTEGER NOT NULL,
 
     PRIMARY KEY (`progres_id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -133,6 +143,7 @@ CREATE TABLE `Kuis` (
     `created_by` INTEGER NULL,
     `created_at` TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
     `is_published` BOOLEAN NOT NULL DEFAULT false,
+    `thumbnail` VARCHAR(200) NULL,
 
     PRIMARY KEY (`kuis_id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -142,6 +153,7 @@ CREATE TABLE `PertanyaanKuis` (
     `pertanyaan_id` INTEGER NOT NULL AUTO_INCREMENT,
     `kuis_id` INTEGER NULL,
     `teks_pertanyaan` TEXT NOT NULL,
+    `image` VARCHAR(200) NULL,
     `tipe` ENUM('pilihan_ganda', 'benar_salah') NOT NULL,
     `poin` INTEGER NOT NULL DEFAULT 10,
     `urutan` INTEGER NOT NULL,
@@ -160,14 +172,24 @@ CREATE TABLE `pilihanKuis` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
+CREATE TABLE `KategoriCerita` (
+    `KategoriId` INTEGER NOT NULL AUTO_INCREMENT,
+    `NamaKategori` VARCHAR(100) NOT NULL,
+
+    PRIMARY KEY (`KategoriId`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `cerita_interaktif` (
     `cerita_id` INTEGER NOT NULL AUTO_INCREMENT,
     `judul` VARCHAR(100) NOT NULL,
     `thumbnail` VARCHAR(200) NULL,
     `deskripsi` TEXT NULL,
+    `kategori` INTEGER NOT NULL DEFAULT 1,
     `xp_reward` INTEGER NOT NULL DEFAULT 150,
     `created_by` INTEGER NULL,
     `created_at` TIMESTAMP(0) NULL,
+    `is_published` BOOLEAN NOT NULL DEFAULT false,
 
     PRIMARY KEY (`cerita_id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -177,6 +199,7 @@ CREATE TABLE `scene` (
     `scene_id` INTEGER NOT NULL AUTO_INCREMENT,
     `cerita_id` INTEGER NULL,
     `scene_key` VARCHAR(50) NOT NULL,
+    `image` VARCHAR(200) NULL,
     `scene_text` TEXT NOT NULL,
     `scene_choices` JSON NULL,
     `condition` JSON NULL,
@@ -198,6 +221,7 @@ CREATE TABLE `Puzzle` (
     `xp_reward` INTEGER NOT NULL DEFAULT 80,
     `created_by` INTEGER NULL,
     `created_at` TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
+    `is_published` BOOLEAN NOT NULL DEFAULT false,
 
     PRIMARY KEY (`puzzle_id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -246,6 +270,9 @@ CREATE TABLE `MemberAchievement` (
 
     PRIMARY KEY (`member_id`, `achievement_id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- AddForeignKey
+ALTER TABLE `Session` ADD CONSTRAINT `Session_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Guru` ADD CONSTRAINT `Guru_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `User`(`user_id`) ON DELETE SET NULL ON UPDATE CASCADE;
@@ -297,6 +324,9 @@ ALTER TABLE `pilihanKuis` ADD CONSTRAINT `pilihanKuis_pertanyaan_id_fkey` FOREIG
 
 -- AddForeignKey
 ALTER TABLE `cerita_interaktif` ADD CONSTRAINT `cerita_interaktif_created_by_fkey` FOREIGN KEY (`created_by`) REFERENCES `User`(`user_id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `cerita_interaktif` ADD CONSTRAINT `cerita_interaktif_kategori_fkey` FOREIGN KEY (`kategori`) REFERENCES `KategoriCerita`(`KategoriId`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `scene` ADD CONSTRAINT `scene_cerita_id_fkey` FOREIGN KEY (`cerita_id`) REFERENCES `cerita_interaktif`(`cerita_id`) ON DELETE SET NULL ON UPDATE CASCADE;

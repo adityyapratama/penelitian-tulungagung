@@ -1,11 +1,10 @@
-import prisma from "@/lib/prisma"
 import { PrismaClient } from "@prisma/client"
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
 }
 
-
+export const prisma = globalForPrisma.prisma ?? new PrismaClient()
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma
 
@@ -16,6 +15,7 @@ export interface SceneData {
   is_ending: boolean
   ending_point?: number
   ending_type?: string
+  scene_image?: string
 }
 
 export async function saveScenesToDatabase(scenes: SceneData[], cerita_id: number) {
@@ -36,6 +36,7 @@ export async function saveScenesToDatabase(scenes: SceneData[], cerita_id: numbe
           is_ending: scene.is_ending,
           ending_point: scene.ending_point || 0,
           ending_type: scene.ending_type,
+          scene_image: scene.scene_image,
           urutan: index + 1,
         },
       }),
@@ -65,6 +66,7 @@ export async function loadScenesFromDatabase(cerita_id: number) {
         is_ending: scene.is_ending,
         ending_point: scene.ending_point,
         ending_type: scene.ending_type,
+        scene_image: scene.scene_image,
       })),
     }
   } catch (error) {

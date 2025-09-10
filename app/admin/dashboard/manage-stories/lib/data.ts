@@ -43,22 +43,6 @@ export async function GetStoryById(id:string){
     }
 }
 
-export async function GetScenesByStoryId(id: string): Promise<IScene[] | { error: string }> {
-  try {
-    const scenes = await prisma.scene.findMany({
-      where: { cerita_id: parseInt(id) },
-    })
-    return scenes
-  } catch (error) {
-    console.error(error)
-    return { error: String(error) }
-  }
-}
-
-
-
-
-
 export async function saveScenes(formData: FormData) {
   const scenesJson = formData.get("scenes") as string
   const ceritaId = Number.parseInt(formData.get("cerita_id") as string)
@@ -88,4 +72,19 @@ export async function loadScenes(formData: FormData) {
   const result = await loadScenesFromDatabase(ceritaId)
   revalidatePath(`/${ceritaId}`)
   return result
+}
+
+// Adding GetScenesByStoryId function to fetch scenes by story ID
+export async function GetScenesByStoryId(id: string) {
+  try {
+    const scenes = await prisma.scene.findMany({
+      where: {
+        cerita_id: Number.parseInt(id),
+      },
+    })
+    return scenes
+  } catch (error) {
+    console.log(error)
+    return { error: error }
+  }
 }
