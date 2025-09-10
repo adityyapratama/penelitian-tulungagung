@@ -58,6 +58,7 @@ export const SchemaQuiz = z.object({
   kategori_id: z.number({ message: "kategori is required" }).int().min(1),
   xp_reward: z.number({ message: "xp reward is required" }).int(),
   is_published: z.boolean({ message: "published option is required" }),
+  thumbnail: z.instanceof(File),
 });
 
 export const SchemaPilihan = z.object({
@@ -71,6 +72,7 @@ export const SchemaPertanyaan = z.object({
   poin: z.number().int().default(10),
   urutan: z.number().int(),
   pilihan: z.array(SchemaPilihan),
+  image : z.instanceof(File).optional()
 });
 
 export const SchemaStory = z.object({

@@ -27,6 +27,7 @@ export interface StoryScene {
   is_ending: boolean
   ending_point?: number
   ending_type?: "good" | "bad" | "neutral"
+  scene_image?: string
 }
 
 const nodeTypes = {
@@ -97,6 +98,7 @@ export default function Page() {
             is_ending: scene.is_ending,
             ending_point: scene.ending_point || 0,
             ending_type: scene.ending_type,
+            scene_image: scene.scene_image,
           }))
 
           setScenes(convertedScenes)
@@ -269,6 +271,7 @@ export default function Page() {
             is_ending: scene.is_ending,
             ending_point: scene.ending_point,
             ending_type: scene.ending_type,
+            scene_image: scene.scene_image,
           }))
 
           setScenes(convertedScenes)
@@ -319,7 +322,7 @@ export default function Page() {
           variant="outline"
           className="flex items-center gap-2 bg-transparent"
         >
-          <PlayCircle className="w-4 h-4"/>
+          <PlayCircle className="w-4 h-4" />
           {isPending ? "Loading..." : "Play"}
         </Button>
       </div>
