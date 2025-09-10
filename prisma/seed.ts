@@ -131,7 +131,11 @@ Aliquam pharetra molestie nulla, ut dignissim nisl efficitur nec. Interdum et ma
 
 export async function main() {
   for (const u of userData) {
-    await prisma.user.create({ data: u });
+    await prisma.user.upsert({
+    where: { username: u.username },
+    update: {},          // kalau sudah ada, biarkan
+    create: u,           // kalau belum ada, buat baru
+    })
   }
   for (const c of CategoryArticleData){
     await prisma.kategoriArtikel.create({data:c})

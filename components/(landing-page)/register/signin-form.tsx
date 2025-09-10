@@ -10,7 +10,7 @@ export function SignInForm() {
   const [state, formAction] = useActionState(handleLogin, null);
 
   return (
-    <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-2xl shadow-lg">
+    <div className="w-full max-w-md p-8 space-y-6 bg-white shadow-lg rounded-2xl">
       {/* Judul Form */}
       <div className="text-center">
         <Image
@@ -34,7 +34,7 @@ export function SignInForm() {
         <div>
           <label
             htmlFor="email"
-            className="block text-sm font-medium text-gray-700 mb-2"
+            className="block mb-2 text-sm font-medium text-gray-700"
           >
             Alamat Email
           </label>
@@ -42,7 +42,7 @@ export function SignInForm() {
             id="email"
             type="email"
             name="email"
-            className="block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition"
+            className="block w-full px-4 py-3 placeholder-gray-400 transition border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
             required
             placeholder="anda@email.com"
           />
@@ -50,7 +50,7 @@ export function SignInForm() {
 
         {/* Input Password */}
         <div>
-          <div className="flex justify-between items-center mb-2">
+          <div className="flex items-center justify-between mb-2">
             <label
               htmlFor="password"
               className="block text-sm font-medium text-gray-700"
@@ -65,7 +65,7 @@ export function SignInForm() {
             id="password"
             type="password"
             name="password"
-            className="block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition"
+            className="block w-full px-4 py-3 placeholder-gray-400 transition border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
             required
             placeholder="••••••••"
           />
@@ -73,8 +73,8 @@ export function SignInForm() {
 
         {/* Pesan Error */}
         {state?.message && (
-          <div className="flex items-center space-x-2 text-sm text-red-600 bg-red-50 p-3 rounded-lg">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+          <div className="flex items-center p-3 space-x-2 text-sm text-red-600 rounded-lg bg-red-50">
+            <svg xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0 w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
             </svg>
             <p>{state.message}</p>
@@ -86,7 +86,7 @@ export function SignInForm() {
           <Button type="submit" className="w-full" size="lg">Masuk</Button>
           <p className="mt-2 text-sm text-center text-gray-600">
             Belum mempunyai akun ?{" "}
-            <Link href="/register" className="font-medium text-primary hover:text-primary-3/4">
+            <Link href="sign-up" className="font-medium text-primary hover:text-primary-3/4">
               Daftar
             </Link>
           </p>

@@ -12,12 +12,17 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
+export const metadata = {
+  title: "Manage-puzzles",
+};
+
+
 export default async function ManagePuzzlesPage() {
   const puzzles = await getPuzzle();
 
   if ("error" in puzzles) {
     return (
-      <div className="container mx-auto py-4 px-4 md:py-8">
+      <div className="container px-4 py-4 mx-auto md:py-8">
         <div className="text-center">
           <p className="text-destructive">
             Error loading puzzles: {String(puzzles.error)}
@@ -33,11 +38,11 @@ export default async function ManagePuzzlesPage() {
   const totalXP = puzzles.reduce((sum, puzzle) => sum + puzzle.xp_reward, 0);
 
   return (
-    <div className="container mx-auto py-4 px-4 md:py-8 space-y-6 md:space-y-8">
+    <div className="container px-4 py-4 mx-auto space-y-6 md:py-8 md:space-y-8">
       {/* Header Section */}
       <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
         <div className="space-y-2">
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
+          <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
             Manajemen Puzzle
           </h1>
           <p className="text-sm md:text-base text-muted-foreground">
@@ -45,15 +50,15 @@ export default async function ManagePuzzlesPage() {
           </p>
         </div>
         <div className="flex flex-col space-y-2 md:flex-row md:items-center md:space-y-0 md:space-x-4">
-          <div className="flex items-center space-x-2 text-sm text-muted-foreground bg-muted/50 px-3 py-2 rounded-lg">
-            <Puzzle className="h-4 w-4" />
+          <div className="flex items-center px-3 py-2 space-x-2 text-sm rounded-lg text-muted-foreground bg-muted/50">
+            <Puzzle className="w-4 h-4" />
             <span>
               Total: {totalPuzzles} puzzle{totalPuzzles !== 1 ? "s" : ""}
             </span>
           </div>
-          <Button asChild className="shadow-sm w-full md:w-auto">
+          <Button asChild className="w-full shadow-sm md:w-auto">
             <Link href="/admin/dashboard/manage-puzzles/create">
-              <Plus className="h-4 w-4 mr-2" />
+              <Plus className="w-4 h-4 mr-2" />
               Tambah Puzzle
             </Link>
           </Button>
@@ -61,11 +66,11 @@ export default async function ManagePuzzlesPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium">Total Puzzles</CardTitle>
-            <Puzzle className="h-4 w-4 text-muted-foreground" />
+            <Puzzle className="w-4 h-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalPuzzles}</div>
@@ -75,9 +80,9 @@ export default async function ManagePuzzlesPage() {
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium">Kategori</CardTitle>
-            <Puzzle className="h-4 w-4 text-muted-foreground" />
+            <Puzzle className="w-4 h-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{kategoris.length}</div>
@@ -85,9 +90,9 @@ export default async function ManagePuzzlesPage() {
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium">Total XP</CardTitle>
-            <Puzzle className="h-4 w-4 text-muted-foreground" />
+            <Puzzle className="w-4 h-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalXP.toLocaleString()}</div>

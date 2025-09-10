@@ -272,7 +272,7 @@ export async function CreateQuizCategory(
     });
 
     return { message: "Kategori kuis berhasil dibuat" };
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error(err);
     return { error: "Gagal membuat kategori kuis" };
   }
@@ -300,15 +300,11 @@ export async function UpdateQuizCategory(id: string, formData: FormData) {
     });
 
     return { success: true, data: updated };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("UpdateQuizCategory Error:", error);
-    return { error: error.message || "Failed to update category" };
+    return { error: "Failed to update category" };
   }
 }
-
-
-
-
 
 
 export async function DeleteQuizCategory(id: string) {
@@ -321,11 +317,21 @@ export async function DeleteQuizCategory(id: string) {
     });
 
     return { success: true, message: "Category deleted successfully" };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("DeleteQuizCategory Error:", error);
-    return { error: error.message || "Failed to delete category" };
+    return { error: "Failed to delete category" };
 }
 }
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -391,7 +397,7 @@ export async function DeleteMultipleQuizzes(ids: string[]): Promise<ActionResult
     revalidatePath("/admin/dashboard/manage-quiz/quiz");
 
     return { success: `${deleteResult.count} kuis berhasil dihapus.` };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Bulk Delete Error:", error);
     return { error: "Gagal menghapus kuis yang dipilih." };
   }

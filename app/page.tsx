@@ -17,7 +17,7 @@ import {AccordionDemo} from "@/components/(landing-page)/stacked/stacked";
 
 export default function Home() {
   return (
-    <div className="min-h-screen overflow-x-hidden font-sans">
+    <div className="min-h-screen font-sans">
       <NavbarDemo/>   
       
       <main className="">

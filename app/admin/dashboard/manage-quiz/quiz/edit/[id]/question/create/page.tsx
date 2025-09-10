@@ -49,6 +49,7 @@ export default async function CreateQuestionPage({ params }: PageProps) {
         <DynamicQuestionBuilder 
             quizId={quiz.kuis_id}
             initialQuestions={Array.isArray(initialQuestions) ? initialQuestions : []} 
+            quizTitle={quiz.judul}
         />
       </div>
     </div>
