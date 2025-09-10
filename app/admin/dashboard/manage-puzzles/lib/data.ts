@@ -12,6 +12,7 @@ export async function getPuzzle() {
         gambar: puzzle.gambar,
         kategori: puzzle.kategori,
         xp_reward: puzzle.xp_reward,
+        is_published: puzzle.is_published,
         created_by: puzzle.created_by!,
         created_at: puzzle.created_at,
       };

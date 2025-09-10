@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   type ColumnDef,
@@ -12,13 +12,36 @@ import {
   type ColumnFiltersState,
   type VisibilityState,
   type RowSelectionState,
-} from "@tanstack/react-table"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ChevronLeft, ChevronRight, Search, Filter, Download, Trash2, Eye } from "lucide-react"
-import { useState } from "react"
+} from "@tanstack/react-table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Search,
+  Filter,
+  Download,
+  Trash2,
+  Eye,
+  CircleCheck,
+  CircleX,
+} from "lucide-react";
+import { useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -26,20 +49,23 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Badge } from "@/components/ui/badge"
+} from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
 
 interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[]
-  data: TData[]
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
 }
 
-export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
-  const [globalFilter, setGlobalFilter] = useState("")
+export function DataTable<TData, TValue>({
+  columns,
+  data,
+}: DataTableProps<TData, TValue>) {
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const [globalFilter, setGlobalFilter] = useState("");
 
   const table = useReactTable({
     data,
@@ -66,30 +92,32 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
         pageSize: 10,
       },
     },
-  })
+  });
 
   const exportToCSV = () => {
-    const selectedRows = table.getFilteredSelectedRowModel().rows
+    const selectedRows = table.getFilteredSelectedRowModel().rows;
     const dataToExport =
       selectedRows.length > 0
         ? selectedRows.map((row) => row.original)
-        : table.getFilteredRowModel().rows.map((row) => row.original)
+        : table.getFilteredRowModel().rows.map((row) => row.original);
 
     const csv = [
       Object.keys(dataToExport[0] || {}).join(","),
-      ...dataToExport.map((row) => Object.values(row as Record<string, unknown>).join(",")),
-    ].join("\n")
+      ...dataToExport.map((row) =>
+        Object.values(row as Record<string, unknown>).join(",")
+      ),
+    ].join("\n");
 
-    const blob = new Blob([csv], { type: "text/csv" })
-    const url = window.URL.createObjectURL(blob)
-    const a = document.createElement("a")
-    a.href = url
-    a.download = `puzzles-${new Date().toISOString().split("T")[0]}.csv`
-    a.click()
-    window.URL.revokeObjectURL(url)
-  }
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `puzzles-${new Date().toISOString().split("T")[0]}.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
 
-  const selectedRowsCount = table.getFilteredSelectedRowModel().rows.length
+  const selectedRowsCount = table.getFilteredSelectedRowModel().rows.length;
 
   return (
     <div className="space-y-4">
@@ -109,8 +137,14 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
 
           {/* Category Filter */}
           <Select
-            value={(table.getColumn("kategori")?.getFilterValue() as string) ?? ""}
-            onValueChange={(value) => table.getColumn("kategori")?.setFilterValue(value === "all" ? "" : value)}
+            value={
+              (table.getColumn("kategori")?.getFilterValue() as string) ?? ""
+            }
+            onValueChange={(value) =>
+              table
+                .getColumn("kategori")
+                ?.setFilterValue(value === "all" ? "" : value)
+            }
           >
             <SelectTrigger className="w-full md:w-[180px]">
               <Filter className="mr-2 h-4 w-4" />
@@ -125,11 +159,43 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
               <SelectItem value="Lainnya">Lainnya</SelectItem>
             </SelectContent>
           </Select>
+          <Select
+            value={
+              (table.getColumn("is_published")?.getFilterValue() as string) ??
+              "all"
+            }
+            onValueChange={(value) =>
+              table.getColumn("is_published")?.setFilterValue(value)
+            }
+          >
+            <SelectTrigger className="w-full md:w-[180px]">
+              <Filter className="mr-2 h-4 w-4" />
+              <SelectValue placeholder="Filter status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Semua Status</SelectItem>
+              <SelectItem value="true">
+                <div className="flex items-center">
+                  <CircleCheck className="w-3.5 h-3.5 mr-2 text-green-500" />
+                  Published
+                </div>
+              </SelectItem>
+              <SelectItem value="false">
+                <div className="flex items-center">
+                  <CircleX className="w-3.5 h-3.5 mr-2 text-muted-foreground" />
+                  Draft
+                </div>
+              </SelectItem>
+            </SelectContent>
+          </Select>
 
           {/* Column Visibility */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="w-full md:w-auto md:ml-auto bg-transparent">
+              <Button
+                variant="outline"
+                className="w-full md:w-auto md:ml-auto bg-transparent"
+              >
                 <Eye className="mr-2 h-4 w-4" />
                 Kolom
               </Button>
@@ -146,21 +212,24 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                       key={column.id}
                       className="capitalize"
                       checked={column.getIsVisible()}
-                      onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                      onCheckedChange={(value) =>
+                        column.toggleVisibility(!!value)
+                      }
                     >
+                      {/* [UBAH] Tambahkan label untuk kolom baru */}
                       {column.id === "judul"
-                        ? "Judul"
+                        ? "Judul & Gambar"
                         : column.id === "kategori"
-                          ? "Kategori"
-                          : column.id === "xp_reward"
-                            ? "XP Reward"
-                            : column.id === "created_at"
-                              ? "Dibuat"
-                              : column.id === "gambar"
-                                ? "Gambar"
-                                : column.id}
+                        ? "Kategori"
+                        : column.id === "xp_reward"
+                        ? "XP Reward"
+                        : column.id === "created_at"
+                        ? "Dibuat"
+                        : column.id === "is_published" // <-- Tambahkan ini
+                        ? "Status"
+                        : column.id}
                     </DropdownMenuCheckboxItem>
-                  )
+                  );
                 })}
             </DropdownMenuContent>
           </DropdownMenu>
@@ -175,11 +244,20 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
               </Badge>
             </div>
             <div className="flex flex-col space-y-2 md:flex-row md:items-center md:space-y-0 md:space-x-2">
-              <Button variant="outline" size="sm" onClick={exportToCSV} className="w-full md:w-auto bg-transparent">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={exportToCSV}
+                className="w-full md:w-auto bg-transparent"
+              >
                 <Download className="mr-2 h-4 w-4" />
                 Export Terpilih
               </Button>
-              <Button variant="destructive" size="sm" className="w-full md:w-auto">
+              <Button
+                variant="destructive"
+                size="sm"
+                className="w-full md:w-auto"
+              >
                 <Trash2 className="mr-2 h-4 w-4" />
                 Hapus Terpilih
               </Button>
@@ -194,10 +272,21 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
           <Table className="min-w-full">
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id} className="hover:bg-transparent border-b border-border">
+                <TableRow
+                  key={headerGroup.id}
+                  className="hover:bg-transparent border-b border-border"
+                >
                   {headerGroup.headers.map((header) => (
-                    <TableHead key={header.id} className="font-semibold border-b border-border">
-                      {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                    <TableHead
+                      key={header.id}
+                      className="font-semibold border-b border-border"
+                    >
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
                     </TableHead>
                   ))}
                 </TableRow>
@@ -213,14 +302,20 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id} className="py-4">
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
                       </TableCell>
                     ))}
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={columns.length} className="h-24 text-center text-muted-foreground">
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center text-muted-foreground"
+                  >
                     <div className="flex flex-col items-center space-y-2">
                       <Search className="h-8 w-8 text-muted-foreground/50" />
                       <p>Tidak ada data yang ditemukan</p>
@@ -229,8 +324,8 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                           variant="outline"
                           size="sm"
                           onClick={() => {
-                            setGlobalFilter("")
-                            setColumnFilters([])
+                            setGlobalFilter("");
+                            setColumnFilters([]);
                           }}
                         >
                           Reset Filter
@@ -249,15 +344,25 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
       <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
         <div className="flex flex-col space-y-2 md:flex-row md:items-center md:space-y-0 md:space-x-4">
           <div className="text-sm text-muted-foreground text-center md:text-left">
-            Menampilkan {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1} -{" "}
+            Menampilkan{" "}
+            {table.getState().pagination.pageIndex *
+              table.getState().pagination.pageSize +
+              1}{" "}
+            -{" "}
             {Math.min(
-              (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
-              table.getFilteredRowModel().rows.length,
+              (table.getState().pagination.pageIndex + 1) *
+                table.getState().pagination.pageSize,
+              table.getFilteredRowModel().rows.length
             )}{" "}
             dari {table.getFilteredRowModel().rows.length} data
           </div>
           {selectedRowsCount === 0 && (
-            <Button variant="outline" size="sm" onClick={exportToCSV} className="w-full md:w-auto bg-transparent">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={exportToCSV}
+              className="w-full md:w-auto bg-transparent"
+            >
               <Download className="mr-2 h-4 w-4" />
               Export Semua
             </Button>
@@ -266,15 +371,19 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
 
         <div className="flex flex-col space-y-4 md:flex-row md:items-center md:space-y-0 md:space-x-2">
           <div className="flex items-center justify-center space-x-2">
-            <span className="text-sm text-muted-foreground">Baris per halaman:</span>
+            <span className="text-sm text-muted-foreground">
+              Baris per halaman:
+            </span>
             <Select
               value={`${table.getState().pagination.pageSize}`}
               onValueChange={(value) => {
-                table.setPageSize(Number(value))
+                table.setPageSize(Number(value));
               }}
             >
               <SelectTrigger className="h-8 w-[70px]">
-                <SelectValue placeholder={table.getState().pagination.pageSize} />
+                <SelectValue
+                  placeholder={table.getState().pagination.pageSize}
+                />
               </SelectTrigger>
               <SelectContent side="top">
                 {[5, 10, 20, 30, 50].map((pageSize) => (
@@ -299,9 +408,12 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
               <span className="sm:hidden">Prev</span>
             </Button>
             <div className="flex items-center space-x-1 px-2">
-              <span className="text-sm text-muted-foreground hidden sm:inline">Halaman</span>
+              <span className="text-sm text-muted-foreground hidden sm:inline">
+                Halaman
+              </span>
               <span className="text-sm font-medium">
-                {table.getState().pagination.pageIndex + 1} / {table.getPageCount()}
+                {table.getState().pagination.pageIndex + 1} /{" "}
+                {table.getPageCount()}
               </span>
             </div>
             <Button
@@ -319,5 +431,5 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
         </div>
       </div>
     </div>
-  )
+  );
 }
