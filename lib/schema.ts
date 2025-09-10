@@ -1,5 +1,10 @@
 import { z } from "zod";
 
+const myBooleanSchema = z.preprocess(
+  (val) => val === 'true' || val === '1',
+  z.boolean({ message: "publish option is required" })
+);
+
 export const schemaSignIn = z.object({
   email: z.string({ message: "Email is required" }),
   password: z
@@ -57,7 +62,7 @@ export const SchemaQuiz = z.object({
   deskripsi: z.string({ message: "deskripsi is required" }),
   kategori_id: z.number({ message: "kategori is required" }).int().min(1),
   xp_reward: z.number({ message: "xp reward is required" }).int(),
-  is_published: z.boolean({ message: "published option is required" }),
+  is_published: myBooleanSchema,
   thumbnail: z.instanceof(File),
 });
 
@@ -83,7 +88,7 @@ export const SchemaStory = z.object({
   category: z.string({ message: "category is required" }),
   deskripsi: z.string({ message: "deskripsi is required" }),
   xp_reward: z.number({ message: "xp reward is required" }).int(),
-  is_published: z.boolean({message:"publish option is required"})
+  is_published: myBooleanSchema
 });
 
 export const SchemaCategoryKuis = z.object({
@@ -117,7 +122,7 @@ export const SchemaPuzzle = z.object({
       invalid_type_error: "xp reward harus berupa angka",
     })
     .int({ message: "xp reward harus berupa bilangan bulat" }),
-  is_published: z.boolean({message:"publish option is required"})
+  is_published: myBooleanSchema
 });
 
 export const SchemaMember = z.object(
