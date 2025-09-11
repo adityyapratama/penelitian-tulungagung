@@ -194,7 +194,7 @@ export async function CreateProgress(_:unknown,data : ProgressData){
       (completedAt.getTime() - data.startedAt.getTime()) / 1000
     );
 
-    const progress = await prisma.progresMember.create({
+    await prisma.progresMember.create({
       data: {
         member_id: id,
         content_id: data.contentId,
@@ -205,7 +205,27 @@ export async function CreateProgress(_:unknown,data : ProgressData){
       },
     });
 
-    return progress;
+    const score = await GetExpMember(String(id))
+
+   if (score !== null) {
+      const level = Math.floor(Number(score) / 400);
+      
+      try {
+        await prisma.member.update({
+          where:{
+            member_id:id
+          },
+          data:{
+            level:level
+          }
+        })
+      } catch {
+        return {error:"terjadi kesalahan"}
+      }
+  }
+
+  return {success:"Selamat",score:`${data.skor}`}
+    
   } catch (error) {
     console.error("CreateProgress error:", error);
     return null;
