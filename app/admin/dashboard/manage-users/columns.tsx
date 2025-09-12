@@ -107,7 +107,7 @@ export const columns: ColumnDef<TColumn>[] = [
           className="h-auto p-0 font-semibold hover:bg-transparent"
         >
           Username
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          <ArrowUpDown className="w-4 h-4 ml-2" />
         </Button>
       )
     },
@@ -130,7 +130,7 @@ export const columns: ColumnDef<TColumn>[] = [
           className="h-auto p-0 font-semibold hover:bg-transparent"
         >
           Email
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          <ArrowUpDown className="w-4 h-4 ml-2" />
         </Button>
       )
     },
@@ -148,7 +148,7 @@ export const columns: ColumnDef<TColumn>[] = [
           className="h-auto p-0 font-semibold hover:bg-transparent"
         >
           Role
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          <ArrowUpDown className="w-4 h-4 ml-2" />
         </Button>
       )
     },
@@ -172,14 +172,14 @@ export const columns: ColumnDef<TColumn>[] = [
           className="h-auto p-0 font-semibold hover:bg-transparent"
         >
           Login Terakhir
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          <ArrowUpDown className="w-4 h-4 ml-2" />
         </Button>
       )
     },
     cell: ({ row }) => {
       const lastLogin = row.getValue("last_login") as Date | null
       if (!lastLogin) {
-        return <span className="text-muted-foreground italic">Belum pernah</span>
+        return <span className="italic text-muted-foreground">Belum pernah</span>
       }
       return (
         <div className="space-y-1">
