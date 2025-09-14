@@ -1,10 +1,5 @@
 import prisma from "@/lib/prisma"
 
-
-
-
-
-
 export async function getQuizzes() {
     try {
         const quizzes = await prisma.kuis.findMany({

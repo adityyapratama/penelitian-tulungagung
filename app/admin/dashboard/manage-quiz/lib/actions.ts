@@ -28,7 +28,7 @@ export async function CreateQuiz(
     deskripsi: formData.get("deskripsi"),
     kategori_id: Number(formData.get("kategori_id")),
     xp_reward: Number(formData.get("xp_reward")),
-    is_published: formData.get("is_published") === "1",
+    is_published: formData.get("is_published"),
     thumbnail: formData.get("thumbnail"),
   });
 
@@ -92,7 +92,7 @@ export async function UpdateQuiz(
     deskripsi: formData.get("deskripsi"),
     kategori_id: Number(formData.get("kategori_id")),
     xp_reward: Number(formData.get("xp_reward")),
-    is_published: formData.get("is_published") === "1",
+    is_published: formData.get("is_published"),
     thumbnail: formData.get("thumbnail"),
   });
 

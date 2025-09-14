@@ -1,7 +1,9 @@
+"use server"
 import prisma from "@/lib/prisma";
 import { SchemaSekolah } from "@/lib/schema";
 import { auth } from "@/auth";
-import { redirect } from "next/navigation";
+
+
 
 export async function createSekolah(_:unknown,formData:FormData){
     const parse = SchemaSekolah.safeParse({
@@ -10,7 +12,7 @@ export async function createSekolah(_:unknown,formData:FormData){
     })
 
     if(!parse.success){
-        return {error:parse.error.message}
+        return {error:parse.error.errors[0].message}
     }
 
     try {
@@ -21,10 +23,10 @@ export async function createSekolah(_:unknown,formData:FormData){
             }
         })
 
-        return redirect("/admin/dashboard/manage-sekolah")
+        return {success:"berhasil membuat sekolah"}
     } catch (error) {
         console.log(error)
-        return {error:error}
+        return {error:"terjadi kesalahan saat membuat sekolah"}
     }
 }
 
@@ -53,9 +55,9 @@ export async function updateSekolah(_:unknown,formData:FormData,id:string | unde
             }
         })
 
-        return 
-    } catch (error) {
-        return {error:error}
+        return {success:"berhasil update sekolah"}
+    } catch {
+        return {error:"terjadi kesalahan"}
     }
 }
 
@@ -74,6 +76,27 @@ export async function deleteSekolah(id:number) {
         return { success: true };
     } catch (error) {
         console.log(error);
-        return { error:error };
+        return { error:"terjadi kesalahan" };
     }
+}
+
+export async function deleteManySekolah(ids: number[]) {
+  const session = await auth();
+
+  if (!session?.user) {
+    return { error: "Not authenticated" };
+  }
+
+  try {
+    await prisma.sekolah.deleteMany({
+      where: {
+        sekolah_id: { in: ids },
+      },
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error(error);
+    return { error: "Gagal menghapus banyak sekolah" };
+  }
 }
