@@ -212,6 +212,7 @@ export async function CreateProgress(_:unknown,data : ProgressData){
   }
 }
 
+
 export async function GetLeaderboard(id: string, content_type: ContentType) {
   try {
     const progressList = await prisma.progresMember.findMany({

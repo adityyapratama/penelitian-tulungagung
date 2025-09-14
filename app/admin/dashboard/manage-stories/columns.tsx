@@ -31,6 +31,7 @@ export type StoryColumn = {
   deskripsi?: string | null;
   xp_reward: number;
   created_at?: Date | null;
+  kategori: string; 
 };
 
 export const getColumns = (

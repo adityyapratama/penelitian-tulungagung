@@ -16,6 +16,9 @@ export async function GetStories() {
                 judul: stories.judul,
                 thumbnail: stories.thumbnail,
                 deskripsi: stories.deskripsi,
+                category: stories.kategori,
+                is_published: stories.is_published,
+                created_by: stories.created_by!,
                 xp_reward: stories.xp_reward,
                 created_at: stories.created_at
             }

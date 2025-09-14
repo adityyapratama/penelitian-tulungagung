@@ -82,6 +82,21 @@ const data = {
         },
       ],
     },
+     {
+      title: "Manajemen Artikel",
+      url: "/admin/dashboard/manage-articles",
+      icon: FileQuestion,
+      // items: [
+      //    {
+      //     title: "index kuis kategori",
+      //     url: "/admin/dashboard/manage-quiz/categories",
+      //   },
+      //   {
+      //     title: "Tambah pertanyaan",
+      //     url: "/admin/dashboard/manage-quiz/quiz",
+      //   },
+      // ],
+    },
     
   ],
 };
