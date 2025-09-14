@@ -83,11 +83,15 @@ const data = {
       ],
     },
      {
+      title: "Manajemen Artikel",
+      url: "/admin/dashboard/manage-articles",
+      icon: FileQuestion,
+    },
+    {
       title: "Manajemen sekolah",
       url: "/admin/dashboard/manage-sekolah",
       icon: School2Icon,
     },
-    
   ],
 };
 
