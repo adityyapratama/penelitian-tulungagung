@@ -35,6 +35,7 @@ export async function createPuzzle(
     gambar: formData.get("gambar"),
     kategori: formData.get("kategori"),
     xp_reward: formData.get("xp_reward"),
+    is_published: formData.get("is_published")
   });
 
   if (!parse.success) {
@@ -66,6 +67,7 @@ export async function createPuzzle(
         kategori: parse.data.kategori,
         xp_reward: parse.data.xp_reward,
         created_by: parseInt(session.user.id!),
+        is_published: parse.data.is_published,
       },
     });
 
@@ -85,6 +87,7 @@ export async function UpdatePuzzle(id: string, previousState: PuzzleFormState, f
     gambar: formData.get("gambar"),
     kategori: formData.get("kategori"),
     xp_reward: formData.get("xp_reward"),
+    is_published: formData.get("is_published") == "1"
   });
 
   if (!parse.success) {
@@ -129,6 +132,7 @@ export async function UpdatePuzzle(id: string, previousState: PuzzleFormState, f
         judul: parse.data.judul,
         kategori: parse.data.kategori,
         xp_reward: parse.data.xp_reward,
+        is_published: parse.data.is_published ,
         ...(relativePath && { gambar: relativePath }),
       },
     });

@@ -47,7 +47,7 @@ export default function CreateCategoryPage() {
       // Tunggu sejenak sebelum redirect agar pengguna bisa melihat notifikasi
       setTimeout(() => {
         router.push("/admin/dashboard/manage-quiz/categories");
-      }, 1000);
+      }, 500);
     }
     // Tampilkan juga notifikasi jika ada error global
     if (state?.error) {

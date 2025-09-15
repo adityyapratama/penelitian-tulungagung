@@ -1,5 +1,10 @@
 import { z } from "zod";
 
+const myBooleanSchema = z.preprocess(
+  (val) => val === 'true' || val === '1',
+  z.boolean({ message: "publish option is required" })
+);
+
 export const schemaSignIn = z.object({
   email: z.string({ message: "Email is required" }),
   password: z
@@ -57,7 +62,8 @@ export const SchemaQuiz = z.object({
   deskripsi: z.string({ message: "deskripsi is required" }),
   kategori_id: z.number({ message: "kategori is required" }).int().min(1),
   xp_reward: z.number({ message: "xp reward is required" }).int(),
-  is_published: z.boolean({ message: "published option is required" }),
+  is_published: myBooleanSchema,
+  thumbnail: z.instanceof(File),
 });
 
 export const SchemaPilihan = z.object({
@@ -71,6 +77,7 @@ export const SchemaPertanyaan = z.object({
   poin: z.number().int().default(10),
   urutan: z.number().int(),
   pilihan: z.array(SchemaPilihan),
+  image : z.instanceof(File).optional()
 });
 
 export const SchemaStory = z.object({
@@ -81,6 +88,7 @@ export const SchemaStory = z.object({
   category: z.string({ message: "category is required" }),
   deskripsi: z.string({ message: "deskripsi is required" }),
   xp_reward: z.number({ message: "xp reward is required" }).int(),
+  is_published: myBooleanSchema
 });
 
 export const SchemaCategoryKuis = z.object({
@@ -114,4 +122,22 @@ export const SchemaPuzzle = z.object({
       invalid_type_error: "xp reward harus berupa angka",
     })
     .int({ message: "xp reward harus berupa bilangan bulat" }),
+  is_published: myBooleanSchema
 });
+
+export const SchemaMember = z.object(
+  {
+    sekolah_id: z.string({message:"sekolah is required"}),
+    nis: z.string({message:"nis is required"}),
+    foto_profile: z.instanceof(File),
+    bio: z.string({message: "bio is required"}),
+    tanggal_lahir : z.string()
+    .refine((val) => !isNaN(Date.parse(val)), {
+      message: "Format tanggal tidak valid",
+    })
+    .transform((val) => new Date(val)),
+    jenis_kelamin: z.enum(["L","P","Lainnya"]),
+    minat: z.string({message:"message:required"}),
+  }
+)
+  

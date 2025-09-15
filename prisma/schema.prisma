@@ -143,7 +143,7 @@ model GroupMember {
 }
 
 model Member {
-  member_id     Int           @id
+  member_id     Int           @id     @default(autoincrement())
   user_id       Int?          @unique // user_id di Member adalah foreign key dan juga unique
   sekolah_id    Int?
   nis           String?       @db.VarChar(20)
@@ -174,7 +174,7 @@ model ProgresMember {
   content_id   Int
   skor         Int?
   completed_at DateTime?   @db.Timestamp(0)
-
+  duration     Int
   // Relasi
   Member Member? @relation(fields: [member_id], references: [member_id])
   Group  Group?  @relation(fields: [group_id], references: [group_id])
@@ -233,19 +233,19 @@ model Kuis {
   created_by   Int?
   created_at   DateTime @default(now()) @db.Timestamp(0)
   is_published Boolean  @default(false)
-
+  thumbnail       String?       @db.VarChar(200)
   // Relasi
   KategoriKuis   KategoriKuis?    @relation(fields: [kategori_id], references: [kategori_id])
   User           User?            @relation(fields: [created_by], references: [user_id])
   PertanyaanKuis PertanyaanKuis[]
 }
 
-// ... kode lainnya di atas ...
 
 model PertanyaanKuis {
   pertanyaan_id   Int           @id @default(autoincrement())
   kuis_id         Int?
   teks_pertanyaan String        @db.Text
+  image           String? @db.VarChar(200)
   tipe            QuestionType
   poin            Int           @default(10)
   urutan          Int
@@ -266,8 +266,6 @@ model PilihanKuis {
 model KategoriCerita {
   KategoriId   Int    @id @default(autoincrement()) @map("KategoriId")
   NamaKategori String @db.VarChar(100)
-
-  // Relasi ke CeritaInteraktif
   CeritaInteraktif CeritaInteraktif[]
 }
 
@@ -280,6 +278,7 @@ model CeritaInteraktif {
   xp_reward  Int       @default(150)
   created_by Int?
   created_at DateTime? @db.Timestamp(0)
+  is_published Boolean  @default(false)
 
   // Relasi
   User           User?           @relation(fields: [created_by], references: [user_id])
@@ -293,10 +292,9 @@ model Scene {
   scene_id      Int     @id @default(autoincrement()) @map("scene_id") // serial maps to Int @id @default(autoincrement())
   cerita_id     Int?
   scene_key     String  @db.VarChar(50)
+  scene_image         String? @db.VarChar(200)
   scene_text    String  @db.Text
   scene_choices Json?   @db.Json // jsonb maps to Json in Prisma
-  condition     Json?   @db.Json // jsonb maps to Json in Prisma
-  effect        Json?   @db.Json // jsonb maps to Json in Prisma
   is_ending     Boolean @default(false)
   ending_point  Int     @default(0)
   ending_type   String? @db.VarChar(50)
@@ -316,6 +314,7 @@ model Puzzle {
   xp_reward  Int            @default(80)
   created_by Int?
   created_at DateTime       @default(now()) @db.Timestamp(0)
+  is_published Boolean      @default(false)
 
   // Relasi
   User User? @relation(fields: [created_by], references: [user_id])

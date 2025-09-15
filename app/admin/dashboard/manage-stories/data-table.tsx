@@ -172,7 +172,7 @@ export function DataTable<TData extends StoryColumn, TValue>({ columns, data }: 
 
         {/* Bulk Actions */}
         {selectedRowsCount > 0 && (
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between p-4 bg-muted/50 rounded-lg border">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between p-4 bg-muted/50 rounded-lg border border-border">
             <Badge variant="secondary" className="font-medium">{selectedRowsCount} story dipilih</Badge>
             <div className="flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-2">
               <Button variant="outline" size="sm" onClick={exportToCSV}>
@@ -187,14 +187,14 @@ export function DataTable<TData extends StoryColumn, TValue>({ columns, data }: 
       </div>
 
       {/* Table */}
-      <div className="rounded-lg border bg-card overflow-hidden">
+      <div className="rounded-lg border border-border bg-card overflow-hidden">
         <div className="overflow-x-auto">
           <Table className="min-w-full">
-            <TableHeader>
+            <TableHeader >
               {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
+                <TableRow  key={headerGroup.id}>
                   {headerGroup.headers.map((header) => (
-                    <TableHead key={header.id}>
+                    <TableHead className="border-b border-border" key={header.id}>
                       {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                     </TableHead>
                   ))}

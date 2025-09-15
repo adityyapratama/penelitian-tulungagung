@@ -12,7 +12,7 @@ export default async function SignInPage() {
     } else if (session.user.role === "guru") {
       redirect("/guru/dashboard");
     } else {
-      redirect("/");
+      redirect("/dashboard");
     }
   }
 

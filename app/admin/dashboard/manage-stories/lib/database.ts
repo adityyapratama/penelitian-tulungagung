@@ -1,11 +1,10 @@
-import prisma from "@/lib/prisma"
 import { PrismaClient } from "@prisma/client"
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
 }
 
-
+export const prisma = globalForPrisma.prisma ?? new PrismaClient()
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma
 
@@ -16,18 +15,19 @@ export interface SceneData {
   is_ending: boolean
   ending_point?: number
   ending_type?: string
+  scene_image?: string
 }
 
 export async function saveScenesToDatabase(scenes: SceneData[], cerita_id: number) {
   try {
     // Delete existing scenes for this story
-    await prisma.scene.deleteMany({
+    await prisma.Scene.deleteMany({
       where: { cerita_id },
     })
 
     // Insert new scenes
     const scenePromises = scenes.map((scene, index) =>
-      prisma.scene.create({
+      prisma.Scene.create({
         data: {
           cerita_id,
           scene_key: scene.scene_key,
@@ -36,6 +36,7 @@ export async function saveScenesToDatabase(scenes: SceneData[], cerita_id: numbe
           is_ending: scene.is_ending,
           ending_point: scene.ending_point || 0,
           ending_type: scene.ending_type,
+          scene_image: scene.scene_image,
           urutan: index + 1,
         },
       }),
@@ -51,7 +52,7 @@ export async function saveScenesToDatabase(scenes: SceneData[], cerita_id: numbe
 
 export async function loadScenesFromDatabase(cerita_id: number) {
   try {
-    const scenes = await prisma.scene.findMany({
+    const scenes = await prisma.Scene.findMany({
       where: { cerita_id },
       orderBy: { urutan: "asc" },
     })
@@ -65,6 +66,7 @@ export async function loadScenesFromDatabase(cerita_id: number) {
         is_ending: scene.is_ending,
         ending_point: scene.ending_point,
         ending_type: scene.ending_type,
+        scene_image: scene.scene_image,
       })),
     }
   } catch (error) {

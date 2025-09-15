@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma"
 import { StoryColumn } from "../columns"
 import { saveScenesToDatabase, loadScenesFromDatabase, type SceneData } from "./database"
 import { revalidatePath } from "next/cache"
-import { IScene } from "@/types"
+
 
 export async function GetStories() {
     try {
@@ -16,6 +16,9 @@ export async function GetStories() {
                 judul: stories.judul,
                 thumbnail: stories.thumbnail,
                 deskripsi: stories.deskripsi,
+                category: stories.kategori,
+                is_published: stories.is_published,
+                created_by: stories.created_by!,
                 xp_reward: stories.xp_reward,
                 created_at: stories.created_at
             }
@@ -42,22 +45,6 @@ export async function GetStoryById(id:string){
         return {error:error}
     }
 }
-
-export async function GetScenesByStoryId(id: string): Promise<IScene[] | { error: string }> {
-  try {
-    const scenes = await prisma.scene.findMany({
-      where: { cerita_id: parseInt(id) },
-    })
-    return scenes
-  } catch (error) {
-    console.error(error)
-    return { error: String(error) }
-  }
-}
-
-
-
-
 
 export async function saveScenes(formData: FormData) {
   const scenesJson = formData.get("scenes") as string
@@ -88,4 +75,19 @@ export async function loadScenes(formData: FormData) {
   const result = await loadScenesFromDatabase(ceritaId)
   revalidatePath(`/${ceritaId}`)
   return result
+}
+
+// Adding GetScenesByStoryId function to fetch scenes by story ID
+export async function GetScenesByStoryId(id: string) {
+  try {
+    const scenes = await prisma.scene.findMany({
+      where: {
+        cerita_id: Number.parseInt(id),
+      },
+    })
+    return scenes
+  } catch (error) {
+    console.log(error)
+    return { error: error }
+  }
 }

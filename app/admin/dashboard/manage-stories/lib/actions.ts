@@ -6,10 +6,9 @@ import fs from 'fs'
 import path from 'path'
 import { auth } from "@/auth"
 import { ActionResult } from "@/lib/executeAction"
+import { v4 as uuidv4 } from "uuid"; // untuk generate UUID
 
-
-
-export async function createStory(_: unknown, formData: FormData):Promise<ActionResult> {
+export async function createStory(_: unknown, formData: FormData): Promise<ActionResult> {
   const session = await auth();
   if (!session) return { error: "Not Authorized" };
 
@@ -18,14 +17,19 @@ export async function createStory(_: unknown, formData: FormData):Promise<Action
     thumbnail: formData.get("thumbnail"),
     category: formData.get("kategori"),
     deskripsi: formData.get("deskripsi"),
-    xp_reward: Number(formData.get("xp_reward")), // convert string → number
+    xp_reward: Number(formData.get("xp_reward") ?? 0), // safe conversion
+    is_published: formData.get("is_published")
   });
 
   if (!parse.success) {
     return { error: parse.error.message };
   }
 
-  const file = parse.data.thumbnail as File;
+  const file = parse.data.thumbnail;
+  if (!(file instanceof File)) {
+    return { error: "Thumbnail invalid" };
+  }
+
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
 
@@ -34,10 +38,12 @@ export async function createStory(_: unknown, formData: FormData):Promise<Action
     fs.mkdirSync(uploadDir, { recursive: true });
   }
 
-  const filePath = path.join(uploadDir, file.name);
+  const fileExt = path.extname(file.name);
+  const fileName = `${uuidv4()}${fileExt}`;
+  const filePath = path.join(uploadDir, fileName);
   fs.writeFileSync(filePath, buffer);
 
-  const relativePath = path.join("/story", file.name);
+  const relativePath = path.join("/story", fileName);
 
   try {
     await prisma.ceritaInteraktif.create({
@@ -47,7 +53,8 @@ export async function createStory(_: unknown, formData: FormData):Promise<Action
         deskripsi: parse.data.deskripsi,
         xp_reward: parse.data.xp_reward,
         created_by: parseInt(session.user.id!),
-        kategori : parseInt(parse.data.category)
+        kategori: parseInt(parse.data.category),
+        is_published: parse.data.is_published
       },
     });
 
@@ -58,7 +65,7 @@ export async function createStory(_: unknown, formData: FormData):Promise<Action
   }
 }
 
-export async function UpdateStory(id: string, formData: FormData):Promise<ActionResult> {
+export async function UpdateStory(id: string, formData: FormData): Promise<ActionResult> {
   const session = await auth();
   if (!session) return { error: "Not Authorized" };
 
@@ -66,8 +73,9 @@ export async function UpdateStory(id: string, formData: FormData):Promise<Action
     judul: formData.get("judul"),
     thumbnail: formData.get("thumbnail"),
     deskripsi: formData.get("deskripsi"),
-    category : formData.get("category"),
-    xp_reward: Number(formData.get("xp_reward")),
+    category: formData.get("category"),
+    xp_reward: Number(formData.get("xp_reward") ?? 0), // safe conversion
+    is_published: formData.get("is_published")
   });
 
   if (!parse.success) {
@@ -93,7 +101,7 @@ export async function UpdateStory(id: string, formData: FormData):Promise<Action
         }
       }
 
-      // upload file baru
+      // upload file baru dengan nama unik
       const file = parse.data.thumbnail as File;
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
@@ -103,10 +111,12 @@ export async function UpdateStory(id: string, formData: FormData):Promise<Action
         fs.mkdirSync(uploadDir, { recursive: true });
       }
 
-      const filePath = path.join(uploadDir, file.name);
+      const fileExt = path.extname(file.name);
+      const fileName = `${uuidv4()}${fileExt}`;
+      const filePath = path.join(uploadDir, fileName);
       fs.writeFileSync(filePath, buffer);
 
-      relativePath = path.join("/story", file.name);
+      relativePath = path.join("/story", fileName);
     }
 
     // update database
@@ -116,7 +126,8 @@ export async function UpdateStory(id: string, formData: FormData):Promise<Action
         judul: parse.data.judul,
         deskripsi: parse.data.deskripsi,
         xp_reward: parse.data.xp_reward,
-        kategori : parseInt(parse.data.category),
+        kategori: parseInt(parse.data.category ?? "0"), // safe conversion
+        is_published: parse.data.is_published,
         ...(relativePath && { thumbnail: relativePath }),
       },
     });
