@@ -53,6 +53,7 @@ const ArticleCard: React.FC<{ article: Article }> = ({ article }) => {
 // Komponen Grid UTAMA yang sudah diperbaiki
 const ArticleGridClient: React.FC<{ articles: Article[]; limit?: number }> = ({ articles, limit }) => {
   // Komponen ini SEKARANG MENERIMA 'articles' dari props
+  const displayedArticles = limit ? articles.slice(0, limit) : articles;
   // BUKAN memanggil getArticles() lagi.
 
   return (

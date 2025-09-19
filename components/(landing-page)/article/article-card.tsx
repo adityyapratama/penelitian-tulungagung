@@ -1,12 +1,16 @@
-// File: /app/page.tsx atau /app/artikel/page.tsx (Ini adalah SERVER COMPONENT)
+
 
 import { getArticles } from '@/app/lib/actions'; // Panggil fungsi server Anda
 import ArticleGridClient from '@/components/(landing-page)/article/article';
+import { Server } from 'lucide-react';
+import { use } from 'react';
 
 // Halaman ini adalah ASYNC function
 export default async function ArticlePage() {
   // 1. Ambil data di server
+  
   const articles = await getArticles();
+
 
   return (
     <main>

@@ -75,7 +75,7 @@ export async function CreateQuiz(
     return { success: "Kuis berhasil dibuat" };
   } catch (error) {
     console.error("CreateQuiz error:", error);
-    return { error: "Gagal membuat kuis" };
+    return { error: String(error) };
   }
 }
 
@@ -408,7 +408,7 @@ export async function CreateQuizCategory(
 ): Promise<{
   message?: string;
   error?: string;
-  errors?: { nama_kategori?: string[]; deskripsi?: string[] };
+  errors?: { nama_kategori?: string[]; deskripsi?: string[]; thumbnail?: string[] };
 }> {
   const session = await auth();
   if (!session) {
@@ -418,28 +418,54 @@ export async function CreateQuizCategory(
   const parse = SchemaCategoryKuis.safeParse({
     nama_kategori: formData.get("nama_kategori"),
     deskripsi: formData.get("deskripsi"),
+    thumbnail: formData.get("thumbnail"),
   });
 
   if (!parse.success) {
     const errors = Object.entries(parse.error.flatten().fieldErrors).reduce(
       (acc, [key, value]) => {
         if (value && value.length > 0) {
-          acc[key as "nama_kategori" | "deskripsi"] = value.map((msg) =>
+          acc[key as "nama_kategori" | "deskripsi" | "thumbnail"] = value.map((msg) =>
             msg
               .replace(
                 /String must contain at least \d+ character\(s\)/,
                 "Minimal beberapa karakter"
               )
               .replace(/Required/, "Wajib diisi")
+              .replace(/Expected File, received/, "File gambar wajib diisi")
           );
         }
         return acc;
       },
-      {} as { nama_kategori?: string[]; deskripsi?: string[] }
+      {} as { nama_kategori?: string[]; deskripsi?: string[]; thumbnail?: string[] }
     );
 
     return { errors };
   }
+
+  const file = parse.data.thumbnail;
+  if (!(file instanceof File)) return { error: "Thumbnail invalid" };
+
+  // Validasi tambahan (opsional)
+  const allowedExt = [".jpg", ".jpeg", ".png", ".webp"];
+  const fileExt = path.extname(file.name).toLowerCase();
+  if (!allowedExt.includes(fileExt)) {
+    return { error: "Format file tidak diizinkan" };
+  }
+
+  const bytes = await file.arrayBuffer();
+  const buffer = Buffer.from(bytes);
+
+  const uploadDir = path.join(process.cwd(), "public", "quiz");
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  }
+
+  const fileName = `${uuidv4()}${fileExt}`;
+  const filePath = path.join(uploadDir, fileName);
+  fs.writeFileSync(filePath, buffer);
+
+  const relativePath = `/quiz/${fileName}`;
 
   try {
     await prisma.kategoriKuis.create({
@@ -447,9 +473,11 @@ export async function CreateQuizCategory(
         nama_kategori: parse.data.nama_kategori,
         created_by: Number(session.user.id),
         deskripsi: parse.data.deskripsi,
+        thumbnail: relativePath,
       },
     });
 
+    revalidatePath("/admin/dashboard/manage-quiz/categories");
     return { message: "Kategori kuis berhasil dibuat" };
   } catch (err: unknown) {
     console.error(err);
@@ -461,22 +489,68 @@ export async function UpdateQuizCategory(id: string, formData: FormData) {
   const session = await auth();
   if (!session) return { error: "Not Authorized" };
 
-  const parse = SchemaCategoryKuis.safeParse({
+  const parse = SchemaCategoryKuisUpdate.safeParse({
     nama_kategori: formData.get("nama_kategori"),
     deskripsi: formData.get("deskripsi"),
+    thumbnail: formData.get("thumbnail") || undefined,
   });
 
   if (!parse.success) return { error: parse.error.message };
 
+  let relativePath: string | undefined;
+
   try {
+    // Kalau ada thumbnail baru
+    if (parse.data.thumbnail instanceof File) {
+      // ambil data lama
+      const old = await prisma.kategoriKuis.findUnique({
+        where: { kategori_id: parseInt(id) },
+        select: { thumbnail: true },
+      });
+
+      // hapus file lama kalau ada
+      if (old?.thumbnail) {
+        const oldPath = path.join(process.cwd(), "public", old.thumbnail);
+        if (fs.existsSync(oldPath)) {
+          fs.unlinkSync(oldPath);
+        }
+      }
+
+      // validasi tambahan
+      const file = parse.data.thumbnail;
+      const allowedExt = [".jpg", ".jpeg", ".png", ".webp"];
+      const fileExt = path.extname(file.name).toLowerCase();
+      if (!allowedExt.includes(fileExt)) {
+        return { error: "Format file tidak diizinkan" };
+      }
+
+      // upload file baru
+      const bytes = await file.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+
+      const uploadDir = path.join(process.cwd(), "public", "quiz");
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+      }
+
+      const fileName = `${uuidv4()}${fileExt}`;
+      const filePath = path.join(uploadDir, fileName);
+      fs.writeFileSync(filePath, buffer);
+
+      relativePath = `/quiz/${fileName}`;
+    }
+
+    // update database
     const updated = await prisma.kategoriKuis.update({
       where: { kategori_id: parseInt(id) },
       data: {
         nama_kategori: parse.data.nama_kategori,
         deskripsi: parse.data.deskripsi,
+        ...(relativePath && { thumbnail: relativePath }),
       },
     });
 
+    revalidatePath("/admin/dashboard/manage-quiz/categories");
     return { success: true, data: updated };
   } catch (error: unknown) {
     console.error("UpdateQuizCategory Error:", error);
