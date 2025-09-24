@@ -1,10 +1,11 @@
 import { getPuzzle } from "@/app/admin/dashboard/manage-puzzles/lib/data";
 import { getQuizzes } from "@/app/admin/dashboard/manage-quiz/lib/data";
 import { GetStories } from "@/app/admin/dashboard/manage-stories/lib/data";
+import prisma from "@/lib/prisma";
 
 export type GameCardData = {
   id: string;
-  type: 'puzzle' | 'kuis' | 'cerita';
+  type: "puzzle" | "kuis" | "cerita";
   title: string;
   description: string;
   image: string;
@@ -16,16 +17,16 @@ export type GameCardData = {
 export async function getAllPuzzlesFormatted(): Promise<GameCardData[]> {
   const puzzles = await getPuzzle();
   if (!Array.isArray(puzzles)) return [];
-  
-  return puzzles.map(p => ({
+
+  return puzzles.map((p) => ({
     id: `puzzle-${p.puzzle_id}`,
     title: p.judul,
-    type: 'puzzle',
+    type: "puzzle",
     image: p.gambar || "/placeholder.svg",
     description: `Susun gambar ${p.judul} untuk mengasah logikamu.`,
     category: p.kategori?.replace("_", " ") || "Umum",
     xp_reward: p.xp_reward,
-    createdAt: p.created_at, 
+    createdAt: p.created_at,
   }));
 }
 
@@ -33,13 +34,13 @@ export async function getAllQuizzesFormatted(): Promise<GameCardData[]> {
   const quizzes = await getQuizzes();
   if (!Array.isArray(quizzes)) return [];
 
-  return quizzes.map(q => ({
+  return quizzes.map((q) => ({
     id: `quiz-${q.kuis_id}`,
     title: q.judul,
-    type: 'kuis',
+    type: "kuis",
     image: q.thumbnail || "/placeholder.svg",
     description: q.deskripsi || "Kuis ini tidak memiliki deskripsi.",
-    category: q.KategoriKuis?.nama_kategori || 'Tidak ada kategori',
+    category: q.KategoriKuis?.nama_kategori || "Tidak ada kategori",
     xp_reward: q.xp_reward,
     createdAt: q.created_at,
   }));
@@ -49,14 +50,15 @@ export async function getAllStoriesFormatted(): Promise<GameCardData[]> {
   const stories = await GetStories();
   if (!Array.isArray(stories)) return [];
 
-  return stories.map(s => ({
+  return stories.map((s) => ({
     id: `story-${s.cerita_id}`,
     title: s.judul,
-    type: 'cerita',
+    type: "cerita",
     image: s.thumbnail || "/placeholder.svg",
     description: s.deskripsi || "Cerita ini tidak memiliki deskripsi.",
-    category: s.kategori || 'Tidak ada kategori',
+    category: s.kategori || "Tidak ada kategori",
     xp_reward: s.xp_reward,
-    createdAt: s.created_at || new Date(), 
+    createdAt: s.created_at || new Date(),
   }));
 }
+
