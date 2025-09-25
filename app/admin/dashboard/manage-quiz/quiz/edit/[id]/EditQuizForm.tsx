@@ -8,12 +8,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle, Star, BookOpen, ListChecks } from "lucide-react";
+import { CheckCircle, Star, BookOpen, ListChecks, ImageIcon, UploadCloud, X, CircleAlert } from "lucide-react";
 import { UpdateQuiz } from "@/app/admin/dashboard/manage-quiz/lib/actions";
-import type { Kuis, KategoriKuis } from "@prisma/client";
+import { prisma } from "@/lib/generated/prisma";
+import Image from "next/image";
 
-
-// Tombol submit bisa diubah teksnya
 function SubmitButton() {
   const { pending } = useFormStatus();
   return (
@@ -30,32 +29,39 @@ function SubmitButton() {
   );
 }
 
-// 2. UBAH: Definisikan props untuk menerima data kuis dan kategori
 interface EditQuizFormProps {
-    quiz: Kuis;
-    categories: KategoriKuis[];
+  quiz: any;
+  categories: any[];
 }
 
 export function EditQuizForm({ quiz, categories }: EditQuizFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
+  const [imagePreview, setImagePreview] = useState<string | null>(quiz.thumbnail);
   const router = useRouter();
 
-  // 3. UBAH: handleSubmit sekarang memanggil UpdateQuiz dengan ID
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSubmit = async (formData: FormData) => {
     setError(null);
     setSuccess(false);
     try {
-      // Panggil UpdateQuiz dengan ID kuis dan formData
       const result = await UpdateQuiz(quiz.kuis_id.toString(), formData);
-      
       if (result?.error) {
-        setError(typeof result.error === 'string' ? result.error : "Terjadi kesalahan.");
+        setError(typeof result.error === "string" ? result.error : "Terjadi kesalahan.");
       } else {
         setSuccess(true);
         setTimeout(() => {
-          // Refresh halaman untuk melihat data terbaru
-          router.push('/admin/dashboard/manage-quiz/quiz');
+          router.push("/admin/dashboard/manage-quiz/quiz");
         }, 1500);
       }
     } catch {
@@ -71,11 +77,11 @@ export function EditQuizForm({ quiz, categories }: EditQuizFormProps) {
       </CardHeader>
 
       <CardContent>
-        <form action={handleSubmit} className="space-y-6">
+        {/* Perhatikan: encType="multipart/form-data" agar file bisa dikirim */}
+        <form action={handleSubmit} className="space-y-6" encType="multipart/form-data">
           {error && <p className="text-sm font-medium text-destructive">{error}</p>}
           {success && <p className="text-sm font-medium text-green-600">Kuis berhasil diperbarui!</p>}
 
-          {/* 4. UBAH: Tambahkan 'defaultValue' ke setiap input */}
           <div className="space-y-2">
             <Label htmlFor="judul">Judul Kuis</Label>
             <Input id="judul" name="judul" defaultValue={quiz.judul} required />
@@ -88,7 +94,13 @@ export function EditQuizForm({ quiz, categories }: EditQuizFormProps) {
 
           <div className="space-y-2">
             <Label htmlFor="kategori_id">Kategori</Label>
-            <select id="kategori_id" name="kategori_id" defaultValue={quiz.kategori_id?.toString()} className="w-full p-2 border rounded-md" required>
+            <select
+              id="kategori_id"
+              name="kategori_id"
+              defaultValue={quiz.kategori_id?.toString()}
+              className="w-full p-2 border rounded-md"
+              required
+            >
               <option value="">-- Pilih Kategori --</option>
               {categories.map((cat) => (
                 <option key={cat.kategori_id} value={cat.kategori_id}>
@@ -105,10 +117,70 @@ export function EditQuizForm({ quiz, categories }: EditQuizFormProps) {
 
           <div className="space-y-2">
             <Label htmlFor="is_published">Publikasikan?</Label>
-            <select id="is_published" name="is_published" defaultValue={quiz.is_published ? "true" : "false"} className="w-full p-2 border rounded-md" required>
-              <option value="1">Ya</option>
-              <option value="0">Tidak</option>
+            <select
+              id="is_published"
+              name="is_published"
+              defaultValue={quiz.is_published ? "1" : "0"}
+              className="w-full p-2 border rounded-md"
+              required
+            >
+              <option value="true">Ya</option>
+              <option value="false">Tidak</option>
             </select>
+          </div>
+
+          {/* Thumbnail */}
+          <div className="space-y-3">
+            <Label className="flex items-center gap-2 text-sm font-medium">
+              <ImageIcon className="w-4 h-4" />
+              Thumbnail Kuis
+            </Label>
+            <Label
+              htmlFor="thumbnail"
+              className="relative flex items-center justify-center w-full h-48 overflow-hidden transition-colors border-2 border-dashed rounded-lg cursor-pointer border-muted-foreground/30 hover:border-primary"
+            >
+              {imagePreview ? (
+                <>
+                  <Image
+                    src={imagePreview || "/placeholder.svg"}
+                    alt="Preview Thumbnail"
+                    fill
+                    className="object-contain"
+                  />
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="icon"
+                    className="absolute z-10 top-2 right-2 h-7 w-7"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      const inputFile = document.getElementById("thumbnail") as HTMLInputElement
+                      if (inputFile) inputFile.value = ""
+                      setImagePreview(null)
+                    }}
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </>
+              ) : (
+                <div className="text-center text-muted-foreground">
+                  <UploadCloud className="w-10 h-10 mx-auto mb-2" />
+                  <p className="text-sm font-bold">Klik untuk memilih gambar</p>
+                  <p className="text-xs">JPG, JPEG, PNG, WEBP (maks. 5MB)</p>
+                </div>
+              )}
+            </Label>
+            <Input
+              id="thumbnail"
+              name="thumbnail"
+              type="file"
+              accept="image/*"
+              className="sr-only"
+              onChange={handleImageChange}
+            />
+            <p className="text-sm text-muted-foreground">
+              Kosongkan jika tidak ingin mengubah gambar.
+            </p>
           </div>
 
           <div className="pt-4">

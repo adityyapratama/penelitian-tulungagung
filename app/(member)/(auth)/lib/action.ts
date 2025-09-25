@@ -46,7 +46,7 @@ export async function handleRegister(_:unknown,formData:FormData):Promise <Actio
     return {error: parse.error.errors[0].message}
   }
 
-  const passwordHash = bcrypt.hashSync(parse.data.username,saltRounds)
+  const passwordHash = bcrypt.hashSync(parse.data.password,saltRounds)
 
   try{
     await prisma.user.create({
@@ -64,6 +64,6 @@ export async function handleRegister(_:unknown,formData:FormData):Promise <Actio
         }
   }
 
-  return redirect("/signin")
+  return redirect("/sign-in")
 }
 

@@ -124,13 +124,6 @@ export function CreateArticleForm({ categories }: CreateArticleFormProps) {
             />
           )}
         />
-        {/* <Input
-          id="thumbnail"
-          type="file"
-          accept="image/*"
-          {...form.register("thumbnail")}
-          required
-        /> */}
       </div>
 
       {/* Konten */}

@@ -2,7 +2,8 @@ import { getPuzzleById } from "../../lib/data";
 import EditPuzzleForm from "../../_components/edit-form"; 
 
 export default async function EditPuzzlePage({ params }: { params: { id: string } }) {
-  const { id } = params;
+  const resolvedParams = await params; 
+  const id = resolvedParams.id;
   const puzzle = await getPuzzleById(id);
 
   if (!puzzle || "error" in puzzle) {

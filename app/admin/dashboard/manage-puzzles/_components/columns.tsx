@@ -4,7 +4,7 @@ import type { ColumnDef } from "@tanstack/react-table"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Edit, Trash2, ArrowUpDown, Star } from "lucide-react"
+import { Edit, Trash2, ArrowUpDown, Star, CircleCheck, CircleX } from "lucide-react"
 import dayjs from "dayjs"
 import utc from "dayjs/plugin/utc"
 import timezone from "dayjs/plugin/timezone"
@@ -21,7 +21,9 @@ export type TPuzzle = {
   gambar: string
   kategori: string 
   xp_reward: number
+  is_published: boolean
   created_by: number
+  is_published: boolean
   created_at: Date
 }
 
@@ -85,13 +87,13 @@ export const columns: ColumnDef<TPuzzle>[] = [
       const puzzle = row.original
       return (
         <div className="flex items-center justify-center">
-          <div className="w-12 h-12 rounded-lg overflow-hidden bg-muted">
+          <div className="w-12 h-12 overflow-hidden rounded-lg bg-muted">
             <Image
               src={puzzle.gambar || "/placeholder.svg?height=48&width=48&query=puzzle"}
               alt={puzzle.judul}
               width={48}
               height={48}
-              className="w-full h-full object-cover"
+              className="object-cover w-full h-full"
             />
           </div>
         </div>
@@ -101,18 +103,11 @@ export const columns: ColumnDef<TPuzzle>[] = [
   },
   {
     accessorKey: "judul",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="h-auto p-0 font-semibold hover:bg-transparent"
-        >
-          Judul Puzzle
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+    header: ({ column }) => (
+        <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")} className="h-auto p-0 font-semibold hover:bg-transparent">
+          Judul Puzzle <ArrowUpDown className="w-4 h-4 ml-2" />
         </Button>
-      )
-    },
+    ),
     cell: ({ row }) => {
       const puzzle = row.original
       return (
@@ -132,7 +127,7 @@ export const columns: ColumnDef<TPuzzle>[] = [
           className="h-auto p-0 font-semibold hover:bg-transparent"
         >
           Kategori
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          <ArrowUpDown className="w-4 h-4 ml-2" />
         </Button>
       )
     },
@@ -156,7 +151,7 @@ export const columns: ColumnDef<TPuzzle>[] = [
           className="h-auto p-0 font-semibold hover:bg-transparent"
         >
           XP Reward
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          <ArrowUpDown className="w-4 h-4 ml-2" />
         </Button>
       )
     },
@@ -171,6 +166,20 @@ export const columns: ColumnDef<TPuzzle>[] = [
     },
   },
   {
+  accessorKey: "is_published",
+  header: "Status",
+  cell: ({ row }) => {
+    const isPublished = Boolean(row.getValue("is_published"));
+    return (
+      <Badge variant={isPublished ? "default" : "destructive"}>
+        {isPublished ? "Published" : "Draft"}
+      </Badge>
+    );
+  },
+},
+
+  
+  {
     accessorKey: "created_at",
     header: ({ column }) => {
       return (
@@ -180,7 +189,7 @@ export const columns: ColumnDef<TPuzzle>[] = [
           className="h-auto p-0 font-semibold hover:bg-transparent"
         >
           Dibuat
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          <ArrowUpDown className="w-4 h-4 ml-2" />
         </Button>
       )
     },
@@ -204,7 +213,7 @@ export const columns: ColumnDef<TPuzzle>[] = [
         <div className="flex items-center space-x-2">
           <Link href={`/admin/dashboard/manage-puzzles/edit/${puzzle.puzzle_id}`}>
           <Button variant="outline" size="sm" className="h-8 px-2 bg-transparent hover:bg-primary hover:text-white">
-            <Edit className="h-4 w-4" />
+            <Edit className="w-4 h-4" />
           </Button>
         </Link>
           <DeletePuzzleButton 
@@ -215,4 +224,34 @@ export const columns: ColumnDef<TPuzzle>[] = [
       )
     },
   },
+  {
+    accessorKey: "is_published",
+    header: ({ column }) => (
+        <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")} className="h-auto p-0 font-semibold hover:bg-transparent">
+          Status <ArrowUpDown className="w-4 h-4 ml-2" />
+        </Button>
+    ),
+    cell: ({ row }) => {
+      const isPublished = row.getValue("is_published") as boolean
+
+      
+      return isPublished ? (
+        <Badge variant="default" className="bg-green-500 hover:bg-green-600">
+          <CircleCheck className="w-3.5 h-3.5 mr-1.5" />
+          Published
+        </Badge> 
+      ) : (
+        <Badge variant="secondary">
+          <CircleX className="w-3.5 h-3.5 mr-1.5" />
+          {isPublished }
+          Draft
+        </Badge>  
+      )
+    },
+    // Menambahkan fungsi filter di sini
+    filterFn: (row, id, value) => {
+      // Jika value 'all', tampilkan semua. Jika tidak, cocokkan nilainya.
+      return value === "all" ? true : value === String(row.getValue(id));
+    },
+  }
 ]

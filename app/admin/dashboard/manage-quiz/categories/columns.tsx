@@ -22,6 +22,7 @@ export type TCategoryColumn = {
   kategori_id: number
   nama_kategori: string
   deskripsi: string | null
+  thumbnail: string | null
   created_at: Date | null
   User: {
     username: string
@@ -48,6 +49,32 @@ export const columns: ColumnDef<TCategoryColumn>[] = [
     ),
     enableSorting: false,
     enableHiding: false,
+  },
+  {
+    accessorKey: "thumbnail",
+    header: "Thumbnail",
+    cell: ({ row }) => {
+      const thumbnail = row.getValue("thumbnail") as string | null
+      if (!thumbnail) {
+        return <span className="italic text-muted-foreground text-sm">Tidak ada gambar</span>
+      }
+      return (
+        <div className="w-12 h-12 rounded-md overflow-hidden border">
+          <img 
+            src={thumbnail} 
+            alt={`Thumbnail ${row.getValue("nama_kategori")}`}
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              e.currentTarget.style.display = 'none'
+              e.currentTarget.nextElementSibling?.classList.remove('hidden')
+            }}
+          />
+          <div className="hidden w-full h-full bg-muted items-center justify-center text-xs text-muted-foreground">
+            Error
+          </div>
+        </div>
+      )
+    },
   },
   {
     accessorKey: "nama_kategori",
@@ -94,7 +121,9 @@ export const columns: ColumnDef<TCategoryColumn>[] = [
     ),
     cell: ({ row }) => {
       const createdAt = row.getValue("created_at") as Date | null
-      if (!createdAt) return null
+      if (!createdAt) {
+        return <span className="italic text-muted-foreground text-sm">Tidak ada tanggal</span>
+      }
       return (
         <div className="text-sm">
           {dayjs(createdAt).tz("Asia/Jakarta").format("DD MMM YYYY, HH:mm")}

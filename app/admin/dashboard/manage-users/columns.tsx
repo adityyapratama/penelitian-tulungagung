@@ -107,7 +107,7 @@ export const columns: ColumnDef<TColumn>[] = [
           className="h-auto p-0 font-semibold hover:bg-transparent"
         >
           Username
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          <ArrowUpDown className="w-4 h-4 ml-2" />
         </Button>
       )
     },
@@ -130,7 +130,7 @@ export const columns: ColumnDef<TColumn>[] = [
           className="h-auto p-0 font-semibold hover:bg-transparent"
         >
           Email
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          <ArrowUpDown className="w-4 h-4 ml-2" />
         </Button>
       )
     },
@@ -148,7 +148,7 @@ export const columns: ColumnDef<TColumn>[] = [
           className="h-auto p-0 font-semibold hover:bg-transparent"
         >
           Role
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          <ArrowUpDown className="w-4 h-4 ml-2" />
         </Button>
       )
     },
@@ -172,45 +172,19 @@ export const columns: ColumnDef<TColumn>[] = [
           className="h-auto p-0 font-semibold hover:bg-transparent"
         >
           Login Terakhir
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          <ArrowUpDown className="w-4 h-4 ml-2" />
         </Button>
       )
     },
     cell: ({ row }) => {
       const lastLogin = row.getValue("last_login") as Date | null
       if (!lastLogin) {
-        return <span className="text-muted-foreground italic">Belum pernah</span>
+        return <span className="italic text-muted-foreground">Belum pernah</span>
       }
       return (
         <div className="space-y-1">
           <p className="text-sm font-medium">{dayjs(lastLogin).tz("Asia/Jakarta").format("DD MMM YYYY")}</p>
           <p className="text-xs text-muted-foreground">{dayjs(lastLogin).tz("Asia/Jakarta").format("HH:mm")} WIB</p>
-        </div>
-      )
-    },
-  },
-  {
-    id: "actions",
-    header: "Aksi",
-    cell: ({ row }) => {
-      const user = row.original
-
-      return (
-        <div className="flex items-center space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-8 px-2 bg-transparent hover:bg-primary hover:text-white"
-          >
-            <Edit className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-8 px-2 bg-transparent hover:bg-primary hover:text-white"
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
         </div>
       )
     },

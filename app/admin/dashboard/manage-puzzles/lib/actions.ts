@@ -152,7 +152,7 @@ export async function UpdatePuzzle(
         judul: parse.data.judul,
         kategori: parse.data.kategori,
         xp_reward: parse.data.xp_reward,
-        is_published: parse.data.is_published,
+        is_published: parse.data.is_published ,
         ...(relativePath && { gambar: relativePath }),
       },
     });

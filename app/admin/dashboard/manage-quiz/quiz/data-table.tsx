@@ -163,13 +163,13 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
       )}
 
       {/* Tabel */}
-      <div className="border border-gray-200 rounded-lg dark:border-gray-700">
+      <div className="border border-border rounded-lg bg-card overflow-hidden ">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map(headerGroup => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map(header => (
-                  <TableHead key={header.id}>
+                  <TableHead className="border-b border-border" key={header.id}>
                     {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                   </TableHead>
                 ))}

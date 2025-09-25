@@ -1,3 +1,5 @@
+"use server"
+
 import { auth } from "@/auth"
 import prisma from "@/lib/prisma";
 import { SchemaMember } from "@/lib/schema";
@@ -252,6 +254,7 @@ export async function CreateProgress(_:unknown,data : ProgressData){
     return null;
   }
 }
+
 
 export async function GetLeaderboard(id: string, content_type: ContentType) {
   try {
