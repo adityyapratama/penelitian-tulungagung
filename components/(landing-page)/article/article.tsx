@@ -97,6 +97,12 @@ const ArticleGridClient: React.FC<{ articles: Article[]; limit?: number }> = ({
     setSearchTerm("");
     setSelectedCategory("All");
   };
+// Komponen Grid UTAMA yang sudah diperbaiki
+const ArticleGridClient: React.FC<{ articles: Article[]; limit?: number }> = ({ articles, limit }) => {
+  // Komponen ini SEKARANG MENERIMA 'articles' dari props
+  const displayedArticles = limit ? articles.slice(0, limit) : articles;
+  // BUKAN memanggil getArticles() lagi.
+main
 
   return (
     <div className="py-16 bg-gray-50">

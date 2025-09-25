@@ -96,6 +96,15 @@ export const SchemaCategoryKuis = z.object({
     .string({ message: "nama kategori is required" })
     .min(8, { message: "Judul should have min 8 characters" }),
   deskripsi: z.string({ message: "deskripsi is required" }),
+  thumbnail: z.instanceof(File).optional(),
+});
+
+export const SchemaCategoryKuisUpdate = z.object({
+  nama_kategori: z
+    .string({ message: "nama kategori is required" })
+    .min(8, { message: "Judul should have min 8 characters" }),
+  deskripsi: z.string({ message: "deskripsi is required" }),
+  thumbnail: z.instanceof(File).optional(),
 });
 
 export const SchemaStoryCategory = z.object({
