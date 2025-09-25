@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Image from "next/image";
-import { FileQuestion, School2Icon, FileQuestion } from "lucide-react";
+import { FileQuestion, School2Icon, FileEdit } from "lucide-react";
 import {
   BookAudioIcon,
   LayoutDashboard,
@@ -78,8 +78,6 @@ const data = {
       icon: FileQuestion,
       items: [
         {
-          title: "index kuis kategori",
-         {
           title: "daftar kuis kategori",
           url: "/admin/dashboard/manage-quiz/categories",
         },
@@ -88,11 +86,6 @@ const data = {
           url: "/admin/dashboard/manage-quiz/quiz",
         },
       ],
-    },
-     {
-      title: "Manajemen Artikel",
-      url: "/admin/dashboard/manage-articles",
-      icon: FileQuestion,
     },
     {
       title: "Manajemen sekolah",

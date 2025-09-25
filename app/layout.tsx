@@ -4,8 +4,6 @@ import "./globals.css";
 import { SessionProvider } from "next-auth/react";
 import { NavbarDemo } from "@/components/(landing-page)/navbar/navbar";
 
-
-
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -18,8 +16,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | Pusaka Tulungagung', 
-    default: 'Pusaka Tulungagung',      
+    template: "%s | Pusaka Tulungagung",
+    default: "Pusaka Tulungagung",
   },
   description: "Website Gamifikasi Budaya Tulungagung",
 };
@@ -29,16 +27,12 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   return (
-    <html lang="en">
+    <html lang="id">
       <body
-      
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <SessionProvider>
-        {children}
-        </SessionProvider>
+        <SessionProvider>{children}</SessionProvider>
       </body>
     </html>
   );
