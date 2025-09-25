@@ -167,6 +167,27 @@ export async function GetExpMember(id : string) {
   }
 }
 
+export async function GetDetailsProgressMember(id : string){
+  try {
+
+    const memberId = Number(id) 
+
+    if (isNaN(memberId)) {
+      return { error: "invalid member id" }
+    }
+
+    const progress = await prisma.progresMember.findMany({
+      where:{
+        member_id:memberId
+      }
+    })
+
+    return {data:progress}
+  } catch {
+    return {error:"failed to find progress member"}
+  }
+}
+
 export async function CreateProgress(_:unknown,data : ProgressData){
   const session = await auth()
   if (!session){

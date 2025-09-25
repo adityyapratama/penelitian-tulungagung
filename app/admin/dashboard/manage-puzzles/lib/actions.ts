@@ -1,12 +1,12 @@
-"use server"
+"use server";
 
-import prisma from "@/lib/prisma"
-import { auth } from "@/auth"
-import { SchemaPuzzle } from "@/lib/schema"
-import fs from 'fs'
-import path from 'path'
-import { revalidatePath } from "next/cache"
-
+import prisma from "@/lib/prisma";
+import { auth } from "@/auth";
+import { SchemaPuzzle } from "@/lib/schema";
+import fs from "fs";
+import path from "path";
+import { revalidatePath } from "next/cache";
+import { v4 as uuidv4 } from "uuid";
 
 export type PuzzleFormState = {
   errors?: {
@@ -15,19 +15,19 @@ export type PuzzleFormState = {
     kategori?: string[];
     xp_reward?: string[];
   };
-  message?: string;  
-  error?: string;    
-  success?: boolean; 
+  message?: string;
+  error?: string;
+  success?: boolean;
 };
 
 export async function createPuzzle(
-  previousState: PuzzleFormState, 
+  previousState: PuzzleFormState,
   formData: FormData
 ): Promise<PuzzleFormState> {
   const session = await auth();
 
   if (!session) {
-    return { error: "Not Authorized" }; 
+    return { error: "Not Authorized" };
   }
 
   const parse = SchemaPuzzle.safeParse({
@@ -35,17 +35,27 @@ export async function createPuzzle(
     gambar: formData.get("gambar"),
     kategori: formData.get("kategori"),
     xp_reward: formData.get("xp_reward"),
-    is_published: formData.get("is_published")
+    is_published: formData.get("is_published"),
   });
 
   if (!parse.success) {
     return {
       errors: parse.error.flatten().fieldErrors,
       message: "Validasi gagal, silakan cek input Anda.",
-    }; 
+    };
   }
 
-  const file = parse.data.gambar as File;
+  const file = parse.data.gambar;
+
+  if (!(file instanceof File)) return { error: "Thumbnail invalid" };
+
+  // Validasi tambahan (opsional)
+  const allowedExt = [".jpg", ".jpeg", ".png", ".webp"];
+  const fileExt = path.extname(file.name).toLowerCase();
+  if (!allowedExt.includes(fileExt)) {
+    return { error: "Format file tidak diizinkan" };
+  }
+
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
 
@@ -54,10 +64,11 @@ export async function createPuzzle(
     fs.mkdirSync(uploadDir, { recursive: true });
   }
 
-  const filePath = path.join(uploadDir, file.name);
+  const fileName = `${uuidv4()}${fileExt}`;
+  const filePath = path.join(uploadDir, fileName);
   fs.writeFileSync(filePath, buffer);
 
-  const relativePath = `/puzzle/` + file.name;
+  const relativePath = `/puzzle/` + fileName;
 
   try {
     await prisma.puzzle.create({
@@ -67,18 +78,22 @@ export async function createPuzzle(
         kategori: parse.data.kategori,
         xp_reward: parse.data.xp_reward,
         created_by: parseInt(session.user.id!),
-        is_published: parse.data.is_published
+        is_published: parse.data.is_published,
       },
     });
 
-    return { success: true }; 
+    return { success: true };
   } catch (error) {
     console.log(error);
     return { error: "Terjadi kesalahan saat menyimpan ke database." };
   }
 }
 
-export async function UpdatePuzzle(id: string, previousState: PuzzleFormState, formData: FormData): Promise<PuzzleFormState> {
+export async function UpdatePuzzle(
+  id: string,
+  previousState: PuzzleFormState,
+  formData: FormData
+): Promise<PuzzleFormState> {
   const session = await auth();
   if (!session) return { error: "Not Authorized" };
 
@@ -87,7 +102,7 @@ export async function UpdatePuzzle(id: string, previousState: PuzzleFormState, f
     gambar: formData.get("gambar"),
     kategori: formData.get("kategori"),
     xp_reward: formData.get("xp_reward"),
-    is_published : formData.get("is_published")
+    is_published: formData.get("is_published"),
   });
 
   if (!parse.success) {
@@ -98,7 +113,6 @@ export async function UpdatePuzzle(id: string, previousState: PuzzleFormState, f
     let relativePath: string | undefined;
 
     if (parse.data.gambar instanceof File && parse.data.gambar.size > 0) {
-
       const old = await prisma.puzzle.findUnique({
         where: { puzzle_id: parseInt(id) },
         select: { gambar: true },
@@ -112,6 +126,11 @@ export async function UpdatePuzzle(id: string, previousState: PuzzleFormState, f
       }
 
       const file = parse.data.gambar as File;
+      const allowedExt = [".jpg", ".jpeg", ".png", ".webp"];
+      const fileExt = path.extname(file.name).toLowerCase();
+      if (!allowedExt.includes(fileExt)) {
+              return { error: "Format file tidak diizinkan" };
+      }
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
 
@@ -120,7 +139,8 @@ export async function UpdatePuzzle(id: string, previousState: PuzzleFormState, f
         fs.mkdirSync(uploadDir, { recursive: true });
       }
 
-      const filePath = path.join(uploadDir, file.name);
+      const fileName = `${uuidv4()}${fileExt}`;
+      const filePath = path.join(uploadDir, fileName);
       fs.writeFileSync(filePath, buffer);
 
       relativePath = `/puzzle/` + file.name;
@@ -160,7 +180,6 @@ export async function DeletePuzzle(id: string) {
         fs.unlinkSync(oldPath);
       }
     }
-
 
     await prisma.puzzle.delete({
       where: { puzzle_id: parseInt(id) },
