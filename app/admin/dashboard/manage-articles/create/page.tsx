@@ -1,5 +1,4 @@
 import { CreateArticleForm } from "./create-form";
-import { CreateArticleCategory } from "../lib/actions";
 import {
   Card,
   CardContent,

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import { CreateQuizCategory } from "@/app/admin/dashboard/manage-quiz/lib/actions";
@@ -9,10 +9,11 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ImageIcon, UploadCloud, X, CircleAlert } from "lucide-react";
 import { Alert } from "@heroui/react";
 import { useRouter } from "next/navigation"; // 1. Impor useRouter
 import { toast } from "sonner"; // Impor toast untuk notifikasi
+import Image from "next/image";
 
 type ActionResult = {
   message?: string;
@@ -20,6 +21,7 @@ type ActionResult = {
   errors?: {
     nama_kategori?: string[];
     deskripsi?: string[];
+    thumbnail?: string[];
   };
 };
 
@@ -37,6 +39,18 @@ export default function CreateCategoryPage() {
   const initialState: ActionResult = {};
   const [state, formAction] = useActionState<ActionResult, FormData>(CreateQuizCategory, initialState);
   const formRef = useRef<HTMLFormElement>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   // 3. useEffect yang sudah diperbaiki
   useEffect(() => {
@@ -60,7 +74,7 @@ export default function CreateCategoryPage() {
       <div className="container px-4 py-8 mx-auto">
         <div className="flex justify-center">
           <div className="w-full max-w-2xl">
-            <form ref={formRef} action={formAction}>
+            <form ref={formRef} action={formAction} encType="multipart/form-data">
               <Card>
                 <CardHeader>
                   <CardTitle className="text-2xl font-bold">Tambah Kategori Quiz Baru</CardTitle>
@@ -102,6 +116,68 @@ export default function CreateCategoryPage() {
                     {state.errors?.deskripsi && (
                       <p className="text-sm font-medium text-red-500">
                         {state.errors.deskripsi[0]}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Gambar Input */}
+                  <div className="space-y-3">
+                    <Label className="flex items-center gap-2 text-sm font-medium">
+                      <ImageIcon className="w-4 h-4" />
+                      Thumbnail Kategori
+                    </Label>
+
+                    <Label
+                      htmlFor="thumbnail"
+                      className="relative flex items-center justify-center w-full h-48 overflow-hidden transition-colors border-2 border-dashed rounded-lg cursor-pointer border-muted-foreground/30 hover:border-primary"
+                    >
+                      {imagePreview ? (
+                        <>
+                          <Image
+                            src={imagePreview || "/placeholder.svg"}
+                            alt="Preview Thumbnail"
+                            fill
+                            className="object-contain"
+                          />
+                          <Button
+                            type="button"
+                            variant="destructive"
+                            size="icon"
+                            className="absolute z-10 top-2 right-2 h-7 w-7"
+                            onClick={(e) => {
+                              // Hentikan event agar tidak memicu dialog file lagi
+                              e.preventDefault()
+                              const inputFile = document.getElementById("thumbnail") as HTMLInputElement
+                              if (inputFile) inputFile.value = ""
+                              setImagePreview(null)
+                            }}
+                          >
+                            <X className="w-4 h-4" />
+                          </Button>
+                        </>
+                      ) : (
+                        <div className="text-center text-muted-foreground">
+                          <UploadCloud className="w-10 h-10 mx-auto mb-2" />
+                          <p className="text-sm font-bold">Klik untuk memilih gambar</p>
+                          <p className="text-xs">JPG, JPEG, PNG, WEBP (maks. 5MB)</p>
+                        </div>
+                      )}
+                    </Label>
+
+                    <Input
+                      id="thumbnail"
+                      name="thumbnail"
+                      type="file"
+                      accept="image/*"
+                      required
+                      className="sr-only"
+                      onChange={handleImageChange}
+                    />
+
+                    {state.errors?.thumbnail && (
+                      <p className="flex items-center gap-2 text-sm font-medium text-destructive">
+                        <CircleAlert className="w-4 h-4" />
+                        {state.errors.thumbnail[0]}
                       </p>
                     )}
                   </div>

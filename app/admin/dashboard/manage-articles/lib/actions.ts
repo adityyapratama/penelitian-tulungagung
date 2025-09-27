@@ -107,7 +107,7 @@ export async function UpdateArticle(
       },
     });
 
-    return redirect("/admin/dashboard/manage-articles");
+    return { success: "true" };
   } catch (error) {
     console.error(error);
     return { error: "failed to update data" };

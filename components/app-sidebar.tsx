@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Image from "next/image";
-import { FileQuestion, School2Icon } from "lucide-react";
+import { FileQuestion, School2Icon, FileEdit } from "lucide-react";
 import {
   BookAudioIcon,
   LayoutDashboard,
@@ -33,14 +33,19 @@ const data = {
   },
   navMain: [
     {
-      title: "Dashboard", 
+      title: "Dashboard",
       url: "/admin/dashboard",
       icon: LayoutDashboard,
-    }, 
+    },
     {
       title: "Manajemen Pengguna",
       url: "/admin/dashboard/manage-users",
       icon: PersonStanding,
+    },
+    {
+      title: "Manajemen Artikel",
+      url: "/admin/dashboard/manage-articles",
+      icon: FileEdit,
     },
     {
       title: "Manajemen Puzzle",
@@ -53,10 +58,6 @@ const data = {
       icon: BookAudioIcon,
       items: [
         {
-          title: "Daftar Pengguna",
-          url: "/admin/dashboard/manage-users",
-        },
-        {
           title: "Daftar Cerita",
           url: "/admin/dashboard/manage-stories",
         },
@@ -66,26 +67,25 @@ const data = {
         },
       ],
     },
-    
     {
       title: "Manajemen Kuis",
       url: "/admin/dashboard/manage-quiz",
       icon: FileQuestion,
       items: [
-         {
+
+        {
           title: "daftar kuis kategori",
+
+        {         
+          title: "Daftar Kuis Kategori",
+
           url: "/admin/dashboard/manage-quiz/categories",
         },
         {
-          title: "Tambah pertanyaan",
+          title: "Daftar Kuis",
           url: "/admin/dashboard/manage-quiz/quiz",
         },
       ],
-    },
-     {
-      title: "Manajemen Artikel",
-      url: "/admin/dashboard/manage-articles",
-      icon: FileQuestion,
     },
     {
       title: "Manajemen sekolah",
@@ -109,11 +109,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <Image
                   alt="logo-dashboard"
                   src={"/asset/unair.png"}
-                  width={24} 
+                  width={24}
                   height={24}
                   className="!size-5"
                 />
-                <span className="text-base font-semibold">Pusaka Tulungagung</span>
+                <span className="text-base font-semibold">
+                  Pusaka Tulungagung
+                </span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
