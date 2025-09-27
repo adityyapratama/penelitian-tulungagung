@@ -1,23 +1,23 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Trophy, Medal, Award, ChevronRight } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { generateInitials } from "@/lib/utils";
 
-// Tipe data ini mendefinisikan struktur data yang diharapkan dari server
 type Ranking = {
   skor: number | null;
   duration: number;
   Member: {
+    foto_profil: string | null;
     User: { username: string } | null;
   } | null;
 };
 
-// Komponen menerima 'rankings' sebagai props
 export function RankingSection({ rankings }: { rankings: Ranking[] }) {
-  // Menangani kasus jika tidak ada data peringkat
   if (!rankings || rankings.length === 0) {
     return (
-      <Card className="w-full bg-card border-border shadow-lg">
-        <CardHeader className="pb-4 bg-primary text-primary-foreground rounded-t-lg">
+      <Card className="w-full bg-card border-border shadow-lg p-0">
+        <CardHeader className="p-6 pb-4 bg-primary text-primary-foreground rounded-t-lg">
           <div className="flex items-center justify-center gap-2">
             <Trophy className="w-6 h-6" />
             <CardTitle className="text-2xl font-bold text-center">RANKING</CardTitle>
@@ -32,8 +32,8 @@ export function RankingSection({ rankings }: { rankings: Ranking[] }) {
   }
 
   return (
-    <Card className="w-full bg-card border-border shadow-lg">
-      <CardHeader className="pb-4 bg-primary text-primary-foreground rounded-t-lg">
+    <Card className="w-full bg-card border-border shadow-lg p-0">
+      <CardHeader className="p-6 pb-4 bg-primary text-primary-foreground rounded-t-lg">
         <div className="flex items-center justify-center gap-2">
           <Trophy className="w-6 h-6" />
           <CardTitle className="text-2xl font-bold text-center">RANKING</CardTitle>
@@ -47,7 +47,8 @@ export function RankingSection({ rankings }: { rankings: Ranking[] }) {
         {rankings.map((player, index) => {
           const rank = index + 1;
           const IconComponent = rank <= 3 ? [Trophy, Medal, Award][rank - 1] : null;
-
+          const username = player.Member?.User?.username;
+          
           return (
             <div
               key={rank}
@@ -61,15 +62,19 @@ export function RankingSection({ rankings }: { rankings: Ranking[] }) {
                 >
                   {rank}
                 </div>
-                {IconComponent && <IconComponent className="w-5 h-5 text-yellow-500" />}
+                <Avatar className="h-9 w-9">
+                  <AvatarImage src={player.Member?.foto_profil || undefined} />
+                  <AvatarFallback>{generateInitials(username)}</AvatarFallback>
+                </Avatar>
                 <div>
-                  <span className="font-medium text-foreground">{player.Member?.User?.username || "Pemain"}</span>
+                  <span className="font-medium text-foreground">{username || "Pemain"}</span>
                   <div className="flex items-center gap-2 mt-1">
                     <span className="text-sm font-semibold text-primary">{player.skor || 0} pts</span>
                     <span className="text-xs text-muted-foreground">({player.duration}s)</span>
                   </div>
                 </div>
               </div>
+              {IconComponent && <IconComponent className="w-5 h-5 text-yellow-500" />}
             </div>
           );
         })}

@@ -16,10 +16,9 @@ import { useSession } from "next-auth/react";
 
 export function NavbarDemo() {
   const navItems = [
-    { name: "Features", link: "#features" },
-    { name: "Pricing", link: "#pricing" },
-    { name: "Contact", link: "#contact" },
-    { name: "Articles", link: "/article" },
+    { name: "Beranda", link: "/" },
+    { name: "Fitur", link: "/games" },
+    { name: "Artikel", link: "/article" },
   ];
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);

@@ -1,7 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { UserCircle2 } from "lucide-react";
 
-// Tipe data disesuaikan dengan output fungsi GetLeaderboard Anda
 type LeaderboardData = {
   member_id: number | null;
   skor: number;
@@ -13,7 +12,7 @@ export function Leaderboard({ data }: { data: LeaderboardData }) {
   if (!data || data.length === 0) {
     return (
       <Card>
-        <CardContent className="pt-6 text-center text-muted-foreground">
+        <CardContent className=" text-center text-muted-foreground">
           Belum ada yang menyelesaikan. Jadilah yang pertama!
         </CardContent>
       </Card>

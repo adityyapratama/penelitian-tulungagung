@@ -1,29 +1,36 @@
-import { notFound, redirect } from "next/navigation";
-import { auth } from "@/auth";
-import { getPuzzleById } from "@/app/admin/dashboard/manage-puzzles/lib/data";
-import { PuzzleGameClient } from "../../_components/puzzle-game-client";
+import { notFound, redirect } from "next/navigation"
+import { auth } from "@/auth"
+import { getPuzzleById } from "@/app/admin/dashboard/manage-puzzles/lib/data"
+import { PuzzleGameClient } from "../../_components/puzzle-game-client"
 
-export default async function PuzzlePlayPage({ params, searchParams }: {
-  params: { id: string };
-  searchParams: { difficulty: string };
+export default async function PuzzlePlayPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>
+  searchParams: Promise<{ difficulty: string }>
 }) {
-  return <GameLoader params={params} searchParams={searchParams} />;
+  const [{ id }, searchParamsObj] = await Promise.all([params, searchParams])
+  return <GameLoader id={id} searchParams={searchParamsObj} />
 }
 
-async function GameLoader({ params, searchParams }: {
-  params: { id: string };
-  searchParams: { difficulty: string };
+async function GameLoader({
+  id,
+  searchParams,
+}: {
+  id: string
+  searchParams: { difficulty: string }
 }) {
-  const session = await auth();
+  const session = await auth()
   if (!session?.user) {
-    redirect("/login");
+    redirect("/login")
   }
 
-  const puzzle = await getPuzzleById(params.id);
-  const difficulty = searchParams.difficulty || 'easy';
+  const puzzle = await getPuzzleById(id)
+  const difficulty = searchParams.difficulty || "easy"
 
   if (!puzzle || "error" in puzzle) {
-    notFound();
+    notFound()
   }
 
   const gameData: PuzzleGameData = {
@@ -31,21 +38,14 @@ async function GameLoader({ params, searchParams }: {
     judul: puzzle.judul,
     gambar: puzzle.gambar,
     xp_reward: puzzle.xp_reward,
-  };
+  }
 
-  return (
-    <main className="min-h-screen bg-background flex items-center justify-center p-4">
-      <PuzzleGameClient 
-        gameData={gameData} 
-        difficulty={difficulty}
-      />
-    </main>
-  );
+  return <PuzzleGameClient gameData={gameData} difficulty={difficulty} />
 }
 
 export type PuzzleGameData = {
-  puzzle_id: number;
-  judul: string;
-  gambar: string;
-  xp_reward: number;
-};
+  puzzle_id: number
+  judul: string
+  gambar: string
+  xp_reward: number
+}

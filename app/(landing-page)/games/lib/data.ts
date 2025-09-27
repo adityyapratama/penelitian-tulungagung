@@ -62,3 +62,28 @@ export async function getAllStoriesFormatted(): Promise<GameCardData[]> {
   }));
 }
 
+export async function getMemberDetailsByIds(memberIds: number[]) {
+  if (memberIds.length === 0) {
+    return [];
+  }
+  try {
+    const members = await prisma.member.findMany({
+      where: {
+        member_id: { in: memberIds },
+      },
+      select: {
+        member_id: true,
+        foto_profil: true,
+        User: {
+          select: {
+            username: true,
+          },
+        },
+      },
+    });
+    return members;
+  } catch (error) {
+    console.error("Gagal mengambil detail member:", error);
+    return [];
+  }
+}

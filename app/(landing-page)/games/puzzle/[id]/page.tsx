@@ -1,16 +1,31 @@
 import { getPuzzleById } from "@/app/admin/dashboard/manage-puzzles/lib/data";
-import { GetLeaderboard } from "@/app/(member)/lib/actions";
-import { getMemberDetailsByIds } from "@/app/(landing-page)/games/lib/data";
+import { GetLeaderboard} from "@/app/(member)/lib/actions";
+import { getMemberDetailsByIds} from "@/app/(landing-page)/games/lib/data";
+import { getPuzzleStats } from "../lib/data";
 import { ContentType } from "@/lib/generated/prisma";
 import { notFound } from "next/navigation";
 import { PuzzleInfo } from "../_components/puzzle-info";
 import { RankingSection } from "../_components/ranking-section";
 import { DifficultySelector } from "../_components/difficulty-selector";
+import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
 
-export default async function PuzzleDetailPage({ params }: { params: { id: string } }) {
-  const [puzzle, leaderboardScores] = await Promise.all([
-    getPuzzleById(params.id),
-    GetLeaderboard(params.id, ContentType.puzzle),
+function BackButton({ href, text }: { href: string; text: string }) {
+  return (
+    <Link href={href} className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-8">
+      <ArrowLeft className="w-4 h-4" />
+      <span>{text}</span>
+    </Link>
+  );
+}
+
+export default async function PuzzleDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+
+  const [puzzle, leaderboardScores, stats] = await Promise.all([
+    getPuzzleById(id),
+    GetLeaderboard(id, ContentType.puzzle),
+    getPuzzleStats(id)
   ]);
 
   if (!puzzle || "error" in puzzle) {
@@ -32,9 +47,10 @@ export default async function PuzzleDetailPage({ params }: { params: { id: strin
 
   return (
     <main className="min-h-screen bg-background">
-      <div className="p-6">
+      <div className="py-12 px-4 sm:px-8 lg:px-24"> 
         <div className="mx-auto max-w-7xl space-y-8">
-          <PuzzleInfo puzzle={puzzle} />
+          <BackButton href="/games" text="Kembali ke Lobi Game" />
+          <PuzzleInfo puzzle={puzzle} stats={stats} />
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-1">
               <RankingSection rankings={fullLeaderboardData} />

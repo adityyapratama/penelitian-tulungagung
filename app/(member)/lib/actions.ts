@@ -8,6 +8,7 @@ import path from 'path'
 import { v4 as uuidv4 } from "uuid"
 import {ProgressData} from "@/types/index"
 import { ContentType } from "@/lib/generated/prisma";
+import { getMemberDetailsByIds } from "@/app/(landing-page)/games/lib/data";
 
 
 export async function GetMemberData(){
@@ -196,62 +197,83 @@ export async function CreateProgress(_:unknown,data : ProgressData){
     return {error:"Not Authorized"}
   }
 
-  let id
+  let id;
   try {
     const user = await prisma.member.findFirst({
-      where:{
-        user_id: parseInt(session.user.id!)
-      }
-    })
-
-    id = user?.member_id
+      where: {
+        user_id: parseInt(session.user.id!),
+      },
+    });
+    id = user?.member_id;
     if (!id) return { error: "User is not a member" };
   } catch (error) {
-    console.log(error)
-    return {error:"User is not a member"}
+    return { error: "User is not a member" };
   }
 
   try {
-    const completedAt = new Date(); 
-    const duration = Math.floor(
-      (completedAt.getTime() - data.startedAt.getTime()) / 1000
-    );
-
-    await prisma.progresMember.create({
-      data: {
+    const existingProgress = await prisma.progresMember.findFirst({
+      where: {
         member_id: id,
         content_id: data.contentId,
-        content_type: data.contentType,
-        skor: data.skor,
-        completed_at: completedAt,
-        duration: duration,
       },
     });
 
-    const score = await GetExpMember(String(id))
+    if (existingProgress) {
+      if (data.skor > existingProgress.skor!) {
+        const completedAt = new Date();
+        const duration = Math.floor(
+          (completedAt.getTime() - data.startedAt.getTime()) / 1000
+        );
+        await prisma.progresMember.update({
+          where: {
+            progres_id: existingProgress.progres_id,
+          },
+          data: {
+            skor: data.skor,
+            completed_at: completedAt,
+            duration: duration,
+          },
+        });
+      }
+    } else {
+      const completedAt = new Date();
+      const duration = Math.floor(
+        (completedAt.getTime() - data.startedAt.getTime()) / 1000
+      );
+      await prisma.progresMember.create({
+        data: {
+          member_id: id,
+          content_id: data.contentId,
+          content_type: data.contentType,
+          skor: data.skor,
+          completed_at: completedAt,
+          duration: duration,
+        },
+      });
+    }
 
-   if (score !== null) {
+    const score = await GetExpMember(String(id));
+    if (score !== null) {
       const level = Math.floor(Number(score) / 400);
-      
       try {
         await prisma.member.update({
-          where:{
-            member_id:id
+          where: {
+            member_id: id,
           },
-          data:{
-            level:level
-          }
-        })
+          data: {
+            level: level,
+          },
+        });
       } catch {
-        return {error:"terjadi kesalahan"}
+        return { error: "terjadi kesalahan update level" };
       }
-  }
+    }
 
-  return {success:"Selamat",score:`${data.skor}`}
-    
+    return { success: "Selamat", score: `${data.skor}` };
+
   } catch (error) {
     console.error("CreateProgress error:", error);
-    return null;
+    return { error: "Gagal menyimpan progres." };
   }
 }
 
@@ -267,21 +289,34 @@ export async function GetLeaderboard(id: string, content_type: ContentType) {
         member_id: true,
         skor: true,
         duration: true
-      }
+      },
+      orderBy: {
+        skor: 'desc'
+      },
+      take: 10
     });
 
-    const leaderboard = progressList
-      .map(p => ({
-        member_id: p.member_id,
-        skor: p.skor ?? 0,
-        duration: p.duration ?? 1, 
-        ratio: (p.skor ?? 0) / (p.duration ?? 1)
-      }))
-      .sort((a, b) => b.ratio - a.ratio);
+    if (progressList.length === 0) {
+      return [];
+    }
 
-    return leaderboard;
+    const memberIds = progressList
+      .map(score => score.member_id)
+      .filter((id): id is number => id !== null);
+
+    const memberDetails = await getMemberDetailsByIds(memberIds);
+
+    const memberDetailsMap = new Map(memberDetails.map(m => [m.member_id, m]));
+
+    const fullLeaderboardData = progressList.map(score => ({
+      ...score,
+      Member: score.member_id ? memberDetailsMap.get(score.member_id) || null : null,
+    }));
+  
+    return fullLeaderboardData;
+
   } catch (error) {
-    console.error(error);
+    console.error("Error fetching leaderboard:", error);
     return [];
   }
 }
