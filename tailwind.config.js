@@ -1,5 +1,6 @@
 import heroui from "@heroui/theme/plugin";
 import tailwindcssAnimate from "tailwindcss-animate";
+import daisyui from "daisyui";
 
 /** @type {import('tailwindcss').Config} */
 const config = {
@@ -22,9 +23,12 @@ const config = {
   },
   darkMode: "class",
   plugins: [
+     daisyui,
     heroui(),
     tailwindcssAnimate // Gunakan variabel yang sudah di-import
+    
   ],
+  daisyui: {},
 };
 
 export default config;

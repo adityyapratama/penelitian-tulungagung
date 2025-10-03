@@ -97,12 +97,6 @@ const ArticleGridClient: React.FC<{ articles: Article[]; limit?: number }> = ({
     setSearchTerm("");
     setSelectedCategory("All");
   };
-// Komponen Grid UTAMA yang sudah diperbaiki
-const ArticleGridClient: React.FC<{ articles: Article[]; limit?: number }> = ({ articles, limit }) => {
-  // Komponen ini SEKARANG MENERIMA 'articles' dari props
-  const displayedArticles = limit ? articles.slice(0, limit) : articles;
-  // BUKAN memanggil getArticles() lagi.
-main
 
   return (
     <div className="py-16 bg-gray-50">
@@ -166,7 +160,7 @@ main
                 <span>Active filters:</span>
                 {searchTerm && (
                   <span className="px-2 py-1 bg-[#FFCC29] text-[#2957A4] rounded-full">
-                    Search: "{searchTerm}"
+                    Search: &quot;{searchTerm}&quot;
                   </span>
                 )}
                 {selectedCategory !== "All" && (

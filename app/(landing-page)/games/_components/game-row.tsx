@@ -34,7 +34,7 @@ export function GameRow({ title, description, games, href }: GameRowProps) {
 
   const getGameUrl = (game: GameCardData) => {
     const id = game.id.split("-")[1]
-    if (game.type === "kuis") return `/games/kuis/${id}`
+    if (game.type === "kuis") return `/games/quiz/${id}`
     if (game.type === "cerita") return `/games/cerita/${id}`
     return `/games/puzzle/${id}`
   }
@@ -54,7 +54,7 @@ export function GameRow({ title, description, games, href }: GameRowProps) {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center animate-bounce-in shadow-lg"
+              className="flex items-center justify-center w-10 h-10 shadow-lg rounded-xl animate-bounce-in"
               style={{
                 backgroundColor: getBadgeColor(games[0]?.type || "puzzle"),
                 boxShadow: `0 4px 20px ${getBadgeColor(games[0]?.type || "puzzle")}40`,
@@ -76,7 +76,7 @@ export function GameRow({ title, description, games, href }: GameRowProps) {
         <p className="text-muted-foreground">{description}</p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {games.slice(0, 4).map((game, index) => {
           const isLocked = false // Untuk sementara tidak ada game yang terkunci
 
@@ -90,7 +90,7 @@ export function GameRow({ title, description, games, href }: GameRowProps) {
               }}
               disabled={isLocked}
             >
-              <Play className="h-3 w-3" />
+              <Play className="w-3 h-3" />
               {isLocked ? "Terkunci" : "Mainkan"}
             </Button>
           );
@@ -98,36 +98,36 @@ export function GameRow({ title, description, games, href }: GameRowProps) {
           return (
             <Card
               key={game.id}
-              className="group relative overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 flex flex-col border-0 animate-bounce-in pt-0 "
+              className="relative flex flex-col pt-0 overflow-hidden transition-all duration-500 border-0 group hover:shadow-2xl hover:-translate-y-2 animate-bounce-in "
               style={{
                 animationDelay: `${index * 0.1}s`,
                 background: "linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)",
                 boxShadow: "0 4px 20px rgba(41, 87, 164, 0.1)",
               }}
             >
-              <div className="relative w-full h-42 flex-shrink-0 overflow-hidden rounded-t-lg">
+              <div className="relative flex-shrink-0 w-full overflow-hidden rounded-t-lg h-42">
                 <Image
                   src={game.image || "/placeholder.svg"}
                   alt={game.title}
                   fill
-                  className="object-cover group-hover:scale-110 transition-transform duration-500"
+                  className="object-cover transition-transform duration-500 group-hover:scale-110"
                   sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
                 />
-                <div className="absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-bold flex items-center shadow-md" style={{ backgroundColor: "#FFCC29", color: "#2957A4" }}>
+                <div className="absolute flex items-center px-2 py-1 text-xs font-bold rounded-full shadow-md top-2 right-2" style={{ backgroundColor: "#FFCC29", color: "#2957A4" }}>
                   <Trophy className="w-3 h-3 mr-1" />
                   {game.xp_reward}
                 </div>
               </div>
 
-              <div className="p-4 space-y-3 flex flex-col flex-grow">
-                <div className="space-y-2 flex-grow">
-                  <h3 className="font-semibold text-sm line-clamp-2" style={{ color: "#2957A4" }}>
+              <div className="flex flex-col flex-grow p-4 space-y-3">
+                <div className="flex-grow space-y-2">
+                  <h3 className="text-sm font-semibold line-clamp-2" style={{ color: "#2957A4" }}>
                     {game.title}
                   </h3>
                 </div>
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-medium text-muted-foreground truncate mr-2">{game.category}</span>
-                  <Badge className="text-xs px-2 py-1 text-white" style={{ backgroundColor: getBadgeColor(game.type), border: "none" }}>
+                  <span className="mr-2 font-medium truncate text-muted-foreground">{game.category}</span>
+                  <Badge className="px-2 py-1 text-xs text-white" style={{ backgroundColor: getBadgeColor(game.type), border: "none" }}>
                     {game.type.charAt(0).toUpperCase() + game.type.slice(1)}
                   </Badge>
                 </div>

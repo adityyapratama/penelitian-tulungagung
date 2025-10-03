@@ -100,9 +100,9 @@ export function NavUser({
              <DropdownMenuItem 
               className="cursor-pointer" 
               onSelect={(event) => event.preventDefault()} 
-              onClick={async () => await signOut({ callbackUrl: "/admin/sign-in" })}
+              onClick={async () => await signOut({ callbackUrl: "/" })}
             >
-              <LogOut className=" h-2 w-2" />
+              <LogOut className="w-2 h-2 " />
               <span>Log out</span>
        
             </DropdownMenuItem>

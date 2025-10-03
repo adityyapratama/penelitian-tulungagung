@@ -32,7 +32,7 @@ export function NavbarDemo() {
         } else if (session?.user?.role === "user") {
           dashboardUrl = "/dashboard";
         } else if (session?.user?.role === "member") {
-          dashboardUrl = "/member/dashboard";
+          dashboardUrl = "/games";
         }
   
   return (

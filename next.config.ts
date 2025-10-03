@@ -16,6 +16,12 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+        {
+        protocol: 'https',
+        hostname: 'img.daisyui.com',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
   eslint: {
