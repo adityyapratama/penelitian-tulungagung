@@ -179,11 +179,14 @@ export async function GetDetailsProgressMember(id : string){
       return { error: "invalid member id" }
     }
 
-    const progress = await prisma.progresMember.findMany({
-      where:{
-        member_id:memberId
-      }
-    })
+    const progress = await prisma.$queryRaw`
+        SELECT     pm.completed_at,pm.skor,pm.duration,COALESCE(k.judul, c.judul, p.judul) AS content_name   
+        FROM ProgresMember pm   
+        LEFT JOIN Kuis k    ON pm.content_type = 'kuis'   AND pm.content_id = k.kuis_id   
+        LEFT JOIN cerita_interaktif c  ON pm.content_type = 'cerita' AND pm.content_id = c.cerita_id   
+        LEFT JOIN Puzzle p  ON pm.content_type = 'puzzle' AND pm.content_id = p.puzzle_id
+        WHERE pm.member_id = ${memberId};
+    `
 
     return {data:progress}
   } catch {
