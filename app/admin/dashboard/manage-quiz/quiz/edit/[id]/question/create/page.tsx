@@ -44,8 +44,7 @@ export default async function CreateQuestionPage({ params }: PageProps) {
           </Button>
         </div>
         
-        {/* 2. UBAH: Render komponen DynamicQuestionBuilder dan kirim props */}
-        {/* Kita akan sesuaikan DynamicQuestionBuilder untuk menerima props ini */}
+    
         <DynamicQuestionBuilder 
             quizId={quiz.kuis_id}
             initialQuestions={Array.isArray(initialQuestions) ? initialQuestions : []} 

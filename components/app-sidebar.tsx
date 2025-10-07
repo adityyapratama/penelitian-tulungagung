@@ -72,9 +72,6 @@ const data = {
       url: "/admin/dashboard/manage-quiz",
       icon: FileQuestion,
       items: [
-        {
-          title: "daftar kuis kategori",
-        },
         {         
           title: "Daftar Kuis Kategori",
 

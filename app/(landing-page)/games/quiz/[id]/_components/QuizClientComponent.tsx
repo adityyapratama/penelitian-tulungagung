@@ -6,9 +6,9 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { CreateProgress } from "@/app/(member)/lib/actions";
 
-// --- Tipe Data dari Server (sesuai Prisma) ---
+
 type Pilihan = {
-  jawaban_id: number; // ✅ Sesuai dengan database
+  jawaban_id: number;
   teks_jawaban: string;
   score: number;
   pertanyaan_id: number | null;
@@ -31,7 +31,7 @@ type Kuis = {
   xp_reward: number;
 };
 
-// --- Tipe Props untuk Komponen Ini ---
+//props
 type QuizComponentProps = {
   quizDetails: Kuis;
   questions: Pertanyaan[];
@@ -65,16 +65,16 @@ export function QuizClientComponent({ quizDetails, questions }: QuizComponentPro
     return totalScore;
   }, [questions, userAnswers]);
 
-  // 1. Catat waktu mulai saat kuis dimuat
+  // Catat waktu mulai saat kuis dimuat
   useEffect(() => {
     setStartedAt(new Date());
   }, []);
 
-  // 2. Kirim data ke server secara otomatis saat kuis selesai
+  //  Kirim data ke server secara otomatis saat kuis selesai
   useEffect(() => {
     // Hanya jalankan jika kuis sudah selesai, waktu mulai sudah tercatat, dan belum pernah submit
     if (quizComplete && startedAt && !hasSubmitted) {
-      setHasSubmitted(true); // ✅ Set flag untuk mencegah multiple submit
+      setHasSubmitted(true); //Set flag untuk mencegah multiple submit
       setIsSubmitting(true);
       
       const submitProgress = async () => {
@@ -143,18 +143,15 @@ export function QuizClientComponent({ quizDetails, questions }: QuizComponentPro
     
     // Jika quiz selesai dan showAnswerKey aktif - tampilkan feedback
     if (showAnswerKey) {
-      // Jawaban yang benar (score > 0) akan menjadi hijau
       if (choice.score > 0) {
         return baseClass + "bg-green-50 border-green-500 text-green-700";
       }
-      
-      // Jawaban yang dipilih user (dan salah) akan menjadi merah
       if (isSelected) {
         return baseClass + "bg-red-50 border-red-500 text-red-700";
       }
     }
     
-    // Default - abu-abu
+    // Default
     return baseClass + "bg-white border-gray-200 text-gray-700";
   };
 
@@ -193,14 +190,14 @@ export function QuizClientComponent({ quizDetails, questions }: QuizComponentPro
 
               {/* ✅ FUNGSI KUNCI JAWABAN - Uncomment untuk aktifkan */}
               
-              <div className="mb-6">
+              {/* <div className="mb-6">
                 <button
                   onClick={() => setShowAnswerKey(!showAnswerKey)}
                   className="px-6 py-3 text-sm font-medium text-blue-600 transition-all duration-200 border border-blue-600 rounded-lg hover:bg-blue-50"
                 >
                   {showAnswerKey ? "Sembunyikan Kunci Jawaban" : "Lihat Kunci Jawaban"}
                 </button>
-              </div>
+              </div> */}
               
 
               {/* ✅ REVIEW JAWABAN - Tampil saat showAnswerKey aktif */}
@@ -307,7 +304,7 @@ export function QuizClientComponent({ quizDetails, questions }: QuizComponentPro
           </div>
         </div>
 
-        {/* Navigation Controls */}
+        
         <div className="flex items-center justify-between w-full max-w-2xl mx-auto mt-6">
           <button
             onClick={handlePrevious}

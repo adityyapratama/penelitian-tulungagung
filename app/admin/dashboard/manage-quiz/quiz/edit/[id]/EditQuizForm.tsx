@@ -8,9 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle, Star, BookOpen, ListChecks, ImageIcon, UploadCloud, X, CircleAlert } from "lucide-react";
+import { ImageIcon, UploadCloud, X } from "lucide-react";
 import { UpdateQuiz } from "@/app/admin/dashboard/manage-quiz/lib/actions";
-import { prisma } from "@/lib/generated/prisma";
 import Image from "next/image";
 
 function SubmitButton() {
@@ -30,8 +29,19 @@ function SubmitButton() {
 }
 
 interface EditQuizFormProps {
-  quiz: any;
-  categories: any[];
+  quiz: {
+    kuis_id: number;
+    judul: string;
+    deskripsi: string;
+    kategori_id: number;
+    xp_reward: number;
+    is_published: boolean;
+    thumbnail: string | null;
+  };
+  categories: {
+    kategori_id: number;
+    nama_kategori: string;
+  }[];
 }
 
 export function EditQuizForm({ quiz, categories }: EditQuizFormProps) {

@@ -9,10 +9,10 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Plus, Trash2, X, Save } from "lucide-react";
+import { Plus, Trash2, X, Save, Upload } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "sonner";
-import type { PertanyaanKuis, PilihanKuis } from "@prisma/client";
+import Image from "next/image";
 import { CreatePertanyaan, DeletePertanyaan } from "@/app/admin/dashboard/manage-quiz/lib/actions";
 
 // --- TIPE DATA & FUNGSI BANTUAN ---
@@ -23,18 +23,46 @@ interface Question {
   questionText: string;
   options: Option[];
   correctAnswer: string;
+  image?: File | null;
+  existingImageUrl?: string | null; // URL gambar yang sudah ada di database
+}
+
+// Type untuk initial questions dari database
+interface PilihanKuis {
+  jawaban_id: number;
+  pertanyaan_id: number | null;
+  teks_jawaban: string;
+  score: number;
+}
+
+interface PertanyaanKuis {
+  pertanyaan_id: number;
+  kuis_id: number | null;
+  teks_pertanyaan: string;
+  image?: string | null;
+  tipe: string;
+  poin: number;
+  urutan: number;
+  PilihanKuis: PilihanKuis[];
 }
 const STORAGE_KEY_PREFIX = "quiz-draft-";
-const createNewQuestion = (): Question => ({
-  id: `q_${Date.now()}`,
-  type: "pilihan_ganda",
-  questionText: "",
-  options: [
-    { id: `o_${Date.now() + 1}`, text: "", score: 0 },
-    { id: `o_${Date.now() + 2}`, text: "", score: 0 }
-  ],
-  correctAnswer: "",
-});
+let questionCounter = 1;
+let optionCounter = 1;
+
+const createNewQuestion = (): Question => {
+  const questionId = `q_new_${questionCounter++}`;
+  return {
+    id: questionId,
+    type: "pilihan_ganda",
+    questionText: "",
+    options: [
+      { id: `o_new_${optionCounter++}`, text: "", score: 0 },
+      { id: `o_new_${optionCounter++}`, text: "", score: 0 }
+    ],
+    correctAnswer: "",
+    image: null,
+  };
+};
 
 // --- PROPS ---
 interface BuilderProps {
@@ -51,13 +79,22 @@ export default function DynamicQuestionBuilder({ quizId, initialQuestions, quizT
   const STORAGE_KEY = `${STORAGE_KEY_PREFIX}${quizId}`;
 
   // State Tunggal untuk semua pertanyaan
-  const [questions, setQuestions] = useState<Question[]>(() => {
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [isInitialized, setIsInitialized] = useState(false);
+  
+  // Initialize questions setelah component mount untuk mencegah hydration mismatch
+  useEffect(() => {
+    if (isInitialized) return;
+    
     if (initialQuestions && initialQuestions.length > 0) {
-      return initialQuestions.map(q => {
+      console.log('🔍 Loading initial questions:', initialQuestions);
+      const mappedQuestions = initialQuestions.map(q => {
+        console.log(`🔍 Question ${q.pertanyaan_id} image:`, q.image);
+        console.log(`🔍 Question ${q.pertanyaan_id} full data:`, JSON.stringify(q, null, 2));
         const correctOption = q.PilihanKuis.find(opt => opt.score > 0);
         return {
           id: q.pertanyaan_id.toString(),
-          type: q.tipe,
+          type: q.tipe as "pilihan_ganda" | "benar_salah",
           questionText: q.teks_pertanyaan,
           options: q.PilihanKuis.map(opt => ({
             id: opt.jawaban_id.toString(),
@@ -67,15 +104,33 @@ export default function DynamicQuestionBuilder({ quizId, initialQuestions, quizT
           correctAnswer: q.tipe === 'benar_salah'
             ? (correctOption?.teks_jawaban.toLowerCase() === 'benar' ? 'true' : 'false')
             : (correctOption?.jawaban_id.toString() || ""),
+          image: null, // Untuk pertanyaan yang sudah ada, image akan ditampilkan dari URL
+          existingImageUrl: q.image || null, // Simpan URL gambar yang sudah ada
         };
       });
-    }
-    if (typeof window !== "undefined") {
+      console.log('🔍 Mapped questions with images:', mappedQuestions.map(q => ({ 
+        id: q.id, 
+        hasImage: !!q.image, 
+        existingImageUrl: q.existingImageUrl 
+      })));
+      setQuestions(mappedQuestions);
+    } else {
+      // Cek draft dari sessionStorage hanya di client-side
       const savedDraft = sessionStorage.getItem(STORAGE_KEY);
-      if (savedDraft) return JSON.parse(savedDraft);
+      if (savedDraft) {
+        try {
+          setQuestions(JSON.parse(savedDraft));
+        } catch (error) {
+          console.error("Error parsing saved draft:", error);
+          setQuestions([createNewQuestion()]);
+        }
+      } else {
+        setQuestions([createNewQuestion()]);
+      }
     }
-    return [createNewQuestion()];
-  });
+    
+    setIsInitialized(true);
+  }, [initialQuestions, STORAGE_KEY, isInitialized]);
 
   // Efek untuk menyimpan draft ke sessionStorage
   useEffect(() => {
@@ -108,19 +163,19 @@ export default function DynamicQuestionBuilder({ quizId, initialQuestions, quizT
     }
   };
 
-  const updateQuestion = (id: string, field: keyof Question, value: any) => {
+  const updateQuestion = (id: string, field: keyof Question, value: string | File | null) => {
     setQuestions(questions.map(q => {
       if (q.id === id) {
         const updatedQuestion = { ...q, [field]: value };
         if (field === "type") {
           updatedQuestion.options = value === "pilihan_ganda"
             ? [
-                { id: `o_${Date.now() + 1}`, text: "", score: 0 },
-                { id: `o_${Date.now() + 2}`, text: "", score: 0 }
+                { id: `o_type_${optionCounter++}`, text: "", score: 0 },
+                { id: `o_type_${optionCounter++}`, text: "", score: 0 }
               ]
             : [
-                { id: `o_${Date.now() + 1}`, text: "Benar", score: 0 },
-                { id: `o_${Date.now() + 2}`, text: "Salah", score: 0 }
+                { id: `o_type_${optionCounter++}`, text: "Benar", score: 0 },
+                { id: `o_type_${optionCounter++}`, text: "Salah", score: 0 }
               ];
           updatedQuestion.correctAnswer = value === "benar_salah" ? "true" : "";
         }
@@ -147,7 +202,7 @@ export default function DynamicQuestionBuilder({ quizId, initialQuestions, quizT
   const addOption = (qId: string) => {
     setQuestions(questions.map(q =>
       q.id === qId
-        ? { ...q, options: [...q.options, { id: `o_${Date.now()}`, text: "", score: 0 }] }
+        ? { ...q, options: [...q.options, { id: `o_add_${optionCounter++}`, text: "", score: 0 }] }
         : q
     ));
   };
@@ -155,6 +210,34 @@ export default function DynamicQuestionBuilder({ quizId, initialQuestions, quizT
     setQuestions(questions.map(q =>
       q.id === qId
         ? { ...q, options: q.options.filter(opt => opt.id !== oId) }
+        : q
+    ));
+  };
+
+  // Handler untuk upload gambar
+  const handleImageChange = (qId: string, file: File | null) => {
+    if (file) {
+      // Validasi file
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        toast.error('Format file tidak didukung. Gunakan JPG, PNG, atau WebP.');
+        return;
+      }
+      
+      if (file.size > 5 * 1024 * 1024) { // 5MB
+        toast.error('Ukuran file terlalu besar. Maksimal 5MB.');
+        return;
+      }
+    }
+    
+    updateQuestion(qId, 'image', file);
+  };
+
+  // Handler untuk menghapus gambar
+  const removeImage = (qId: string) => {
+    setQuestions(questions.map(q =>
+      q.id === qId
+        ? { ...q, image: null, existingImageUrl: null }
         : q
     ));
   };
@@ -173,8 +256,17 @@ export default function DynamicQuestionBuilder({ quizId, initialQuestions, quizT
         const formData = new FormData();
         formData.append("teks_pertanyaan", question.questionText);
         formData.append("tipe", question.type);
+        formData.append("poin", "10"); // Default poin
         formData.append("urutan", (initialQuestions.length + index + 1).toString());
-        let pilihanData = [];
+        
+        // Handle image upload
+        if (question.image) {
+          formData.append("image", question.image);
+        } else {
+          formData.append("image", "null");
+        }
+        
+        let pilihanData: Array<{teks_jawaban: string; score: number}> = [];
         if (question.type === "pilihan_ganda" || question.type === "benar_salah") {
           pilihanData = question.options.map(opt => ({
             teks_jawaban: opt.text,
@@ -195,6 +287,15 @@ export default function DynamicQuestionBuilder({ quizId, initialQuestions, quizT
       }
     });
   };
+
+  // Prevent hydration mismatch by waiting for initialization
+  if (!isInitialized) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <div className="text-gray-500">Memuat data pertanyaan...</div>
+      </div>
+    );
+  }
 
   return (
     <TooltipProvider>
@@ -237,6 +338,71 @@ export default function DynamicQuestionBuilder({ quizId, initialQuestions, quizT
                         </Select>
                       </div>
                     </div>
+                    
+                    {/* Image Upload Section */}
+                    <div className="mt-4">
+                      {(q.image || q.existingImageUrl) ? (
+                        <div className="relative inline-block">
+                          <div className="relative w-32 h-24 overflow-hidden border rounded-lg">
+                            <Image
+                              src={q.image ? URL.createObjectURL(q.image) : q.existingImageUrl!}
+                              alt="Preview gambar pertanyaan"
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                          <Button
+                            type="button"
+                            variant="destructive"
+                            size="icon"
+                            className="absolute w-6 h-6 -top-2 -right-2"
+                            onClick={() => removeImage(q.id)}
+                          >
+                            <X className="w-3 h-3" />
+                          </Button>
+                          {/* Tampilkan opsi untuk mengganti gambar */}
+                          <div className="mt-2">
+                            <Label
+                              htmlFor={`image-${q.id}`}
+                              className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 transition-colors border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50"
+                            >
+                              <Upload className="w-4 h-4" />
+                              Ganti Gambar
+                            </Label>
+                            <Input
+                              id={`image-${q.id}`}
+                              type="file"
+                              accept="image/jpeg,image/jpg,image/png,image/webp"
+                              className="hidden"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0] || null;
+                                handleImageChange(q.id, file);
+                              }}
+                            />
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <Label
+                            htmlFor={`image-${q.id}`}
+                            className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 transition-colors border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50"
+                          >
+                            <Upload className="w-4 h-4" />
+                            Tambah Gambar (Opsional)
+                          </Label>
+                          <Input
+                            id={`image-${q.id}`}
+                            type="file"
+                            accept="image/jpeg,image/jpg,image/png,image/webp"
+                            className="hidden"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0] || null;
+                              handleImageChange(q.id, file);
+                            }}
+                          />
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   {/* Konten Pertanyaan (Opsi Jawaban) */}
@@ -276,7 +442,7 @@ export default function DynamicQuestionBuilder({ quizId, initialQuestions, quizT
                     )}
                     {q.type === 'benar_salah' && (
                       <RadioGroup value={q.correctAnswer} onValueChange={(val) => updateQuestion(q.id, 'correctAnswer', val)} className="space-y-3">
-                        {q.options.map((opt, optIndex) => (
+                        {q.options.map((opt) => (
                           <div key={opt.id} className="flex items-center gap-3 group">
                             <RadioGroupItem value={opt.text.toLowerCase() === "benar" ? "true" : "false"} id={opt.id} className="text-blue-600 border-gray-300"/>
                             <Label htmlFor={opt.id} className="font-medium text-gray-700">{opt.text}</Label>
