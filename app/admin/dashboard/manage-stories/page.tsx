@@ -12,7 +12,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 export default async function ManageStoriesPage() {
   const stories = await GetStories()
 
-  // Antisipasi kalau error
   if (!Array.isArray(stories)) {
     return (
       <div className="container py-10 mx-auto">

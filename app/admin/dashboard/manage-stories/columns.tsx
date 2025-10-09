@@ -4,6 +4,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Edit, Trash2, ArrowUpDown, Settings } from "lucide-react";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -28,10 +29,12 @@ export type StoryColumn = {
   cerita_id: number;
   judul: string;
   thumbnail?: string | null;
-  deskripsi?: string | null;
   xp_reward: number;
   created_at?: Date | null;
-  kategori: string; 
+  is_published: boolean;
+  KategoriCerita: {
+    NamaKategori: string;
+  };
 };
 
 export const getColumns = (
@@ -91,34 +94,45 @@ export const getColumns = (
     },
   },
   {
-    accessorKey: "deskripsi",
-    header: "Deskripsi",
+    accessorFn: (row) => row.KategoriCerita.NamaKategori,
+    id: "kategori",
+    header: "Kategori",
     cell: ({ row }) => {
-      const desc = row.getValue("deskripsi") as string | null;
-      return (
-        <p className="line-clamp-2 text-sm text-muted-foreground max-w-xs">
-          {desc || "-"}
-        </p>
-      );
+      const categoryName = row.original.KategoriCerita.NamaKategori;
+      return <Badge variant="outline">{categoryName}</Badge>;
     },
   },
   {
     accessorKey: "xp_reward",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        className="h-auto p-0 font-semibold hover:bg-transparent"
-      >
-        XP Reward
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
+    header: "XP",
     cell: ({ row }) => {
       return (
         <span className="font-semibold text-primary">
           {row.getValue("xp_reward")}
         </span>
+      );
+    },
+  },
+  {
+    accessorKey: "is_published",
+    header: "Status",
+    cell: ({ row }) => {
+      const isPublished = row.getValue("is_published");
+      return (
+        <Badge variant={isPublished ? "default" : "secondary"}>
+          {isPublished ? "Published" : "Draft"}
+        </Badge>
+      );
+    },
+  },
+  {
+    accessorKey: "created_at",
+    header: "Tanggal Dibuat",
+    cell: ({ row }) => {
+      const date = row.getValue("created_at") as string | null;
+      if (!date) return "-";
+      return (
+        <span>{dayjs(date).tz("Asia/Jakarta").format("DD MMM YYYY")}</span>
       );
     },
   },
@@ -166,8 +180,8 @@ export const getColumns = (
               <AlertDialogHeader>
                 <AlertDialogTitle>Yakin ingin menghapus?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Data <span className="font-semibold">{story.judul}</span> akan
-                  dihapus permanen dan tidak bisa dikembalikan.
+                  Data <span className="font-semibold">{story.judul}</span>{" "}
+                  akan dihapus permanen dan tidak bisa dikembalikan.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>

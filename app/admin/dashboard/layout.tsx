@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   title: "Pusaka Tulungagung - Dashboard Admin",
   description: "Pusaka Tulungagung Dashboard Admin",
 };
-import { Toaster } from "react-hot-toast";
+import { Toaster } from "sonner";
 import { auth } from "@/auth";
 
 export default async function DashboardLayout({

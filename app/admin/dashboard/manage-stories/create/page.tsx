@@ -1,23 +1,23 @@
+"use client";
 
-"use client"
-
-import type React from "react"
-
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Upload, FileImage, Star, BookOpen, CheckCircle } from "lucide-react"
-import { createStory } from "../lib/actions"
-import { useFormStatus } from "react-dom"
-import { useRouter } from "next/navigation"
-import Image from "next/image"
+import type React from "react";
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Upload, FileImage, Star, BookOpen, CheckCircle } from "lucide-react";
+import { GetCategories } from "../lib/data"; 
+import { createStory } from "../lib/actions";
+import { useFormStatus } from "react-dom";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 function SubmitButton() {
-  const { pending } = useFormStatus()
+  const { pending } = useFormStatus();
 
   return (
     <Button type="submit" disabled={pending} className="w-full">
@@ -33,52 +33,74 @@ function SubmitButton() {
         </>
       )}
     </Button>
-  )
+  );
+}
+
+interface Category {
+  KategoriId: number;
+  NamaKategori: string;
 }
 
 export default function CreateStoryForm() {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null)
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
-  const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState<boolean>(false)
-  const router = useRouter()
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<boolean>(false);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const router = useRouter();
+
+  useEffect(() => {
+    async function fetchCategories() {
+      try {
+        const result = await GetCategories();
+        if ("error" in result) {
+          setError("Gagal memuat kategori");
+        } else {
+          setCategories(result);
+        }
+      } catch (error) {
+        console.error("Failed to fetch categories:", error);
+        setError("Gagal memuat kategori");
+      }
+    }
+    fetchCategories();
+  }, []);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
+    const file = event.target.files?.[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
-        setError("File terlalu besar. Maksimal 5MB.")
-        return
+        setError("File terlalu besar. Maksimal 5MB.");
+        return;
       }
 
-      setSelectedFile(file)
-      const url = URL.createObjectURL(file)
-      setPreviewUrl(url)
-      setError(null)
+      setSelectedFile(file);
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+      setError(null);
     }
-  }
+  };
 
   const handleSubmit = async (formData: FormData) => {
-    setError(null)
-    setSuccess(false)
+    setError(null);
+    setSuccess(false);
 
     try {
-      const result = await createStory(null, formData)
+      const result = await createStory(null, formData);
       if (result?.error) {
-        setError(result.error)
+        setError(result.error);
       } else {
-        setSuccess(true)
-        // Reset form
-        setSelectedFile(null)
-        setPreviewUrl(null)
+        setSuccess(true);
+        setSelectedFile(null);
+        setPreviewUrl(null);
       }
       if (result?.redirectTo) {
         router.push(result.redirectTo);
       }
     } catch {
-      setError("Terjadi kesalahan saat membuat cerita")
+      setError("Terjadi kesalahan saat membuat cerita");
     }
-  }
+  };
 
   return (
     <div className="max-w-2xl mx-auto p-6">
@@ -187,6 +209,28 @@ export default function CreateStoryForm() {
               </div>
             </div>
 
+            {/* Category Select */}
+            <div className="space-y-2">
+              <Label htmlFor="kategori" className="text-sm font-medium">
+                Kategori Cerita
+              </Label>
+              <Select name="kategori" required>
+                <SelectTrigger>
+                  <SelectValue placeholder="Pilih kategori cerita" />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories.map((category) => (
+                    <SelectItem key={category.KategoriId} value={category.KategoriId.toString()}>
+                      {category.NamaKategori}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {categories.length === 0 && (
+                <p className="text-destructive text-sm">Tidak ada kategori tersedia. Silakan tambahkan kategori terlebih dahulu.</p>
+              )}
+            </div>
+
             {/* Description */}
             <div className="space-y-2">
               <Label htmlFor="deskripsi" className="text-sm font-medium">
@@ -231,5 +275,5 @@ export default function CreateStoryForm() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

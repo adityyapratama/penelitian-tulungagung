@@ -1,80 +1,93 @@
-"use server"
+"use server";
 
-import prisma from "@/lib/prisma"
-import { StoryColumn } from "../columns"
-import { saveScenesToDatabase, loadScenesFromDatabase, type SceneData } from "./database"
-import { revalidatePath } from "next/cache"
-
+import prisma from "@/lib/prisma";
+import { StoryColumn } from "../columns";
+import {
+  saveScenesToDatabase,
+  loadScenesFromDatabase,
+  type SceneData,
+} from "./database";
+import { revalidatePath } from "next/cache";
 
 export async function GetStories() {
-    try {
-        const stories = await prisma.ceritaInteraktif.findMany({})
+  try {
+    const stories = await prisma.ceritaInteraktif.findMany({
+      include: {
+        KategoriCerita: {
+          select: {
+            NamaKategori: true,
+          },
+        },
+      },
+    });
 
-        const response: StoryColumn[] = stories.map((stories) => {
-            return {
-                cerita_id : stories.cerita_id,
-                judul: stories.judul,
-                thumbnail: stories.thumbnail,
-                deskripsi: stories.deskripsi,
-                category: stories.kategori,
-                is_published: stories.is_published,
-                created_by: stories.created_by!,
-                xp_reward: stories.xp_reward,
-                created_at: stories.created_at
-            }
-        })
+    const response: StoryColumn[] = stories.map((story) => {
+      return {
+        cerita_id: story.cerita_id,
+        judul: story.judul,
+        thumbnail: story.thumbnail,
+        deskripsi: story.deskripsi,
+        KategoriCerita: {
+          NamaKategori: story.KategoriCerita.NamaKategori,
+        },
+        is_published: story.is_published,
+        created_by: story.created_by!,
+        xp_reward: story.xp_reward,
+        created_at: story.created_at,
+      };
+    });
 
-        return response
-    } catch (error) {
-        console.log(error)
-        return {error:error}
-    }
+    return response;
+  } catch (error) {
+    console.log(error);
+    return { error: error };
+  }
 }
 
-export async function GetStoryById(id:string){
-    try {
-        const story = await prisma.ceritaInteraktif.findFirst({
-            where:{
-                cerita_id:parseInt(id)
-            }
-        })
+export async function GetStoryById(id: string) {
+  try {
+    const story = await prisma.ceritaInteraktif.findFirst({
+      where: {
+        cerita_id: parseInt(id),
+      },
+    });
 
-        return story
-    } catch (error) {
-        console.log(error)
-        return {error:error}
-    }
+    return story;
+  } catch (error) {
+    console.log(error);
+    return { error: error };
+  }
 }
 
 export async function saveScenes(formData: FormData) {
-  const scenesJson = formData.get("scenes") as string
-  const ceritaId = Number.parseInt(formData.get("cerita_id") as string)
+  const scenesJson = formData.get("scenes") as string;
+  const ceritaId = Number.parseInt(formData.get("cerita_id") as string);
 
   if (!ceritaId || isNaN(ceritaId)) {
-    return { success: false, error: "Invalid story ID" }
+    return { success: false, error: "Invalid story ID" };
   }
 
   try {
-    const scenes: SceneData[] = JSON.parse(scenesJson)
-    const result = await saveScenesToDatabase(scenes, ceritaId)
+    const scenes: SceneData[] = JSON.parse(scenesJson);
+    const result = await saveScenesToDatabase(scenes, ceritaId);
 
-    revalidatePath(`/${ceritaId}`)
-    return result
+    revalidatePath(`/${ceritaId}`);
+    return result;
   } catch (error) {
-    return { success: false, error: "Invalid scene data" }
+    return { success: false, error: "Invalid scene data" };
   }
 }
 
 export async function loadScenes(formData: FormData) {
-  const ceritaId = Number.parseInt(formData.get("cerita_id") as string)
+  const ceritaId = Number.parseInt(formData.get("cerita_id") as string);
 
   if (!ceritaId || isNaN(ceritaId)) {
-    return { success: false, error: "Invalid story ID" }
+    return { success: false, error: "Invalid story ID" };
   }
 
-  const result = await loadScenesFromDatabase(ceritaId)
-  revalidatePath(`/${ceritaId}`)
-  return result
+  const result = await loadScenesFromDatabase(ceritaId);
+  revalidatePath(`/${ceritaId}`);
+  return result;
 }
 
 // Adding GetScenesByStoryId function to fetch scenes by story ID
@@ -84,10 +97,25 @@ export async function GetScenesByStoryId(id: string) {
       where: {
         cerita_id: Number.parseInt(id),
       },
-    })
-    return scenes
+    });
+    return scenes;
   } catch (error) {
-    console.log(error)
-    return { error: error }
+    console.log(error);
+    return { error: error };
+  }
+}
+
+export async function GetCategories() {
+  try {
+    const categories = await prisma.kategoriCerita.findMany({
+      select: {
+        KategoriId: true,
+        NamaKategori: true,
+      },
+    });
+    return categories;
+  } catch (error) {
+    console.log(error);
+    return { error: error };
   }
 }
