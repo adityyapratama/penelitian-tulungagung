@@ -3,46 +3,20 @@
 import { auth } from "@/auth"
 import prisma from "@/lib/prisma"
 import { SchemaStoryCategory } from "@/lib/schema"
-import { ActionResult } from "@/lib/executeAction"
+import { revalidatePath } from "next/cache"
 
-export async function createCategory(_:unknown,formData:FormData):Promise<ActionResult> {
+export type ActionResult = {
+  success?: string;
+  error?: string;
+  errors?: {
+    NamaKategori?: string[];
+  };
+};
+
+export async function createCategory(_: unknown, formData: FormData): Promise<ActionResult> {
     const session = await auth()
-
-    if(!session){
-        return {error: "Not Authorized"}
-    }
-
-    const parse = SchemaStoryCategory.safeParse({
-        NamaKategori : formData.get("nama_kategori")
-    })
-
-    if (!parse.success) {
-        return { error: parse.error.errors[0].message };
-    }
-
-    try {
-        prisma.kategoriCerita.create({
-            data:{
-                NamaKategori : parse.data.NamaKategori
-            }
-        })
-
-        return {success:"Kategori Berhasil Ditambahkan"}
-    } catch{
-
-        return {error: "Gagal Membuat Kategori"}
-    }
-}
-
-export async function updateCategory(id: string, formData: FormData): Promise<ActionResult> {
-    const session = await auth()
-
     if (!session) {
         return { error: "Not Authorized" }
-    }
-
-    if (!id) {
-        return { error: "ID Kategori tidak ditemukan" }
     }
 
     const parse = SchemaStoryCategory.safeParse({
@@ -50,15 +24,42 @@ export async function updateCategory(id: string, formData: FormData): Promise<Ac
     })
 
     if (!parse.success) {
-        return { error: parse.error.errors[0].message }
+        return { errors: parse.error.flatten().fieldErrors };
+    }
+
+    try {
+        await prisma.kategoriCerita.create({
+            data: {
+                NamaKategori: parse.data.NamaKategori
+            }
+        })
+        revalidatePath("/admin/dashboard/manage-stories/category")
+        return { success: "Kategori Berhasil Ditambahkan" }
+    } catch (e) {
+        return { error: "Gagal Membuat Kategori. Mungkin nama sudah ada." }
+    }
+}
+
+export async function updateCategory(id: string, prevState: unknown, formData: FormData): Promise<ActionResult> {
+    const session = await auth()
+    if (!session) {
+        return { error: "Not Authorized" }
+    }
+
+    const parse = SchemaStoryCategory.safeParse({
+        NamaKategori: formData.get("nama_kategori")
+    })
+
+    if (!parse.success) {
+        return { errors: parse.error.flatten().fieldErrors };
     }
 
     try {
         await prisma.kategoriCerita.update({
-            where: { KategoriId: parseInt(id.toString()) },
+            where: { KategoriId: parseInt(id) },
             data: { NamaKategori: parse.data.NamaKategori }
         })
-
+        revalidatePath("/admin/dashboard/manage-stories/category")
         return { success: "Kategori Berhasil Diperbarui" }
     } catch {
         return { error: "Gagal Update Kategori" }
@@ -67,22 +68,17 @@ export async function updateCategory(id: string, formData: FormData): Promise<Ac
 
 export async function deleteCategory(id: string): Promise<ActionResult> {
     const session = await auth()
-
     if (!session) {
         return { error: "Not Authorized" }
     }
 
-    if (!id) {
-        return { error: "ID Kategori tidak ditemukan" }
-    }
-
     try {
         await prisma.kategoriCerita.delete({
-            where: { KategoriId: parseInt(id.toString()) }
+            where: { KategoriId: parseInt(id) }
         })
-
+        revalidatePath("/admin/dashboard/manage-stories/category")
         return { success: "Kategori Berhasil Dihapus" }
     } catch {
-        return { error: "Gagal Menghapus Kategori" }
+        return { error: "Gagal Menghapus Kategori. Pastikan tidak ada cerita yang menggunakan kategori ini." }
     }
 }

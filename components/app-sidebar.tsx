@@ -62,8 +62,8 @@ const data = {
           url: "/admin/dashboard/manage-stories",
         },
         {
-          title: "Tambah Cerita",
-          url: "/admin/dashboard/manage-stories/create",
+          title: "Daftar Kategori",
+          url: "/admin/dashboard/manage-stories/category",
         },
       ],
     },
