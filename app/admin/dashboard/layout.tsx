@@ -15,6 +15,7 @@ export const metadata: Metadata = {
 };
 import { Toaster } from "sonner";
 import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 
 export default async function DashboardLayout({
   children,
@@ -24,7 +25,7 @@ export default async function DashboardLayout({
   const session = await auth();
 
   if (session?.user.role != "super_admin") {
-    return <p>You are not authorized to view this page!</p>;
+    redirect("/")
   }
 
   return (

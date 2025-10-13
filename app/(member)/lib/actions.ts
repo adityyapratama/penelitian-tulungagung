@@ -209,7 +209,7 @@ export async function CreateProgress(_:unknown,data : ProgressData){
     });
     id = user?.member_id;
     if (!id) return { error: "User is not a member" };
-  } catch (error) {
+  } catch {
     return { error: "User is not a member" };
   }
 

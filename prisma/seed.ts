@@ -93,6 +93,16 @@ const userData: Prisma.UserCreateInput[] = [
     last_login: dayjs().toDate(),
     is_active: true,
   },
+  {
+    username: "Mufi",
+    email: "Mufi@gmail.com",
+    password_hash:
+      "$2a$10$cKpVeVrdMtUL/gwSv3ErQumTbXG/9Vf3gaJbTk3Cw5scSzkHO2J/O",
+    role: "guru",
+    created_at: dayjs().toDate(),
+    last_login: dayjs().toDate(),
+    is_active: true,
+  },
 ];
 
 // Data Sekolah untuk Tulungagung
@@ -780,8 +790,8 @@ export async function main() {
   for (const u of userData) {
     await prisma.user.upsert({
       where: { username: u.username },
-      update: {}, // kalau sudah ada, biarkan
-      create: u, // kalau belum ada, buat baru
+      update: {}, 
+      create: u, 
     });
   }
   for (const c of CategoryArticleData) {

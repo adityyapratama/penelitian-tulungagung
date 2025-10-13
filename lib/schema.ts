@@ -149,4 +149,10 @@ export const SchemaMember = z.object(
     minat: z.string({message:"message:required"}),
   }
 )
-  
+
+export const SchemaGroup = z.object(
+  {
+    group_name : z.string({message:"group shoul have a name"}),
+    group_thumbnail : z.instanceof(File).optional()
+  }
+)

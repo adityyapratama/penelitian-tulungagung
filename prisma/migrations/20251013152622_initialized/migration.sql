@@ -78,6 +78,16 @@ CREATE TABLE `Member` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
+CREATE TABLE `GroupContent` (
+    `group_content_id` INTEGER NOT NULL AUTO_INCREMENT,
+    `group_ud` INTEGER NOT NULL,
+    `content_type` ENUM('kuis', 'cerita', 'puzzle') NOT NULL,
+    `content_id` INTEGER NOT NULL,
+
+    PRIMARY KEY (`group_content_id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `ProgresMember` (
     `progres_id` INTEGER NOT NULL AUTO_INCREMENT,
     `member_id` INTEGER NULL,

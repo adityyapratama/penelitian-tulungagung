@@ -27,10 +27,9 @@ export function NavbarDemo() {
         let dashboardUrl = "/dashboard";
         if (session?.user?.role === "super_admin") {
           dashboardUrl = "/admin/dashboard";
-        } else if (session?.user?.role === "admin") {
-          dashboardUrl = "/dashboard";
-        } else if (session?.user?.role === "user") {
-          dashboardUrl = "/dashboard";
+        }
+         else if (session?.user?.role === "guru") {
+          dashboardUrl = "/guru/dashboard";
         } else if (session?.user?.role === "member") {
           dashboardUrl = "/games";
         }

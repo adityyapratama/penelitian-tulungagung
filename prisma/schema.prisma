@@ -116,11 +116,10 @@ model Guru {
 }
 
 model Group {
-  group_id        Int       @id
+  group_id        String       @id @default(uuid())
   group_name      String?
   group_thumbnail String?
   created_by      Int?
-  group_link      String?
   created_at      DateTime? @db.Timestamp(0)
   updated_at      DateTime? @db.Timestamp(0)
 
@@ -131,7 +130,7 @@ model Group {
 }
 
 model GroupMember {
-  group_id          Int
+  group_id          String
   member_id         Int
   tanggal_bergabung DateTime @db.Timestamp(0)
 
@@ -166,10 +165,17 @@ model Member {
   MemberAchievement  MemberAchievement[]
 }
 
+model GroupContent {
+  group_content_id  Int   @id @default(autoincrement())
+  group_ud  Int
+  content_type      ContentType
+  content_id        Int
+}
+
 model ProgresMember {
   progres_id   Int         @id @default(autoincrement())
   member_id    Int?
-  group_id     Int?
+  group_id     String?
   content_type ContentType
   content_id   Int
   skor         Int?
