@@ -1,12 +1,13 @@
 'use server'
 
 import { auth } from "@/auth"
-import { SchemaGroup } from "@/lib/schema"
+import { SchemaGroup, SchemaGroupContent } from "@/lib/schema"
 import fs from "fs";
 import path from "path";
 import { revalidatePath } from "next/cache";
 import { v4 as uuidv4 } from "uuid";
 import prisma from "@/lib/prisma";
+import { error } from "console";
 
 
 export async function CreateGroup(_: unknown, formData: FormData) {
@@ -156,5 +157,62 @@ export async function UpdateGroup(_: unknown, formData: FormData) {
   } catch (error) {
     console.error(error);
     return { error: "Terjadi kesalahan saat memperbarui group" };
+  }
+}
+
+export async function CreateGroupContent(_: unknown, request: Request) {
+  const body = await request.json();
+
+  const parse = SchemaGroupContent.safeParse(body);
+  if (!parse.success) {
+    return { error: parse.error.errors[0].message };
+  }
+
+  const { group_id, contents } = parse.data;
+
+  try {
+    await prisma.groupContent.createMany({
+      data: contents.map((item) => ({
+        group_id,
+        content_type: item.content_type,
+        content_id: item.content_id,
+      })),
+      skipDuplicates: true,
+    });
+
+    return { success: "Berhasil menambahkan group content" };
+  } catch (error) {
+    console.error(error);
+    return { error: "Terjadi kesalahan saat membuat group content" };
+  }
+}
+
+export async function DeleteGroupContent(_: unknown, request: Request) {
+  const body = await request.json();
+
+  const parse = SchemaGroupContent.safeParse(body);
+  if (!parse.success) {
+    return { error: parse.error.errors[0].message };
+  }
+
+  const { group_id, contents } = parse.data;
+
+  try {
+    await prisma.$transaction(async (tx) => {
+      for (const item of contents) {
+        await tx.groupContent.deleteMany({
+          where: {
+            group_id,
+            content_type: item.content_type,
+            content_id: item.content_id,
+          },
+        });
+      }
+    });
+
+    return { success: "Berhasil menghapus group content" };
+  } catch (error) {
+    console.error(error);
+    return { error: "Terjadi kesalahan saat menghapus group content" };
   }
 }

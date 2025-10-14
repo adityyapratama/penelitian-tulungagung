@@ -127,6 +127,7 @@ model Group {
   Guru          Guru?           @relation(fields: [created_by], references: [guru_id])
   GroupMember   GroupMember[]
   ProgresMember ProgresMember[]
+  GroupContent  GroupContent[]
 }
 
 model GroupMember {
@@ -167,9 +168,11 @@ model Member {
 
 model GroupContent {
   group_content_id  Int   @id @default(autoincrement())
-  group_ud  Int
+  group_id          String
   content_type      ContentType
   content_id        Int
+
+  Group  Group  @relation(fields: [group_id], references: [group_id])
 }
 
 model ProgresMember {

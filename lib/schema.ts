@@ -152,7 +152,18 @@ export const SchemaMember = z.object(
 
 export const SchemaGroup = z.object(
   {
-    group_name : z.string({message:"group shoul have a name"}),
+    group_name : z.string({message:"group should have a name"}),
     group_thumbnail : z.instanceof(File).optional()
   }
 )
+
+
+export const SchemaGroupContent = z.object({
+  group_id: z.string({ message: "group should have id" }),
+  contents: z.array(
+    z.object({
+      content_type: z.enum(["kuis", "cerita", "puzzle"]),
+      content_id: z.coerce.number().int().min(0),
+    })
+  ).min(1, "minimal 1 konten harus dipilih"),
+});
