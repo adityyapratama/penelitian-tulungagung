@@ -234,6 +234,7 @@ export async function CreateProgress(_:unknown,data : ProgressData){
           data: {
             skor: data.skor,
             completed_at: completedAt,
+            group_id : data.group_id,
             duration: duration,
           },
         });
@@ -248,6 +249,7 @@ export async function CreateProgress(_:unknown,data : ProgressData){
           member_id: id,
           content_id: data.contentId,
           content_type: data.contentType,
+          group_id : data.group_id,
           skor: data.skor,
           completed_at: completedAt,
           duration: duration,

@@ -7,7 +7,7 @@ import path from "path";
 import { revalidatePath } from "next/cache";
 import { v4 as uuidv4 } from "uuid";
 import prisma from "@/lib/prisma";
-import { error } from "console";
+
 
 
 export async function CreateGroup(_: unknown, formData: FormData) {
@@ -216,3 +216,24 @@ export async function DeleteGroupContent(_: unknown, request: Request) {
     return { error: "Terjadi kesalahan saat menghapus group content" };
   }
 }
+
+export async function GroupPerformance(id:string){
+  const session = await auth()
+  
+  if (!session){
+    return {error:"Not Authorized"}
+  }
+
+  try {
+    const data = await prisma.$queryRaw`SELECT u.username,SUM(p.skor) as scores, u.last_login from Member m
+                                        INNER JOIN User u ON m.user_id = u.user_id
+                                        LEFT JOIN ProgresMember p ON m.member_id = p.member_id
+                                        WHERE p.group_id = ${id}
+                                        GROUP BY u.username;`
+    return data;  
+  } catch {
+    return {error:"terjadi kesalahan saat mengambil member"}
+  }
+}
+
+
