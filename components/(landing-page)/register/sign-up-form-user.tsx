@@ -30,10 +30,9 @@ export function SignUpForm() {
 
       {/* Form */}
       <form action={formAction} className="space-y-6">
-
         {/* input username */}
 
-         <div>
+        <div>
           <label
             htmlFor="username"
             className="block mb-2 text-sm font-medium text-gray-700"
@@ -50,7 +49,7 @@ export function SignUpForm() {
           />
         </div>
         {/* Input Email */}
-        
+
         <div>
           <label
             htmlFor="email"
@@ -77,7 +76,10 @@ export function SignUpForm() {
             >
               Password
             </label>
-            <a href="#" className="text-sm font-medium text-primary hover:text-primary-3/4">
+            <a
+              href="#"
+              className="text-sm font-medium text-primary hover:text-primary-3/4"
+            >
               Lupa password?
             </a>
           </div>
@@ -101,25 +103,35 @@ export function SignUpForm() {
           </div>
         )} */}
 
-        
-
-    {state?.error && (
-    <div className="flex items-center p-3 space-x-2 text-sm text-red-600 rounded-lg bg-red-50">
-        <svg xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0 w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-        </svg>
-        <p>{state.error}</p>
-        </div>
-    )}
-
-
+        {state?.error && (
+          <div className="flex items-center p-3 space-x-2 text-sm text-red-600 rounded-lg bg-red-50">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="flex-shrink-0 w-5 h-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                clipRule="evenodd"
+              />
+            </svg>
+            <p>{state.error}</p>
+          </div>
+        )}
 
         {/* Tombol Submit */}
         <div>
-          <Button type="submit" className="w-full" size="lg">Daftar</Button>
+          <Button type="submit" className="w-full" size="lg">
+            Daftar
+          </Button>
           <p className="mt-2 text-sm text-center text-gray-600">
             sudah punya akun?{" "}
-            <Link href="/sign-in" className="font-medium text-primary hover:text-primary-3/4">
+            <Link
+              href="/sign-in"
+              className="font-medium text-primary hover:text-primary-3/4"
+            >
               Masuk
             </Link>
           </p>

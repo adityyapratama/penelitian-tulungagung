@@ -55,8 +55,8 @@ export async function getAllStoriesFormatted(): Promise<GameCardData[]> {
     title: s.judul,
     type: "cerita",
     image: s.thumbnail || "/placeholder.svg",
-    description: s.deskripsi || "Cerita ini tidak memiliki deskripsi.",
-    category: s.kategori || "Tidak ada kategori",
+    description: s.deskripsi || "Cerita interaktif yang menarik",
+    category: s.KategoriCerita?.NamaKategori || "Tidak ada kategori",
     xp_reward: s.xp_reward,
     createdAt: s.created_at || new Date(),
   }));

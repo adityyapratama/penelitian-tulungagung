@@ -6,7 +6,6 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { CreateProgress } from "@/app/(member)/lib/actions";
 
-
 type Pilihan = {
   jawaban_id: number;
   teks_jawaban: string;
@@ -37,16 +36,22 @@ type QuizComponentProps = {
   questions: Pertanyaan[];
 };
 
-export function QuizClientComponent({ quizDetails, questions }: QuizComponentProps) {
+export function QuizClientComponent({
+  quizDetails,
+  questions,
+}: QuizComponentProps) {
   const router = useRouter();
-  
+
   // State untuk alur kuis
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState<Record<number, number>>({}); // Menyimpan jawaban user {questionIndex: answerId}
   const [quizComplete, setQuizComplete] = useState(false);
   const [startedAt, setStartedAt] = useState<Date | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitResult, setSubmitResult] = useState<{success?: string; error?: string} | null>(null);
+  const [submitResult, setSubmitResult] = useState<{
+    success?: string;
+    error?: string;
+  } | null>(null);
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [showAnswerKey, setShowAnswerKey] = useState(false); // ✅ State untuk menampilkan kunci jawaban
 
@@ -56,7 +61,9 @@ export function QuizClientComponent({ quizDetails, questions }: QuizComponentPro
     questions.forEach((question, index) => {
       const userAnswerId = userAnswers[index];
       if (userAnswerId) {
-        const selectedChoice = question.PilihanKuis.find(choice => choice.jawaban_id === userAnswerId);
+        const selectedChoice = question.PilihanKuis.find(
+          (choice) => choice.jawaban_id === userAnswerId
+        );
         if (selectedChoice && selectedChoice.score > 0) {
           totalScore += question.poin;
         }
@@ -76,7 +83,7 @@ export function QuizClientComponent({ quizDetails, questions }: QuizComponentPro
     if (quizComplete && startedAt && !hasSubmitted) {
       setHasSubmitted(true); //Set flag untuk mencegah multiple submit
       setIsSubmitting(true);
-      
+
       const submitProgress = async () => {
         try {
           const finalScore = calculateFinalScore();
@@ -84,9 +91,9 @@ export function QuizClientComponent({ quizDetails, questions }: QuizComponentPro
             contentId: quizDetails.kuis_id,
             contentType: "kuis" as const,
             skor: finalScore,
-            startedAt: startedAt
+            startedAt: startedAt,
           };
-          
+
           const result = await CreateProgress(null, progressData);
           setSubmitResult(result);
         } catch {
@@ -95,23 +102,28 @@ export function QuizClientComponent({ quizDetails, questions }: QuizComponentPro
           setIsSubmitting(false);
         }
       };
-      
+
       submitProgress();
     }
-  }, [quizComplete, startedAt, quizDetails.kuis_id, hasSubmitted, calculateFinalScore]); // ✅ Dependency yang aman
-
+  }, [
+    quizComplete,
+    startedAt,
+    quizDetails.kuis_id,
+    hasSubmitted,
+    calculateFinalScore,
+  ]); // ✅ Dependency yang aman
 
   const handleAnswer = (choice: Pilihan) => {
     // Simpan jawaban user untuk pertanyaan ini
-    setUserAnswers(prev => ({
+    setUserAnswers((prev) => ({
       ...prev,
-      [currentQuestionIndex]: choice.jawaban_id
+      [currentQuestionIndex]: choice.jawaban_id,
     }));
   };
 
   const handleNext = () => {
     if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(prev => prev + 1);
+      setCurrentQuestionIndex((prev) => prev + 1);
     } else {
       // Quiz selesai
       setQuizComplete(true);
@@ -120,27 +132,31 @@ export function QuizClientComponent({ quizDetails, questions }: QuizComponentPro
 
   const handlePrevious = () => {
     if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(prev => prev - 1);
+      setCurrentQuestionIndex((prev) => prev - 1);
     }
   };
 
   const handleRestart = () => {
     // Redirect ke halaman games untuk pilih quiz lain
-    router.push('/games');
+    router.push("/games");
   };
 
   const getButtonClass = (choice: Pilihan) => {
-    const baseClass = "w-full h-auto min-h-14 px-6 py-4 rounded-lg font-medium text-base transition-all duration-300 border-2 text-wrap text-left ";
-    
+    const baseClass =
+      "w-full h-auto min-h-14 px-6 py-4 rounded-lg font-medium text-base transition-all duration-300 border-2 text-wrap text-left ";
+
     const isSelected = userAnswers[currentQuestionIndex] === choice.jawaban_id;
-    
+
     // Jika quiz belum selesai - hanya highlight pilihan yang dipilih
     if (!quizComplete) {
-        return baseClass + (isSelected
-          ? "bg-blue-50 border-blue-500 text-blue-700"  // Pilihan yang dipilih
-          : "bg-white border-gray-200 text-gray-700 hover:border-blue-300 hover:bg-blue-50/50"); // Pilihan lain
+      return (
+        baseClass +
+        (isSelected
+          ? "bg-blue-50 border-blue-500 text-blue-700" // Pilihan yang dipilih
+          : "bg-white border-gray-200 text-gray-700 hover:border-blue-300 hover:bg-blue-50/50")
+      ); // Pilihan lain
     }
-    
+
     // Jika quiz selesai dan showAnswerKey aktif - tampilkan feedback
     if (showAnswerKey) {
       if (choice.score > 0) {
@@ -150,7 +166,7 @@ export function QuizClientComponent({ quizDetails, questions }: QuizComponentPro
         return baseClass + "bg-red-50 border-red-500 text-red-700";
       }
     }
-    
+
     // Default
     return baseClass + "bg-white border-gray-200 text-gray-700";
   };
@@ -159,8 +175,9 @@ export function QuizClientComponent({ quizDetails, questions }: QuizComponentPro
   if (quizComplete) {
     const finalScore = calculateFinalScore();
     const totalPoints = questions.reduce((acc, q) => acc + q.poin, 0);
-    const percentage = totalPoints > 0 ? Math.round((finalScore / totalPoints) * 100) : 0;
-    
+    const percentage =
+      totalPoints > 0 ? Math.round((finalScore / totalPoints) * 100) : 0;
+
     const getMessage = () => {
       if (percentage === 100) return "Skor Sempurna! 🎉";
       if (percentage >= 80) return "Kerja Bagus! 🌟";
@@ -175,21 +192,29 @@ export function QuizClientComponent({ quizDetails, questions }: QuizComponentPro
           <h2 className="mb-2 text-3xl font-bold text-gray-800">
             {isSubmitting ? "Menyimpan Progres..." : getMessage()}
           </h2>
-          
+
           {/* Tampilkan hasil setelah server merespons */}
           {!isSubmitting && (
             <>
               <div className="mb-8">
-                <p className="mb-2 text-6xl font-bold text-blue-600">{percentage}%</p>
+                <p className="mb-2 text-6xl font-bold text-blue-600">
+                  {percentage}%
+                </p>
                 <p className="text-xl text-gray-600">
                   Skor Anda: {finalScore} dari {totalPoints} total poin
                 </p>
-                {submitResult?.success && <p className="mt-2 text-green-600">Anda mendapatkan +{quizDetails.xp_reward} XP!</p>}
-                {submitResult?.error && <p className="mt-2 text-red-500">{submitResult.error}</p>}
+                {submitResult?.success && (
+                  <p className="mt-2 text-green-600">
+                    Anda mendapatkan +{quizDetails.xp_reward} XP!
+                  </p>
+                )}
+                {submitResult?.error && (
+                  <p className="mt-2 text-red-500">{submitResult.error}</p>
+                )}
               </div>
 
               {/* ✅ FUNGSI KUNCI JAWABAN - Uncomment untuk aktifkan */}
-              
+
               {/* <div className="mb-6">
                 <button
                   onClick={() => setShowAnswerKey(!showAnswerKey)}
@@ -198,26 +223,40 @@ export function QuizClientComponent({ quizDetails, questions }: QuizComponentPro
                   {showAnswerKey ? "Sembunyikan Kunci Jawaban" : "Lihat Kunci Jawaban"}
                 </button>
               </div> */}
-              
 
               {/* ✅ REVIEW JAWABAN - Tampil saat showAnswerKey aktif */}
               {showAnswerKey && (
                 <div className="mb-8 overflow-y-auto max-h-96">
-                  <h3 className="mb-4 text-lg font-semibold text-gray-800">Review Semua Jawaban:</h3>
+                  <h3 className="mb-4 text-lg font-semibold text-gray-800">
+                    Review Semua Jawaban:
+                  </h3>
                   <div className="space-y-4 text-left">
                     {questions.map((q, index) => {
                       const userAnswerId = userAnswers[index];
-                      const userChoice = q.PilihanKuis.find(choice => choice.jawaban_id === userAnswerId);
-                      const correctChoice = q.PilihanKuis.find(choice => choice.score > 0);
-                      const isCorrect = userChoice?.score && userChoice.score > 0;
-                      
+                      const userChoice = q.PilihanKuis.find(
+                        (choice) => choice.jawaban_id === userAnswerId
+                      );
+                      const correctChoice = q.PilihanKuis.find(
+                        (choice) => choice.score > 0
+                      );
+                      const isCorrect =
+                        userChoice?.score && userChoice.score > 0;
+
                       return (
-                        <div key={q.pertanyaan_id} className="p-4 border rounded-lg bg-gray-50">
+                        <div
+                          key={q.pertanyaan_id}
+                          className="p-4 border rounded-lg bg-gray-50"
+                        >
                           <p className="mb-2 font-medium text-gray-800">
                             {index + 1}. {q.teks_pertanyaan}
                           </p>
-                          <p className={`text-sm mb-1 ${isCorrect ? 'text-green-600' : 'text-red-600'}`}>
-                            Jawaban Anda: {userChoice?.teks_jawaban || "Tidak dijawab"} 
+                          <p
+                            className={`text-sm mb-1 ${
+                              isCorrect ? "text-green-600" : "text-red-600"
+                            }`}
+                          >
+                            Jawaban Anda:{" "}
+                            {userChoice?.teks_jawaban || "Tidak dijawab"}
                             {isCorrect ? " ✓" : " ✗"}
                           </p>
                           <p className="text-sm text-green-600">
@@ -278,12 +317,12 @@ export function QuizClientComponent({ quizDetails, questions }: QuizComponentPro
         <div className="w-full max-w-2xl p-8 mx-auto bg-white shadow-lg rounded-2xl">
           {question.image && (
             <div className="mb-6 overflow-hidden rounded-lg">
-              <Image 
-                src={question.image} 
-                alt="Ilustrasi Pertanyaan" 
+              <Image
+                src={question.image}
+                alt="Ilustrasi Pertanyaan"
                 width={600}
                 height={256}
-                className="object-cover w-full h-64" 
+                className="object-cover w-full h-64"
               />
             </div>
           )}
@@ -304,7 +343,6 @@ export function QuizClientComponent({ quizDetails, questions }: QuizComponentPro
           </div>
         </div>
 
-        
         <div className="flex items-center justify-between w-full max-w-2xl mx-auto mt-6">
           <button
             onClick={handlePrevious}
@@ -313,16 +351,18 @@ export function QuizClientComponent({ quizDetails, questions }: QuizComponentPro
           >
             ← Sebelumnya
           </button>
-          
+
           <span className="text-sm text-gray-500">
             {Object.keys(userAnswers).length} dari {questions.length} terjawab
           </span>
-          
+
           <button
             onClick={handleNext}
             className="px-6 py-3 text-sm font-medium text-white transition-all duration-200 bg-blue-600 rounded-lg hover:bg-blue-700"
           >
-            {currentQuestionIndex < questions.length - 1 ? "Selanjutnya →" : "Selesai"}
+            {currentQuestionIndex < questions.length - 1
+              ? "Selanjutnya →"
+              : "Selesai"}
           </button>
         </div>
       </div>

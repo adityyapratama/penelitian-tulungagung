@@ -28,6 +28,7 @@ dayjs.extend(timezone);
 export type StoryColumn = {
   cerita_id: number;
   judul: string;
+  deskripsi?: string | null;  
   thumbnail?: string | null;
   xp_reward: number;
   created_at?: Date | null;

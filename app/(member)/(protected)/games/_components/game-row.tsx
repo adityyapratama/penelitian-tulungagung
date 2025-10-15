@@ -35,7 +35,7 @@ export function GameRow({ title, description, games, href }: GameRowProps) {
   const getGameUrl = (game: GameCardData) => {
     const id = game.id.split("-")[1]
     if (game.type === "kuis") return `/games/quiz/${id}`
-    if (game.type === "cerita") return `/games/cerita/${id}`
+    if (game.type === "cerita") return `/games/stories/${id}`
     return `/games/puzzle/${id}`
   }
 

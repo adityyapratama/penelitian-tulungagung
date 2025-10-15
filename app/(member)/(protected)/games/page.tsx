@@ -2,14 +2,12 @@ import { Suspense } from "react"
 import { getAllPuzzlesFormatted, getAllQuizzesFormatted, getAllStoriesFormatted } from "./lib/data"
 import { GameBrowser } from "./_components/game-browser"
 import {NavbarDemo} from "@/components/game/NavbarDemo"
-import { LoginUpdate } from "../article/lib/actions"
+import { LoginUpdate } from "@/app/(landing-page)/article/lib/actions"
 
 
 export default function GamesPage() {
   return (
     <>
-    <NavbarDemo/>
-      
       <main className="min-h-screen bg-background">
         <div className="p-6 pt-20 md:pt-24">
           <div className="mx-auto space-y-8 max-w-7xl">
