@@ -1,21 +1,25 @@
 import { GetStoryById, GetScenesByStoryId } from "@/app/admin/dashboard/manage-stories/lib/data";
+import { getArticles } from "@/app/(landing-page)/article/lib/actions";
 import { StoryPlayerClient } from "./_components/StoryPlayerClient";
-import { CeritaInteraktif, Scene } from "@/lib/generated/prisma"; 
+import type { CeritaInteraktif, Scene } from "@/lib/generated/prisma";
 
 type PageProps = {
   params: { id: string };
 };
 
 export default async function StoryDetailPage({ params }: PageProps) {
-  const [storyDetails, scenes] = await Promise.all([
+  const [storyDetails, scenes, recommendedArticles] = await Promise.all([
     GetStoryById(params.id),
     GetScenesByStoryId(params.id),
+    getArticles(3),
   ]);
 
-  if (!storyDetails || 
-      'error' in storyDetails || 
-      !Array.isArray(scenes) || 
-      scenes.length === 0) {
+  if (
+    !storyDetails ||
+    "error" in storyDetails ||
+    !Array.isArray(scenes) ||
+    scenes.length === 0
+  ) {
     return (
       <div className="flex items-center justify-center min-h-screen p-8 text-center bg-gray-50">
         <div>
@@ -30,9 +34,10 @@ export default async function StoryDetailPage({ params }: PageProps) {
 
   return (
     <div className="bg-gray-50">
-      <StoryPlayerClient 
-        storyDetails={storyDetails as CeritaInteraktif} 
-        scenes={scenes as Scene[]} 
+      <StoryPlayerClient
+        storyDetails={storyDetails as CeritaInteraktif}
+        scenes={scenes as Scene[]}
+        recommendedArticles={recommendedArticles}
       />
     </div>
   );

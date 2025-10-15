@@ -7,7 +7,7 @@ import {NavbarDemo} from "@/components/game/NavbarDemo"
 export default function GamesPage() {
   return (
     <>
-    <NavbarDemo/>
+    
       
       <main className="min-h-screen bg-background">
         <div className="p-6 pt-20 md:pt-24">

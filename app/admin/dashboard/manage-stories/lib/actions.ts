@@ -43,7 +43,7 @@ export async function createStory(_: unknown, formData: FormData): Promise<Actio
   const filePath = path.join(uploadDir, fileName);
   fs.writeFileSync(filePath, buffer);
 
-  const relativePath = path.join("/story", fileName);
+  const relativePath = `/story/${fileName}`;
 
   try {
     await prisma.ceritaInteraktif.create({
@@ -116,7 +116,7 @@ export async function UpdateStory(id: string, formData: FormData): Promise<Actio
       const filePath = path.join(uploadDir, fileName);
       fs.writeFileSync(filePath, buffer);
 
-      relativePath = path.join("/story", fileName);
+      relativePath = `/story/${fileName}`;
     }
 
     // update database

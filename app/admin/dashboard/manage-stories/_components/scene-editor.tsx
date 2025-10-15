@@ -10,29 +10,29 @@ import { Switch } from "@/components/ui/switch"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Trash2, Plus } from "lucide-react"
-import type { StoryScene } from "@/app/[id]/page"
+import type { StoryScene } from "../configuration/[id]/page"
 
 interface SceneEditorProps {
   scene: StoryScene
+  allScenes: StoryScene[]
   onSave: (scene: StoryScene) => void
   onDelete: (sceneKey: string) => void
   onClose: () => void
 }
 
-export function SceneEditor({ scene, onSave, onDelete, onClose }: SceneEditorProps) {
+export function SceneEditor({ scene, allScenes, onSave, onDelete, onClose }: SceneEditorProps) {
   const [editedScene, setEditedScene] = useState<StoryScene>({ ...scene })
 
   const handleSave = () => {
     if (editedScene.scene_key.trim() === "") {
-      alert("Scene key cannot be empty!")
+      alert("Scene key tidak boleh kosong!")
       return
     }
-
     onSave(editedScene)
   }
 
   const handleDelete = () => {
-    if (confirm("Are you sure you want to delete this scene?")) {
+    if (confirm("Anda yakin ingin menghapus scene ini?")) {
       onDelete(scene.scene_key)
     }
   }
@@ -56,15 +56,16 @@ export function SceneEditor({ scene, onSave, onDelete, onClose }: SceneEditorPro
     setEditedScene({ ...editedScene, scene_choices: updatedChoices })
   }
 
+  const availableNextScenes = allScenes.filter(s => s.scene_key !== editedScene.scene_key);
+
   return (
     <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-h-[80vh] max-w-2xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Edit Scene: {scene.scene_key}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* Basic Info */}
           <div className="space-y-4">
             <div>
               <Label htmlFor="scene_key">Scene Key</Label>
@@ -72,13 +73,13 @@ export function SceneEditor({ scene, onSave, onDelete, onClose }: SceneEditorPro
                 id="scene_key"
                 value={editedScene.scene_key}
                 onChange={(e) => setEditedScene({ ...editedScene, scene_key: e.target.value })}
-                placeholder="Enter unique scene key"
+                placeholder="Masukkan key unik untuk scene"
               />
-              <p className="text-sm text-gray-500 mt-1">Changing this will update all references in other scenes</p>
+              <p className="mt-1 text-sm text-gray-500">Mengubah ini akan memperbarui semua referensi.</p>
             </div>
 
             <div>
-              <Label htmlFor="scene_text">Scene Text</Label>
+              <Label htmlFor="scene_text">Teks Scene</Label>
               <Textarea
                 id="scene_text"
                 value={editedScene.scene_text}
@@ -93,36 +94,28 @@ export function SceneEditor({ scene, onSave, onDelete, onClose }: SceneEditorPro
                 checked={editedScene.is_ending}
                 onCheckedChange={(checked) => setEditedScene({ ...editedScene, is_ending: checked })}
               />
-              <Label htmlFor="is_ending">Is Ending Scene</Label>
+              <Label htmlFor="is_ending">Jadikan Scene Akhir (Ending)</Label>
             </div>
           </div>
 
-          {/* Ending Scene Options */}
           {editedScene.is_ending && (
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Ending Options</CardTitle>
+                <CardTitle className="text-lg">Opsi Ending</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label htmlFor="ending_point">Ending Points</Label>
+                  <Label htmlFor="ending_point">Poin Akhir</Label>
                   <Input
                     id="ending_point"
                     type="number"
-                    value={editedScene.ending_point?.toString() || ""}
-                    onChange={(e) => {
-                      const value = e.target.value
-                      setEditedScene({
-                        ...editedScene,
-                        ending_point: value === "" ? 0 : Number.parseInt(value) || 0,
-                      })
-                    }}
-                    placeholder="Enter ending points"
+                    value={editedScene.ending_point || 0}
+                    onChange={(e) => setEditedScene({ ...editedScene, ending_point: parseInt(e.target.value) || 0 })}
+                    placeholder="Masukkan poin akhir"
                   />
                 </div>
-
                 <div>
-                  <Label htmlFor="ending_type">Ending Type</Label>
+                  <Label htmlFor="ending_type">Tipe Ending</Label>
                   <Select
                     value={editedScene.ending_type || "neutral"}
                     onValueChange={(value: "good" | "bad" | "neutral") =>
@@ -133,9 +126,9 @@ export function SceneEditor({ scene, onSave, onDelete, onClose }: SceneEditorPro
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="good">Good</SelectItem>
-                      <SelectItem value="bad">Bad</SelectItem>
-                      <SelectItem value="neutral">Neutral</SelectItem>
+                      <SelectItem value="good">Baik</SelectItem>
+                      <SelectItem value="bad">Buruk</SelectItem>
+                      <SelectItem value="neutral">Netral</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -143,42 +136,51 @@ export function SceneEditor({ scene, onSave, onDelete, onClose }: SceneEditorPro
             </Card>
           )}
 
-          {/* Scene Choices */}
           {!editedScene.is_ending && (
             <Card>
               <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="text-lg">Scene Choices</CardTitle>
+                <CardTitle className="text-lg">Pilihan Adegan (Choices)</CardTitle>
                 <Button onClick={addChoice} size="sm" className="flex items-center gap-2">
-                  <Plus className="w-4 h-4" />
-                  Add Choice
+                  <Plus className="h-4 w-4" />
+                  Tambah Pilihan
                 </Button>
               </CardHeader>
               <CardContent className="space-y-4">
                 {editedScene.scene_choices.map((choice, index) => (
-                  <div key={index} className="flex gap-2 items-end">
+                  <div key={index} className="flex items-end gap-2">
                     <div className="flex-1">
-                      <Label>Choice Text</Label>
+                      <Label>Teks Pilihan</Label>
                       <Input
                         value={choice.text}
                         onChange={(e) => updateChoice(index, "text", e.target.value)}
-                        placeholder="Enter choice text"
+                        placeholder="Teks yang muncul di tombol"
                       />
                     </div>
                     <div className="flex-1">
-                      <Label>Next Scene</Label>
-                      <Input
+                      <Label>Scene Berikutnya</Label>
+                      <Select
                         value={choice.next}
-                        onChange={(e) => updateChoice(index, "next", e.target.value)}
-                        placeholder="scene_key"
-                      />
+                        onValueChange={(value) => updateChoice(index, "next", value)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Pilih scene tujuan..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {availableNextScenes.map((s) => (
+                            <SelectItem key={s.scene_key} value={s.scene_key}>
+                              {s.scene_key}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                     <Button
                       onClick={() => removeChoice(index)}
                       variant="outline"
-                      size="sm"
+                      size="icon"
                       className="text-red-600 hover:text-red-700"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
                 ))}
@@ -186,16 +188,15 @@ export function SceneEditor({ scene, onSave, onDelete, onClose }: SceneEditorPro
             </Card>
           )}
 
-          {/* Actions */}
           <div className="flex justify-between">
             <Button onClick={handleDelete} variant="destructive">
-              Delete Scene
+              Hapus Scene
             </Button>
             <div className="flex gap-2">
               <Button onClick={onClose} variant="outline">
-                Cancel
+                Batal
               </Button>
-              <Button onClick={handleSave}>Save Changes</Button>
+              <Button onClick={handleSave}>Simpan Perubahan</Button>
             </div>
           </div>
         </div>
