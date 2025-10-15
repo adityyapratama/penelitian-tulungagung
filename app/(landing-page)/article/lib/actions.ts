@@ -1,13 +1,12 @@
-// REPLACE ISI FILE INI DENGAN CODE BERIKUT:
 
+import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
 import dayjs from 'dayjs';
 
-// Function untuk mengambil semua artikel atau dengan limit
 export async function getArticles(limit?: number) {
     try {
         const articles = await prisma.artikel.findMany({
-            take: limit, // Jika limit undefined, akan mengambil semua
+            take: limit, 
             include: {
                 KategoriArtikel: {
                     select: {
@@ -25,7 +24,6 @@ export async function getArticles(limit?: number) {
             },
         });
 
-        // Transform data untuk komponen
         return articles.map((article) => ({
             id: article.artikel_id,
             title: article.judul,
@@ -40,7 +38,6 @@ export async function getArticles(limit?: number) {
     }
 }
 
-// Function untuk mengambil artikel berdasarkan ID
 export async function getArticleById(id: number) {
     try {
         const article = await prisma.artikel.findUnique({
@@ -68,7 +65,6 @@ export async function getArticleById(id: number) {
     }
 }
 
-// Function untuk rekomendasi artikel
 export async function getRecommendedArticles(currentArticleId: number, limit: number = 3) {
     try {
         const currentArticle = await prisma.artikel.findUnique({
@@ -116,5 +112,29 @@ export async function getRecommendedArticles(currentArticleId: number, limit: nu
     } catch (error) {
         console.error('Error fetching recommended articles:', error);
         return [];
+    }
+}
+
+export async function LoginUpdate() {
+    const session = await auth();
+
+    if (!session){
+        return { }
+    }
+
+    const now = new Date();
+    try {
+        await prisma.user.update({
+            where:{
+                user_id: Number(session.user.id)
+            },
+            data:{
+                last_login: now
+            }
+        })
+
+        return {success : "updated"}
+    } catch{
+        return {error:"terjadi kesalahan"}
     }
 }

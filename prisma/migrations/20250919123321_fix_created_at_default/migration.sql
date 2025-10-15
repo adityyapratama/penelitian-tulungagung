@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE `kategorikuis` MODIFY `created_at` TIMESTAMP(0) NULL DEFAULT CURRENT_TIMESTAMP(0);

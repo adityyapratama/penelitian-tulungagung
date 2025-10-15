@@ -2,6 +2,7 @@ import { Suspense } from "react"
 import { getAllPuzzlesFormatted, getAllQuizzesFormatted, getAllStoriesFormatted } from "./lib/data"
 import { GameBrowser } from "./_components/game-browser"
 import {NavbarDemo} from "@/components/game/NavbarDemo"
+import { LoginUpdate } from "../article/lib/actions"
 
 
 export default function GamesPage() {
@@ -39,6 +40,7 @@ export default function GamesPage() {
 }
 
 async function GamesDataContainer() {
+  await LoginUpdate()
   const [puzzles, quizzes, stories] = await Promise.all([
     getAllPuzzlesFormatted(),
     getAllQuizzesFormatted(),

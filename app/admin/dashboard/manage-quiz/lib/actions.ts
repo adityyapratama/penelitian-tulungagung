@@ -418,7 +418,6 @@ export async function CreateQuizCategory(
   const parse = SchemaCategoryKuis.safeParse({
     nama_kategori: formData.get("nama_kategori"),
     deskripsi: formData.get("deskripsi"),
-    thumbnail: formData.get("thumbnail"),
   });
 
   if (!parse.success) {
@@ -443,37 +442,12 @@ export async function CreateQuizCategory(
     return { errors };
   }
 
-  const file = parse.data.thumbnail;
-  if (!(file instanceof File)) return { error: "Thumbnail invalid" };
-
-  // Validasi tambahan (opsional)
-  const allowedExt = [".jpg", ".jpeg", ".png", ".webp"];
-  const fileExt = path.extname(file.name).toLowerCase();
-  if (!allowedExt.includes(fileExt)) {
-    return { error: "Format file tidak diizinkan" };
-  }
-
-  const bytes = await file.arrayBuffer();
-  const buffer = Buffer.from(bytes);
-
-  const uploadDir = path.join(process.cwd(), "public", "quiz");
-  if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-  }
-
-  const fileName = `${uuidv4()}${fileExt}`;
-  const filePath = path.join(uploadDir, fileName);
-  fs.writeFileSync(filePath, buffer);
-
-  const relativePath = `/quiz/${fileName}`;
-
   try {
     await prisma.kategoriKuis.create({
       data: {
         nama_kategori: parse.data.nama_kategori,
         created_by: Number(session.user.id),
         deskripsi: parse.data.deskripsi,
-        thumbnail: relativePath,
       },
     });
 
@@ -489,64 +463,21 @@ export async function UpdateQuizCategory(id: string, formData: FormData) {
   const session = await auth();
   if (!session) return { error: "Not Authorized" };
 
-  const parse = SchemaCategoryKuisUpdate.safeParse({
+  const parse = SchemaCategoryKuis.safeParse({
     nama_kategori: formData.get("nama_kategori"),
     deskripsi: formData.get("deskripsi"),
-    thumbnail: formData.get("thumbnail") || undefined,
   });
 
   if (!parse.success) return { error: parse.error.message };
 
-  let relativePath: string | undefined;
 
   try {
-    // Kalau ada thumbnail baru
-    if (parse.data.thumbnail instanceof File) {
-      // ambil data lama
-      const old = await prisma.kategoriKuis.findUnique({
-        where: { kategori_id: parseInt(id) },
-        select: { thumbnail: true },
-      });
-
-      // hapus file lama kalau ada
-      if (old?.thumbnail) {
-        const oldPath = path.join(process.cwd(), "public", old.thumbnail);
-        if (fs.existsSync(oldPath)) {
-          fs.unlinkSync(oldPath);
-        }
-      }
-
-      // validasi tambahan
-      const file = parse.data.thumbnail;
-      const allowedExt = [".jpg", ".jpeg", ".png", ".webp"];
-      const fileExt = path.extname(file.name).toLowerCase();
-      if (!allowedExt.includes(fileExt)) {
-        return { error: "Format file tidak diizinkan" };
-      }
-
-      // upload file baru
-      const bytes = await file.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-
-      const uploadDir = path.join(process.cwd(), "public", "quiz");
-      if (!fs.existsSync(uploadDir)) {
-        fs.mkdirSync(uploadDir, { recursive: true });
-      }
-
-      const fileName = `${uuidv4()}${fileExt}`;
-      const filePath = path.join(uploadDir, fileName);
-      fs.writeFileSync(filePath, buffer);
-
-      relativePath = `/quiz/${fileName}`;
-    }
-
     // update database
     const updated = await prisma.kategoriKuis.update({
       where: { kategori_id: parseInt(id) },
       data: {
         nama_kategori: parse.data.nama_kategori,
         deskripsi: parse.data.deskripsi,
-        ...(relativePath && { thumbnail: relativePath }),
       },
     });
 

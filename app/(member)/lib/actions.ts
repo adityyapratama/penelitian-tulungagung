@@ -206,7 +206,7 @@ export async function CreateProgress(_: unknown, data: ProgressData) {
     });
     id = user?.member_id;
     if (!id) return { error: "User is not a member" };
-  } catch (error) {
+  } catch {
     return { error: "User is not a member" };
   }
 
@@ -231,6 +231,7 @@ export async function CreateProgress(_: unknown, data: ProgressData) {
           data: {
             skor: data.skor,
             completed_at: completedAt,
+            group_id : data.group_id,
             duration: duration,
           },
         });
@@ -245,6 +246,7 @@ export async function CreateProgress(_: unknown, data: ProgressData) {
           member_id: id,
           content_id: data.contentId,
           content_type: data.contentType,
+          group_id : data.group_id,
           skor: data.skor,
           completed_at: completedAt,
           duration: duration,

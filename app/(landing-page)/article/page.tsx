@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { getArticles } from "./lib/actions";
+import { getArticles, LoginUpdate } from "./lib/actions";
 import ArticleGridClient from "@/components/(landing-page)/article/article";
 import { ContainerScroll } from "@/components/ui/container-scroll-animation";
 import LoadingIndicator from "@/components/(landing-page)/article/loader";
@@ -15,6 +15,7 @@ export const metadata: Metadata = {
 
 async function Articles() {
   const articles = await getArticles();
+  await LoginUpdate();
   return <ArticleGridClient articles={articles} />;
 }
 
