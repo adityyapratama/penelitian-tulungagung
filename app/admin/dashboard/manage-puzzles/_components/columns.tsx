@@ -1,69 +1,71 @@
-"use client"
+"use client";
 
-import type { ColumnDef } from "@tanstack/react-table"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Edit, Trash2, ArrowUpDown, Star, CircleCheck, CircleX } from "lucide-react"
-import dayjs from "dayjs"
-import utc from "dayjs/plugin/utc"
-import timezone from "dayjs/plugin/timezone"
-import Image from "next/image"
+import type { ColumnDef } from "@tanstack/react-table";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Edit, ArrowUpDown, Star, CircleCheck, CircleX } from "lucide-react";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+import Image from "next/image";
 import Link from "next/link";
-import DeletePuzzleButton from "./delete-puzzle-button"
+import DeletePuzzleButton from "./delete-puzzle-button";
 
-dayjs.extend(utc)
-dayjs.extend(timezone)
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 export type TPuzzle = {
-  puzzle_id: number
-  judul: string
-  gambar: string
-  kategori: string 
-  xp_reward: number
-  is_published: boolean
-  created_by: number
-  is_published: boolean
-  created_at: Date
-}
+  puzzle_id: number;
+  judul: string;
+  gambar: string;
+  kategori: string;
+  xp_reward: number;
+  is_published: boolean;
+  created_by: number;
+  created_at: Date;
+};
 
 const getCategoryIcon = (kategori: string) => {
   switch (kategori) {
     case "Tempat_Wisata":
-      return "🏞️"
+      return "🏞️";
     case "Tokoh_Sejarah":
-      return "🧑‍🎓"
+      return "🧑‍🎓";
     case "Peta":
-      return "🗺️"
+      return "🗺️";
     case "Budaya":
-      return "🎭"
+      return "🎭";
     default:
-      return "🧩"
+      return "🧩";
   }
-}
-
+};
 
 const getCategoryColor = (kategori: string) => {
   switch (kategori) {
     case "Tempat_Wisata":
-      return "bg-green-500 text-white hover:bg-green-600"
+      return "bg-green-500 text-white hover:bg-green-600";
     case "Tokoh_Sejarah":
-      return "bg-yellow-500 text-white hover:bg-yellow-600"
+      return "bg-yellow-500 text-white hover:bg-yellow-600";
     case "Peta":
-      return "bg-blue-500 text-white hover:bg-blue-600"
+      return "bg-blue-500 text-white hover:bg-blue-600";
     case "Budaya":
-      return "bg-purple-500 text-white hover:bg-purple-600"
+      return "bg-purple-500 text-white hover:bg-purple-600";
     default:
-      return "bg-gray-500 text-white hover:bg-gray-600"
+      return "bg-gray-500 text-white hover:bg-gray-600";
   }
-}
+};
 
 export const columns: ColumnDef<TPuzzle>[] = [
+  // ✅ Checkbox untuk select row
   {
     id: "select",
     header: ({ table }) => (
       <Checkbox
-        checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
         className="translate-y-[2px]"
@@ -80,16 +82,21 @@ export const columns: ColumnDef<TPuzzle>[] = [
     enableSorting: false,
     enableHiding: false,
   },
+
+  // ✅ Kolom gambar
   {
     accessorKey: "gambar",
     header: "Gambar",
     cell: ({ row }) => {
-      const puzzle = row.original
+      const puzzle = row.original;
       return (
         <div className="flex items-center justify-center">
           <div className="w-12 h-12 overflow-hidden rounded-lg bg-muted">
             <Image
-              src={puzzle.gambar || "/placeholder.svg?height=48&width=48&query=puzzle"}
+              src={
+                puzzle.gambar ||
+                "/placeholder.svg?height=48&width=48&query=puzzle"
+              }
               alt={puzzle.judul}
               width={48}
               height={48}
@@ -97,161 +104,161 @@ export const columns: ColumnDef<TPuzzle>[] = [
             />
           </div>
         </div>
-      )
+      );
     },
     enableSorting: false,
   },
+
+  // ✅ Kolom judul puzzle
   {
     accessorKey: "judul",
     header: ({ column }) => (
-        <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")} className="h-auto p-0 font-semibold hover:bg-transparent">
-          Judul Puzzle <ArrowUpDown className="w-4 h-4 ml-2" />
-        </Button>
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className="h-auto p-0 font-semibold hover:bg-transparent"
+      >
+        Judul Puzzle <ArrowUpDown className="w-4 h-4 ml-2" />
+      </Button>
     ),
-    cell: ({ row }) => {
-      const puzzle = row.original
-      return (
-        <div className="flex items-center space-x-3">
-          <span className="font-medium">{puzzle.judul}</span>
-        </div>
-      )
-    },
+    cell: ({ row }) => (
+      <span className="font-medium">{row.original.judul}</span>
+    ),
   },
+
+  // ✅ Kolom kategori
   {
     accessorKey: "kategori",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="h-auto p-0 font-semibold hover:bg-transparent"
-        >
-          Kategori
-          <ArrowUpDown className="w-4 h-4 ml-2" />
-        </Button>
-      )
-    },
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className="h-auto p-0 font-semibold hover:bg-transparent"
+      >
+        Kategori <ArrowUpDown className="w-4 h-4 ml-2" />
+      </Button>
+    ),
     cell: ({ row }) => {
-      const kategori = row.getValue("kategori") as string
+      const kategori = row.getValue("kategori") as string;
       return (
-        <Badge className={`flex items-center gap-1 w-fit ${getCategoryColor(kategori)}`}>
+        <Badge
+          className={`flex items-center gap-1 w-fit ${getCategoryColor(
+            kategori
+          )}`}
+        >
           <span>{getCategoryIcon(kategori)}</span>
           {kategori}
         </Badge>
-      )
+      );
     },
   },
+
+  // ✅ Kolom XP Reward
   {
     accessorKey: "xp_reward",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="h-auto p-0 font-semibold hover:bg-transparent"
-        >
-          XP Reward
-          <ArrowUpDown className="w-4 h-4 ml-2" />
-        </Button>
-      )
-    },
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className="h-auto p-0 font-semibold hover:bg-transparent"
+      >
+        XP Reward <ArrowUpDown className="w-4 h-4 ml-2" />
+      </Button>
+    ),
     cell: ({ row }) => {
-      const xp = row.getValue("xp_reward") as number
+      const xp = row.getValue("xp_reward") as number;
       return (
         <div className="flex items-center space-x-1">
           <Star className="w-4 h-4 text-yellow-500" />
           <span className="font-medium">{xp} XP</span>
         </div>
-      )
+      );
     },
   },
-  {
-  accessorKey: "is_published",
-  header: "Status",
-  cell: ({ row }) => {
-    const isPublished = Boolean(row.getValue("is_published"));
-    return (
-      <Badge variant={isPublished ? "default" : "destructive"}>
-        {isPublished ? "Published" : "Draft"}
-      </Badge>
-    );
-  },
-},
 
-  
-  {
-    accessorKey: "created_at",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="h-auto p-0 font-semibold hover:bg-transparent"
-        >
-          Dibuat
-          <ArrowUpDown className="w-4 h-4 ml-2" />
-        </Button>
-      )
-    },
-    cell: ({ row }) => {
-      const createdAt = row.getValue("created_at") as Date
-      return (
-        <div className="space-y-1">
-          <p className="text-sm font-medium">{dayjs(createdAt).tz("Asia/Jakarta").format("DD MMM YYYY")}</p>
-          <p className="text-xs text-muted-foreground">{dayjs(createdAt).tz("Asia/Jakarta").format("HH:mm")} WIB</p>
-        </div>
-      )
-    },
-  },
-  {
-    id: "actions",
-    header: "Aksi",
-    cell: ({ row }) => {
-      const puzzle = row.original
-
-      return (
-        <div className="flex items-center space-x-2">
-          <Link href={`/admin/dashboard/manage-puzzles/edit/${puzzle.puzzle_id}`}>
-          <Button variant="outline" size="sm" className="h-8 px-2 bg-transparent hover:bg-primary hover:text-white">
-            <Edit className="w-4 h-4" />
-          </Button>
-        </Link>
-          <DeletePuzzleButton 
-          puzzleId={puzzle.puzzle_id} 
-          puzzleJudul={puzzle.judul} 
-        />
-        </div>
-      )
-    },
-  },
+  // ✅ Kolom Status Publish — hanya satu, support sorting dan filter
   {
     accessorKey: "is_published",
     header: ({ column }) => (
-        <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")} className="h-auto p-0 font-semibold hover:bg-transparent">
-          Status <ArrowUpDown className="w-4 h-4 ml-2" />
-        </Button>
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className="h-auto p-0 font-semibold hover:bg-transparent"
+      >
+        Status <ArrowUpDown className="w-4 h-4 ml-2" />
+      </Button>
     ),
     cell: ({ row }) => {
-      const isPublished = row.getValue("is_published") as boolean
-
-      
+      const isPublished = Boolean(row.getValue("is_published"));
       return isPublished ? (
         <Badge variant="default" className="bg-green-500 hover:bg-green-600">
           <CircleCheck className="w-3.5 h-3.5 mr-1.5" />
           Published
-        </Badge> 
+        </Badge>
       ) : (
         <Badge variant="secondary">
           <CircleX className="w-3.5 h-3.5 mr-1.5" />
-          {isPublished }
           Draft
-        </Badge>  
-      )
+        </Badge>
+      );
     },
-    // Menambahkan fungsi filter di sini
     filterFn: (row, id, value) => {
-      // Jika value 'all', tampilkan semua. Jika tidak, cocokkan nilainya.
       return value === "all" ? true : value === String(row.getValue(id));
     },
-  }
-]
+  },
+
+  // ✅ Kolom tanggal dibuat
+  {
+    accessorKey: "created_at",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className="h-auto p-0 font-semibold hover:bg-transparent"
+      >
+        Dibuat <ArrowUpDown className="w-4 h-4 ml-2" />
+      </Button>
+    ),
+    cell: ({ row }) => {
+      const createdAt = row.getValue("created_at") as Date;
+      return (
+        <div className="space-y-1">
+          <p className="text-sm font-medium">
+            {dayjs(createdAt).tz("Asia/Jakarta").format("DD MMM YYYY")}
+          </p>
+          <p className="text-xs text-muted-foreground">
+            {dayjs(createdAt).tz("Asia/Jakarta").format("HH:mm")} WIB
+          </p>
+        </div>
+      );
+    },
+  },
+
+  // ✅ Kolom Aksi (Edit & Hapus)
+  {
+    id: "actions",
+    header: "Aksi",
+    cell: ({ row }) => {
+      const puzzle = row.original;
+      return (
+        <div className="flex items-center space-x-2">
+          <Link
+            href={`/admin/dashboard/manage-puzzles/edit/${puzzle.puzzle_id}`}
+          >
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 px-2 bg-transparent hover:bg-primary hover:text-white"
+            >
+              <Edit className="w-4 h-4" />
+            </Button>
+          </Link>
+          <DeletePuzzleButton
+            puzzleId={puzzle.puzzle_id}
+            puzzleJudul={puzzle.judul}
+          />
+        </div>
+      );
+    },
+  },
+];

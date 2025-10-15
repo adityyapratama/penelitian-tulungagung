@@ -1,15 +1,21 @@
 "use client";
+import {
+  Bar,
+  BarChart,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+  Tooltip,
+} from "recharts";
 
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
+interface OverviewChartProps {
+  data: {
+    name: string;
+    total: number;
+  }[];
+}
 
-const data = [
-  { name: "Puzzle", total: Math.floor(Math.random() * 100) + 20 },
-  { name: "Kuis", total: Math.floor(Math.random() * 100) + 20 },
-  { name: "Cerita", total: Math.floor(Math.random() * 100) + 20 },
-  { name: "Artikel", total: Math.floor(Math.random() * 100) + 20 },
-];
-
-export function OverviewChart() {
+export function OverviewChart({ data }: OverviewChartProps) {
   return (
     <ResponsiveContainer width="100%" height={350}>
       <BarChart data={data}>
@@ -28,14 +34,14 @@ export function OverviewChart() {
           tickFormatter={(value) => `${value}`}
         />
         <Tooltip
-          cursor={{ fill: 'hsl(var(--muted))' }}
-          contentStyle={{ 
-            background: 'hsl(var(--background))', 
-            border: '1px solid hsl(var(--border))',
-            borderRadius: 'var(--radius)'
+          cursor={{ fill: "transparent" }}
+          contentStyle={{
+            background: "hsl(var(--background))",
+            border: "1px solid hsl(var(--border))",
+            borderRadius: "var(--radius)",
           }}
         />
-        <Bar dataKey="total" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+        <Bar dataKey="total" fill="var(--primary)" radius={[4, 4, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
   );
