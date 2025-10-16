@@ -1,13 +1,13 @@
-"use client"
+"use client";
 
-import { Card } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Trophy, Play, ArrowRight, Lock, CheckCircle, Puzzle, LogIn } from "lucide-react"
-import type { GameCardData } from "../lib/data"
-import Link from "next/link"
-import Image from "next/image"
-import { useSession } from "next-auth/react"
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Trophy, Play, ArrowRight, Puzzle, LogIn } from "lucide-react";
+import type { GameCardData } from "../lib/data";
+import Link from "next/link";
+import Image from "next/image";
+import { useSession } from "next-auth/react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,35 +18,39 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import { useRouter } from "next/navigation"
+} from "@/components/ui/alert-dialog";
+import { useRouter } from "next/navigation";
 
 interface GameRowProps {
-  title: string
-  description: string
-  games: GameCardData[]
-  href: string
+  title: string;
+  description: string;
+  games: GameCardData[];
+  href: string;
 }
 
 export function GameRow({ title, description, games, href }: GameRowProps) {
-  const { status } = useSession()
-  const router = useRouter()
+  const { status } = useSession();
+  const router = useRouter();
 
   const getGameUrl = (game: GameCardData) => {
-    const id = game.id.split("-")[1]
-    if (game.type === "kuis") return `/games/quiz/${id}`
-    if (game.type === "cerita") return `/games/stories/${id}`
-    return `/games/puzzle/${id}`
-  }
+    const id = game.id.split("-")[1];
+    if (game.type === "kuis") return `/games/quiz/${id}`;
+    if (game.type === "cerita") return `/games/stories/${id}`;
+    return `/games/puzzle/${id}`;
+  };
 
-  const getBadgeColor = (type: string) => {
-    switch (type) {
-      case "puzzle": return "#F44336"
-      case "kuis": return "#2957A4"
-      case "cerita": return "#4CAF50"
-      default: return "#2957A4"
+  const getDifficultyBadge = (difficulty: string) => {
+    switch (difficulty) {
+      case "Mudah":
+        return { backgroundColor: "#4CAF50", color: "white" }; // Hijau
+      case "Sedang":
+        return { backgroundColor: "#FFC107", color: "#212121" }; // Kuning
+      case "Sulit":
+        return { backgroundColor: "#F44336", color: "white" }; // Merah
+      default:
+        return { backgroundColor: "#607D8B", color: "white" }; // Abu-abu
     }
-  }
+  };
   
   return (
     <section className="space-y-6">
@@ -56,8 +60,8 @@ export function GameRow({ title, description, games, href }: GameRowProps) {
             <div
               className="flex items-center justify-center w-10 h-10 shadow-lg rounded-xl animate-bounce-in"
               style={{
-                backgroundColor: getBadgeColor(games[0]?.type || "puzzle"),
-                boxShadow: `0 4px 20px ${getBadgeColor(games[0]?.type || "puzzle")}40`,
+                backgroundColor: "#2957A4",
+                boxShadow: `0 4px 20px #2957A440`,
               }}
             >
               <Puzzle className="w-5 h-5 text-white" />
@@ -78,7 +82,11 @@ export function GameRow({ title, description, games, href }: GameRowProps) {
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {games.slice(0, 4).map((game, index) => {
-          const isLocked = false // Untuk sementara tidak ada game yang terkunci
+          const isLocked = false;
+          
+          const difficulties = ["Mudah", "Sedang", "Sulit", "Mudah"];
+          const difficulty = difficulties[index % difficulties.length];
+          const badgeStyle = getDifficultyBadge(difficulty);
 
           const GameButton = (
             <Button
@@ -127,8 +135,15 @@ export function GameRow({ title, description, games, href }: GameRowProps) {
                 </div>
                 <div className="flex items-center justify-between text-xs">
                   <span className="mr-2 font-medium truncate text-muted-foreground">{game.category}</span>
-                  <Badge className="px-2 py-1 text-xs text-white" style={{ backgroundColor: getBadgeColor(game.type), border: "none" }}>
-                    {game.type.charAt(0).toUpperCase() + game.type.slice(1)}
+                  <Badge
+                    className="px-2 py-1 text-xs"
+                    style={{
+                      backgroundColor: badgeStyle.backgroundColor,
+                      color: badgeStyle.color,
+                      border: "none",
+                    }}
+                  >
+                    {difficulty}
                   </Badge>
                 </div>
 
