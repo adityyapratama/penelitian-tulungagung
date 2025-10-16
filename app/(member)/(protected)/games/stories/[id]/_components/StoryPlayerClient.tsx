@@ -96,6 +96,7 @@ export function StoryPlayerClient({ storyDetails, scenes, recommendedArticles }:
     setGameStarted(true);
     setStartedAt(new Date());
     setHasSubmitted(false);
+    setFinalScore(0);
     setSubmitResult(null);
   };
   
@@ -141,8 +142,8 @@ export function StoryPlayerClient({ storyDetails, scenes, recommendedArticles }:
 
         <div className="mx-auto mt-16 w-full max-w-5xl">
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-800">Bacaan Terkait</h2>
-            <p className="mt-2 text-gray-600">Perdalam pengetahuan Anda dengan artikel berikut.</p>
+            <h2 className="text-3xl font-bold text-gray-800">Rekomendasi Bacaan</h2>
+            <p className="mt-2 text-gray-600">Tingkatkan wawasan Anda dengan artikel-artikel menarik ini.</p>
           </div>
           <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-3">
             {recommendedArticles.map((article) => (
@@ -155,9 +156,11 @@ export function StoryPlayerClient({ storyDetails, scenes, recommendedArticles }:
   }
 
   if (storyComplete && currentScene) {
+  const endingType = currentScene.ending_type || "Default";
+  const capitalizedEnding = endingType.charAt(0).toUpperCase() + endingType.slice(1);
     return (
-       <div className="flex items-center justify-center min-h-screen px-4 py-12 bg-gray-50">
-        <div className="w-full max-w-2xl p-12 mx-auto text-center bg-white shadow-xl rounded-2xl">
+      <div className="w-full min-h-screen bg-gradient-to-b from-white to-gray-50 py-12 px-4">
+        <div className="w-full max-w-2xl p-12 mx-auto text-center bg-white">
           {isSubmitting ? (
             <div className="flex flex-col items-center gap-4">
               <Loader2 className="h-16 w-16 animate-spin text-blue-600" />
@@ -170,13 +173,13 @@ export function StoryPlayerClient({ storyDetails, scenes, recommendedArticles }:
                 Cerita Selesai!
               </h2>
               <Badge variant="outline" className={`mb-6 text-base font-medium ${getEndingBadgeColor(currentScene.ending_type)}`}>
-                {currentScene.ending_type || "Default"} Ending
+                {capitalizedEnding} Ending
               </Badge>
               <p className="mb-8 text-lg text-gray-600">{currentScene.scene_text}</p>
               <div className="p-6 mb-8 rounded-lg bg-gray-100/70">
-                  <p className="text-xl text-gray-600">Kamu mendapatkan</p>
-                  <p className="mb-2 text-6xl font-bold text-blue-600">{finalScore}</p>
-                  <p className="text-xl text-gray-600">poin dari akhir cerita ini.</p>
+                <p className="text-xl text-gray-600">Kamu mendapatkan</p>
+                <p className="mb-2 text-6xl font-bold text-blue-600">{finalScore}</p>
+                <p className="text-xl text-gray-600">poin dari akhir cerita ini.</p>
               </div>
               {submitResult?.success && <p className="mb-6 font-medium text-green-600">Progres berhasil disimpan!</p>}
               {submitResult?.error && <p className="mb-6 font-medium text-red-500">{submitResult.error}</p>}
@@ -191,13 +194,27 @@ export function StoryPlayerClient({ storyDetails, scenes, recommendedArticles }:
             </>
           )}
         </div>
+
+        {recommendedArticles.length > 0 && (
+          <div className="mx-auto mt-16 w-full max-w-5xl">
+            <div className="text-center">
+              <h2 className="text-3xl font-bold text-gray-800">Rekomendasi Bacaan</h2>
+              <p className="mt-2 text-gray-600">Tingkatkan wawasan Anda dengan artikel-artikel menarik ini.</p>
+            </div>
+            <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-3">
+              {recommendedArticles.map((article) => (
+                <ArticleCard key={article.id} article={article} />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     );
   }
 
   if (currentScene) {
     return (
-      <div className="flex items-center justify-center min-h-screen px-4 py-12 bg-gray-50">
+      <div className="flex items-center justify-center min-h-screen px-4 py-12 bg-white">
         <div className="w-full max-w-3xl">
           <Card className="w-full shadow-lg rounded-2xl">
             <CardContent className="p-8 md:p-12">
@@ -222,5 +239,10 @@ export function StoryPlayerClient({ storyDetails, scenes, recommendedArticles }:
     );
   }
 
-  return <div>Memuat cerita...</div>;
+  return (
+    <div className="flex items-center justify-center min-h-screen">
+      <Loader2 className="h-12 w-12 animate-spin text-blue-600" />
+      <span className="sr-only">Memuat cerita...</span>
+    </div>
+  );
 }
