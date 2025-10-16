@@ -8,9 +8,11 @@ type PageProps = {
 };
 
 export default async function StoryDetailPage({ params }: PageProps) {
+  const { id } = await params;
+
   const [storyDetails, scenes, recommendedArticles] = await Promise.all([
-    GetStoryById(params.id),
-    GetScenesByStoryId(params.id),
+    GetStoryById(id),
+    GetScenesByStoryId(id),
     getArticles(3),
   ]);
 
