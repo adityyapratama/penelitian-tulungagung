@@ -1,7 +1,6 @@
 import { Suspense } from "react"
 import { getAllPuzzlesFormatted, getAllQuizzesFormatted, getAllStoriesFormatted } from "./lib/data"
 import { GameBrowser } from "./_components/game-browser"
-import {NavbarDemo} from "@/components/game/NavbarDemo"
 import { LoginUpdate } from "@/app/(landing-page)/article/lib/actions"
 
 

@@ -1,4 +1,4 @@
-import { NavbarDemo } from "@/components/(landing-page)/navbar/navbar";
+import Navbar  from "@/components/game/NavbarDemo";
 
 export default function ProtectedLayout({
   children,
@@ -7,7 +7,7 @@ export default function ProtectedLayout({
 }) {
   return (
     <>
-      <NavbarDemo />
+      <Navbar/>
       <main className="pt-20">
         {children}
       </main>

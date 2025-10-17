@@ -1,5 +1,3 @@
-import { NavbarDemo } from "@/components/(landing-page)/navbar/navbar";
-
 export default function ProtectedLayout({
   children,
 }: {
@@ -7,7 +5,6 @@ export default function ProtectedLayout({
 }) {
   return (
     <>
-      <NavbarDemo />
       <main>
         {children}
       </main>
