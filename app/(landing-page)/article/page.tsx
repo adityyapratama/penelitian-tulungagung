@@ -5,7 +5,7 @@ import { ContainerScroll } from "@/components/ui/container-scroll-animation";
 import LoadingIndicator from "@/components/(landing-page)/article/loader";
 import Image from "next/image";
 import type { Metadata } from "next";
-import { NavbarDemo } from "@/components/(landing-page)/navbar/navbar";
+
 
 export const metadata: Metadata = {
   title: "Daftar Artikel",
@@ -22,7 +22,7 @@ async function Articles() {
 export default function ArticlePage() {
   return (
     <main className="container py-8 mx-auto">
-      <NavbarDemo />
+      
       <div className="flex flex-col overflow-hidden">
         <ContainerScroll
           titleComponent={

@@ -1,5 +1,19 @@
 import { z } from "zod";
 
+// Helper for file validation that works on both client and server
+const fileSchema = z.any().refine(
+  (file) => {
+    // On client side, check if it's a File instance
+    if (typeof File !== 'undefined' && file instanceof File) return true;
+    // On server side, allow any value (will be validated during form processing)
+    if (typeof File === 'undefined') return true;
+    return false;
+  },
+  { message: "Invalid file" }
+);
+
+const optionalFileSchema = z.any().optional();
+
 const myBooleanSchema = z.preprocess(
   (val) => val === 'true' || val === '1',
   z.boolean({ message: "publish option is required" })
@@ -45,7 +59,7 @@ export const SchemaArticle = z.object({
     .string({ message: "Konten is required" })
     .min(100, { message: "Konten shoul have min 100 characters" }),
   kategori: z.coerce.bigint({ message: "Kategori is required" }),
-  thumbnail: z.instanceof(File),
+  thumbnail: fileSchema,
 });
 
 export const SchemaSekolah = z.object({
@@ -63,7 +77,7 @@ export const SchemaQuiz = z.object({
   kategori_id: z.number({ message: "kategori is required" }).int().min(1),
   xp_reward: z.number({ message: "xp reward is required" }).int(),
   is_published: myBooleanSchema,
-  thumbnail: z.instanceof(File),
+  thumbnail: fileSchema,
 });
 
 export const SchemaPilihan = z.object({
@@ -77,14 +91,14 @@ export const SchemaPertanyaan = z.object({
   poin: z.number().int().default(10),
   urutan: z.number().int(),
   pilihan: z.array(SchemaPilihan),
-  image : z.instanceof(File).optional()
+  image : optionalFileSchema
 });
 
 export const SchemaStory = z.object({
   judul: z
     .string({ message: "Judul is required" })
     .min(8, { message: "Judul should have min 8 characters" }),
-  thumbnail: z.instanceof(File),
+  thumbnail: fileSchema,
   category: z.string({ message: "category is required" }),
   deskripsi: z.string({ message: "deskripsi is required" }),
   xp_reward: z.number({ message: "xp reward is required" }).int(),
@@ -96,7 +110,7 @@ export const SchemaCategoryKuis = z.object({
     .string({ message: "nama kategori is required" })
     .min(8, { message: "Judul should have min 8 characters" }),
   deskripsi: z.string({ message: "deskripsi is required" }),
-  thumbnail: z.instanceof(File).optional(),
+  thumbnail: optionalFileSchema,
 });
 
 export const SchemaCategoryKuisUpdate = z.object({
@@ -104,7 +118,7 @@ export const SchemaCategoryKuisUpdate = z.object({
     .string({ message: "nama kategori is required" })
     .min(8, { message: "Judul should have min 8 characters" }),
   deskripsi: z.string({ message: "deskripsi is required" }),
-  thumbnail: z.instanceof(File).optional(),
+  thumbnail: optionalFileSchema,
 });
 
 export const SchemaStoryCategory = z.object({
@@ -117,7 +131,7 @@ export const SchemaPuzzle = z.object({
   judul: z
     .string({ message: "Judul is required" })
     .min(8, { message: "Judul should have min 8 characters" }),
-  gambar: z.instanceof(File),
+  gambar: fileSchema,
   kategori: z.enum([
     "Tempat_Wisata",
     "Tokoh_Sejarah",
@@ -138,7 +152,7 @@ export const SchemaMember = z.object(
   {
     sekolah_id: z.string({message:"sekolah is required"}),
     nis: z.string({message:"nis is required"}),
-    foto_profile: z.instanceof(File),
+    foto_profile: fileSchema,
     bio: z.string({message: "bio is required"}),
     tanggal_lahir : z.string()
     .refine((val) => !isNaN(Date.parse(val)), {
@@ -153,7 +167,7 @@ export const SchemaMember = z.object(
 export const SchemaGroup = z.object(
   {
     group_name : z.string({message:"group should have a name"}),
-    group_thumbnail : z.instanceof(File).optional()
+    group_thumbnail : optionalFileSchema
   }
 )
 

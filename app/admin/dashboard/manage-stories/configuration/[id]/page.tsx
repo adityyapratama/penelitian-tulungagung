@@ -1,9 +1,11 @@
 "use client"
 
 import { useState, useCallback, useTransition, useEffect } from "react"
-import { redirect, useParams } from "next/navigation"
+import { useRouter, useParams } from "next/navigation"
 import {
   ReactFlow,
+  Controls,
+  Background,
   applyNodeChanges,
   applyEdgeChanges,
   addEdge,
@@ -17,8 +19,10 @@ import { StorySceneNode } from "../../_components/story-scene-node"
 import { EndingSceneNode } from "../../_components/ending-scene-node"
 import { SceneEditor } from "../../_components/scene-editor"
 import { Button } from "@/components/ui/button"
-import { PlayCircle, Plus, Save, Upload } from "lucide-react"
+import { PlayCircle, Plus, Save, Upload, ArrowLeft } from "lucide-react"
 import { saveScenes, loadScenes, GetScenesByStoryId } from "../../lib/data"
+import { toast } from "sonner"
+import Link from "next/link"
 
 export interface StoryScene {
   scene_key: string
@@ -35,13 +39,11 @@ const nodeTypes = {
   endingScene: EndingSceneNode,
 }
 
-const initialScenes: StoryScene[] = []
-
 const createNodesFromScenes = (scenes: StoryScene[]): Node[] => {
   return scenes.map((scene, index) => ({
     id: scene.scene_key,
     type: scene.is_ending ? "endingScene" : "storyScene",
-    position: { x: (index % 3) * 300, y: Math.floor(index / 3) * 200 },
+    position: { x: (index % 4) * 280, y: Math.floor(index / 4) * 180 },
     data: scene as unknown as Record<string, unknown>,
   }))
 }
@@ -56,6 +58,7 @@ const createEdgesFromScenes = (scenes: StoryScene[]): Edge[] => {
         target: choice.next,
         label: choice.text,
         type: "smoothstep",
+        markerEnd: { type: "arrowclosed" },
       })
     })
   })
@@ -68,18 +71,19 @@ const updateNodesFromScenes = (scenes: StoryScene[], currentNodes: Node[]): Node
     return {
       id: scene.scene_key,
       type: scene.is_ending ? "endingScene" : "storyScene",
-      position: existingNode?.position || { x: (index % 3) * 300, y: Math.floor(index / 3) * 200 },
+      position: existingNode?.position || { x: (index % 4) * 280, y: Math.floor(index / 4) * 180 },
       data: scene as unknown as Record<string, unknown>,
     }
   })
 }
 
-export default function Page() {
+export default function ConfigurationPage() {
   const params = useParams()
+  const router = useRouter()
   const storyId = params.id as string
 
   const [isLoading, setIsLoading] = useState(true)
-  const [scenes, setScenes] = useState<StoryScene[]>(initialScenes)
+  const [scenes, setScenes] = useState<StoryScene[]>([])
   const [nodes, setNodes] = useState<Node[]>([])
   const [edges, setEdges] = useState<Edge[]>([])
   const [selectedScene, setSelectedScene] = useState<StoryScene | null>(null)
@@ -90,7 +94,7 @@ export default function Page() {
     const loadInitialScenes = async () => {
       try {
         const result = await GetScenesByStoryId(storyId)
-        if (Array.isArray(result)) {
+        if (Array.isArray(result) && result.length > 0) {
           const convertedScenes: StoryScene[] = result.map((scene: any) => ({
             scene_key: scene.scene_key,
             scene_text: scene.scene_text,
@@ -100,85 +104,49 @@ export default function Page() {
             ending_type: scene.ending_type,
             scene_image: scene.scene_image,
           }))
-
           setScenes(convertedScenes)
           setNodes(createNodesFromScenes(convertedScenes))
           setEdges(createEdgesFromScenes(convertedScenes))
         }
       } catch (error) {
-        console.error("[v0] Error loading initial scenes:", error)
+        toast.error("Gagal memuat scene awal.")
       } finally {
         setIsLoading(false)
       }
     }
-
     loadInitialScenes()
   }, [storyId])
 
   const onNodesChange = useCallback(
-    (changes) => setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)),
-    [],
+    (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
+    []
   )
 
-  const onEdgesChange = useCallback((changes: EdgeChange[]) => {
-    setEdges((edgesSnapshot) => {
-      const newEdges = applyEdgeChanges(changes, edgesSnapshot)
-
-      const deletedEdges = changes.filter((change) => change.type === "remove")
-      if (deletedEdges.length > 0) {
-        setScenes((currentScenes) => {
-          const updatedScenes = [...currentScenes]
-
-          deletedEdges.forEach((change) => {
-            const deletedEdge = edgesSnapshot.find((edge) => edge.id === change.id)
-            if (deletedEdge) {
-              const sourceSceneIndex = updatedScenes.findIndex((scene) => scene.scene_key === deletedEdge.source)
-              if (sourceSceneIndex !== -1) {
-                const sourceScene = updatedScenes[sourceSceneIndex]
-                sourceScene.scene_choices = sourceScene.scene_choices.filter(
-                  (choice) => choice.next !== deletedEdge.target,
-                )
-              }
-            }
-          })
-
-          setNodes((currentNodes) => updateNodesFromScenes(updatedScenes, currentNodes))
-          return updatedScenes
-        })
-      }
-
-      return newEdges
-    })
-  }, [])
+  const onEdgesChange = useCallback(
+    (changes: EdgeChange[]) => setEdges((eds) => applyEdgeChanges(changes, eds)),
+    []
+  )
 
   const onConnect = useCallback(
     (params: Connection) => {
       if (!params.source || !params.target) return
 
-      setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot))
-
       setScenes((currentScenes) => {
-        const updatedScenes = [...currentScenes]
-        const sourceSceneIndex = updatedScenes.findIndex((scene) => scene.scene_key === params.source)
-        const targetScene = updatedScenes.find((scene) => scene.scene_key === params.target)
-
-        if (sourceSceneIndex !== -1 && targetScene) {
-          const sourceScene = updatedScenes[sourceSceneIndex]
-          const existingChoice = sourceScene.scene_choices.find((choice) => choice.next === params.target)
-          if (!existingChoice) {
+        const sourceScene = currentScenes.find((s) => s.scene_key === params.source)
+        if (sourceScene) {
+          const choiceExists = sourceScene.scene_choices.some((c) => c.next === params.target)
+          if (!choiceExists) {
             sourceScene.scene_choices.push({
-              text: `Go to ${targetScene.scene_key}`,
-              next: params.target,
+              text: "Pilihan baru...",
+              next: params.target!,
             })
           }
         }
-
-        setNodes((currentNodes) => updateNodesFromScenes(updatedScenes, currentNodes))
-        setEdges(createEdgesFromScenes(updatedScenes))
-        return updatedScenes
+        setEdges(createEdgesFromScenes(currentScenes))
+        return [...currentScenes]
       })
     },
-    [updateNodesFromScenes],
+    []
   )
 
   const onNodeClick = useCallback((event, node: Node) => {
@@ -187,161 +155,154 @@ export default function Page() {
   }, [])
 
   const addNewScene = useCallback(() => {
-    const newSceneKey = `scene_${String(scenes.length + 1).padStart(2, "0")}`
-    const newScene: StoryScene = {
-      scene_key: newSceneKey,
-      scene_text: "Tulis cerita scene baru di sini...",
-      scene_choices: [],
-      is_ending: false,
-    }
-
-    const updatedScenes = [...scenes, newScene]
-    setScenes(updatedScenes)
-    setNodes((currentNodes) => updateNodesFromScenes(updatedScenes, currentNodes))
-    setEdges(createEdgesFromScenes(updatedScenes))
-  }, [scenes])
+    setScenes((currentScenes) => {
+      const newSceneKey = `scene_${String(currentScenes.length + 1).padStart(2, "0")}`
+      const newScene: StoryScene = {
+        scene_key: newSceneKey,
+        scene_text: "Teks untuk scene baru...",
+        scene_choices: [],
+        is_ending: false,
+      }
+      const updatedScenes = [...currentScenes, newScene]
+      setNodes(updateNodesFromScenes(updatedScenes, nodes))
+      return updatedScenes
+    })
+  }, [nodes])
 
   const updateScene = useCallback(
     (updatedScene: StoryScene) => {
-      const originalScene = scenes.find((scene) => scene.scene_key === selectedScene?.scene_key)
-      const oldSceneKey = originalScene?.scene_key
-      const newSceneKey = updatedScene.scene_key
-
-      let updatedScenes = scenes.map((scene) => (scene.scene_key === oldSceneKey ? updatedScene : scene))
-
-      if (oldSceneKey && newSceneKey && oldSceneKey !== newSceneKey) {
-        updatedScenes = updatedScenes.map((scene) => ({
-          ...scene,
-          scene_choices: scene.scene_choices.map((choice) =>
-            choice.next === oldSceneKey ? { ...choice, next: newSceneKey } : choice,
-          ),
-        }))
-      }
-
-      setScenes(updatedScenes)
-      setNodes((currentNodes) => updateNodesFromScenes(updatedScenes, currentNodes))
-      setEdges(createEdgesFromScenes(updatedScenes))
+      setScenes((currentScenes) => {
+        const newScenes = currentScenes.map((s) =>
+          s.scene_key === selectedScene?.scene_key ? updatedScene : s
+        )
+        setNodes(updateNodesFromScenes(newScenes, nodes))
+        setEdges(createEdgesFromScenes(newScenes))
+        return newScenes
+      })
       setIsEditorOpen(false)
+      setSelectedScene(null)
     },
-    [scenes, selectedScene, updateNodesFromScenes],
+    [nodes, selectedScene]
   )
 
   const deleteScene = useCallback(
     (sceneKey: string) => {
-      const updatedScenes = scenes.filter((scene) => scene.scene_key !== sceneKey)
-      setScenes(updatedScenes)
-      setNodes((currentNodes) => updateNodesFromScenes(updatedScenes, currentNodes))
-      setEdges(createEdgesFromScenes(updatedScenes))
+      setScenes((currentScenes) => {
+        const newScenes = currentScenes.filter((s) => s.scene_key !== sceneKey)
+        const finalScenes = newScenes.map(scene => ({
+          ...scene,
+          scene_choices: scene.scene_choices.filter(choice => choice.next !== sceneKey)
+        }))
+        setNodes(updateNodesFromScenes(finalScenes, nodes))
+        setEdges(createEdgesFromScenes(finalScenes))
+        return finalScenes
+      })
       setIsEditorOpen(false)
+      setSelectedScene(null)
     },
-    [scenes, updateNodesFromScenes],
+    [nodes]
   )
 
-  const saveToDatabase = useCallback(async () => {
+  const saveToDatabase = useCallback(() => {
     const formData = new FormData()
     formData.append("scenes", JSON.stringify(scenes))
     formData.append("cerita_id", storyId)
 
     startTransition(async () => {
-      try {
-        const result = await saveScenes(formData)
-        if (result.success) {
-          console.log("[v0] Scenes saved successfully")
-        } else {
-          console.error("[v0] Error saving scenes:", result.error)
-        }
-      } catch (error) {
-        console.error("[v0] Error saving scenes:", error)
+      const result = await saveScenes(formData)
+      if (result.success) {
+        toast.success("Berhasil", { description: "Semua scene berhasil disimpan ke database." })
+      } else {
+        toast.error("Gagal", { description: result.error || "Terjadi kesalahan saat menyimpan." })
       }
     })
   }, [scenes, storyId])
 
-  const loadFromDatabase = useCallback(async () => {
-    const formData = new FormData()
-    formData.append("cerita_id", storyId)
-
+  const loadFromDatabase = useCallback(() => {
     startTransition(async () => {
-      try {
-        const result = await loadScenes(formData)
-        if (result.success && result.scenes) {
-          const convertedScenes: StoryScene[] = result.scenes.map((scene: any) => ({
+        const result = await GetScenesByStoryId(storyId)
+        if (Array.isArray(result)) {
+           const convertedScenes: StoryScene[] = result.map((scene: any) => ({
             scene_key: scene.scene_key,
             scene_text: scene.scene_text,
             scene_choices: scene.scene_choices || [],
             is_ending: scene.is_ending,
-            ending_point: scene.ending_point,
+            ending_point: scene.ending_point || 0,
             ending_type: scene.ending_type,
             scene_image: scene.scene_image,
           }))
-
           setScenes(convertedScenes)
           setNodes(createNodesFromScenes(convertedScenes))
           setEdges(createEdgesFromScenes(convertedScenes))
-
-          console.log("[v0] Scenes loaded successfully")
+          toast.success("Berhasil", { description: "Scene berhasil dimuat dari database." })
         } else {
-          console.error("[v0] Error loading scenes:", result.error)
+            toast.error("Gagal", { description: "Tidak ada scene yang ditemukan di database." })
         }
-      } catch (error) {
-        console.error("[v0] Error loading scenes:", error)
-      }
     })
   }, [storyId])
 
   if (isLoading) {
     return (
-      <div className="w-screen h-screen flex items-center justify-center">
-        <div className="text-lg">Loading scenes...</div>
+      <div className="flex h-full w-full items-center justify-center">
+        <p>Loading...</p>
       </div>
     )
   }
 
   return (
-    <div className="w-screen h-screen relative">
-      <div className="absolute top-4 left-4 z-10 flex gap-2">
-        <Button onClick={addNewScene} className="flex items-center gap-2">
-          <Plus className="w-4 h-4" />
-          Add Scene
-        </Button>
-        <Button onClick={saveToDatabase} disabled={isPending} className="flex items-center gap-2">
-          <Save className="w-4 h-4" />
-          {isPending ? "Saving..." : "Save to DB"}
-        </Button>
-        <Button
-          onClick={loadFromDatabase}
-          disabled={isPending}
-          variant="outline"
-          className="flex items-center gap-2 bg-transparent"
-        >
-          <Upload className="w-4 h-4" />
-          {isPending ? "Loading..." : "Load from DB"}
-        </Button>
-        <Button
-          onClick={() => redirect(`/admin/dashboard/manage-stories/demo/${storyId}`)}
-          disabled={isPending}
-          variant="outline"
-          className="flex items-center gap-2 bg-transparent"
-        >
-          <PlayCircle className="w-4 h-4" />
-          {isPending ? "Loading..." : "Play"}
-        </Button>
+    <div className="container mx-auto flex h-full flex-col space-y-4 p-4 py-6 md:space-y-6">
+      <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
+        <div className="flex items-center gap-4">
+          <Button variant="outline" size="icon" asChild>
+            <Link href="/admin/dashboard/manage-stories">
+              <ArrowLeft className="h-4 w-4" />
+            </Link>
+          </Button>
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">
+              Konfigurasi Alur Cerita
+            </h1>
+            <p className="text-muted-foreground">
+              Atur, hubungkan, dan simpan semua adegan (scene) untuk cerita interaktif Anda.
+            </p>
+          </div>
+        </div>
+        <div className="flex w-full flex-wrap items-center justify-start gap-2 md:w-auto">
+          <Button onClick={addNewScene}>
+            <Plus className="mr-2 h-4 w-4" /> Add Scene
+          </Button>
+          <Button onClick={saveToDatabase} disabled={isPending}>
+            <Save className="mr-2 h-4 w-4" />
+            {isPending ? "Menyimpan..." : "Save to DB"}
+          </Button>
+          <Button onClick={loadFromDatabase} variant="outline">
+            <Upload className="mr-2 h-4 w-4" /> Load from DB
+          </Button>
+          <Button onClick={() => router.push(`/admin/dashboard/manage-stories/demo/${storyId}`)} variant="outline">
+            <PlayCircle className="mr-2 h-4 w-4" /> Play
+          </Button>
+        </div>
       </div>
 
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        onNodeClick={onNodeClick}
-        nodeTypes={nodeTypes}
-        fitView
-        className="bg-gray-50"
-      />
-
+      <div className="relative flex-1 rounded-lg border bg-background shadow-sm">
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          onNodeClick={onNodeClick}
+          nodeTypes={nodeTypes}
+          fitView
+        >
+          <Controls />
+          <Background />
+        </ReactFlow>
+      </div>
       {isEditorOpen && selectedScene && (
         <SceneEditor
           scene={selectedScene}
+          allScenes={scenes} 
           onSave={updateScene}
           onDelete={deleteScene}
           onClose={() => setIsEditorOpen(false)}
