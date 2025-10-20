@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ImageIcon, UploadCloud, X } from "lucide-react";
+import { ImageIcon, Star, UploadCloud, X } from "lucide-react";
 import { UpdateQuiz } from "@/app/admin/dashboard/manage-quiz/lib/actions";
 import Image from "next/image";
 
@@ -121,9 +121,25 @@ export function EditQuizForm({ quiz, categories }: EditQuizFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="xp_reward">XP Reward</Label>
-            <Input id="xp_reward" name="xp_reward" type="number" defaultValue={quiz.xp_reward} required />
-          </div>
+              <Label htmlFor="xp_reward" className="flex items-center gap-2">
+                <Star className="w-4 h-4" />
+                XP Reward / Kesulitan
+              </Label>
+              <select
+                id="xp_reward"
+                name="xp_reward"
+                className="w-full p-2 border rounded-md bg-background"
+                required
+              >
+                <option value="">-- Pilih Kesulitan --</option>
+                <option value="100">Easy (100 XP)</option>
+                <option value="150">Medium (150 XP)</option>
+                <option value="200">Hard (200 XP)</option>
+              </select>
+            </div>
+            
+
+          
 
           <div className="space-y-2">
             <Label htmlFor="is_published">Publikasikan?</Label>

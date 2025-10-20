@@ -27,7 +27,7 @@ const ArticleCard: React.FC<{ article: Article }> = ({ article }) => {
       />
       <div className="p-6 bg-white">
         <div className="flex items-center justify-between mb-2 text-sm">
-          <span className="px-3 py-1 font-medium text-white bg-[#2957A4] rounded-full text-xs">
+          <span className="px-3 py-1 font-medium text-white bg-white rounded-full text-xs">
             {article.category}
           </span>
           <span className="text-gray-500">{article.date}</span>
@@ -99,7 +99,7 @@ const ArticleGridClient: React.FC<{ articles: Article[]; limit?: number }> = ({
   };
 
   return (
-    <div className="py-16 bg-gray-50">
+    <div className="py-16 bg-white">
       <div className="px-6 mx-auto max-w-7xl lg:px-8">
         <div className="mb-12">
           <h2 className="text-3xl font-bold tracking-tight text-center text-[#2957A4] sm:text-4xl mb-4">

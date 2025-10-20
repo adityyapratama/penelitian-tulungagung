@@ -1,7 +1,7 @@
 
 
 import {NavbarDemo} from "@/components/(landing-page)/navbar/navbar";
-import HeroSection from "@/components/(landing-page)/hero/hero";
+// import HeroSection from "@/components/(landing-page)/hero/hero";
 import { AnimationWrapper } from '@/components/animation-wrapper';
 import { Suspense } from 'react';
 import {MarqueeDemo} from "@/components/(landing-page)/comment/comment";
@@ -11,6 +11,7 @@ import Footer from "@/components/(landing-page)/footer/footerPage";
 import ArticlePage from "@/components/(landing-page)/article/article-card";
 import { TypingAnimation } from "@/components/magicui/typing-animation";
 import {AccordionDemo} from "@/components/(landing-page)/stacked/stacked";
+import HeroSection from "@/components/(landing-page)/hero2/page";
 
 
 
@@ -21,20 +22,10 @@ export default function Home() {
       <NavbarDemo/>   
       
       <main className="">
-        <section id="hero">
+        <section id="hero" className="mb-40">
           <Suspense >
             <AnimationWrapper>
               <HeroSection />
-            </AnimationWrapper> 
-          </Suspense>
-        </section>
-
-        <section id="comments-reviews" className="w-full max-w-full py-16 bg-blue-">
-            <TypingAnimation startOnView={true}>Testimonial👋</TypingAnimation>
-          <Suspense fallback={<div className="w-full h-32" />}>
-          
-            <AnimationWrapper>
-              <MarqueeDemo/>
             </AnimationWrapper> 
           </Suspense>
         </section>
@@ -45,6 +36,16 @@ export default function Home() {
             <AnimationWrapper>
               <OurFeature />
             </AnimationWrapper>
+          </Suspense>
+        </section>
+
+            <section id="comments-reviews" className="w-full max-w-full py-16 bg-blue-">
+            <TypingAnimation startOnView={true}>Testimonial👋</TypingAnimation>
+          <Suspense fallback={<div className="w-full h-32" />}>
+          
+            <AnimationWrapper>
+              <MarqueeDemo/>
+            </AnimationWrapper> 
           </Suspense>
         </section>
 

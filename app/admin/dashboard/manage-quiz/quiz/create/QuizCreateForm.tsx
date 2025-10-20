@@ -1,30 +1,17 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import { useFormStatus } from "react-dom";
-import { useRouter } from "next/navigation";
-import Image from "next/image"; // <-- Tambahkan import Image
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  CheckCircle,
-  Star,
-  BookOpen,
-  ListChecks,
-  ImageIcon,
-  UploadCloud,
-  X,
-} from "lucide-react"; // <-- Tambahkan import ikon
-import { CreateQuiz } from "@/app/admin/dashboard/manage-quiz/lib/actions";
+
+import { useState } from "react"
+import { useFormStatus } from "react-dom"
+import { useRouter } from "next/navigation"
+import Image from "next/image" // <-- Tambahkan import Image
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { CheckCircle, Star, BookOpen, ListChecks, ImageIcon, UploadCloud, X } from "lucide-react" // <-- Tambahkan import ikon
+import { CreateQuiz } from "@/app/admin/dashboard/manage-quiz/lib/actions"
 
 // Komponen Tombol Submit (sudah bagus, tidak ada perubahan)
 function SubmitButton() {
@@ -96,11 +83,7 @@ export default function CreateQuizForm({ categories }: { categories: any[] }) {
       </CardHeader>
 
       <CardContent>
-        <form
-          action={handleSubmit}
-          className="space-y-6"
-          encType="multipart/form-data"
-        >
+  <form action={handleSubmit} encType="multipart/form-data" className="space-y-6">
           {error && (
             <div className="p-4 border rounded-lg bg-destructive/10 border-destructive/20">
               <p className="text-sm font-medium text-destructive">{error}</p>
@@ -158,20 +141,26 @@ export default function CreateQuizForm({ categories }: { categories: any[] }) {
               </select>
             </div>
 
+           
             <div className="space-y-2">
               <Label htmlFor="xp_reward" className="flex items-center gap-2">
                 <Star className="w-4 h-4" />
-                XP Reward
+                XP Reward / Kesulitan
               </Label>
-              <Input
+              <select
                 id="xp_reward"
                 name="xp_reward"
-                type="number"
-                min="0"
-                placeholder="Contoh: 100"
+                className="w-full p-2 border rounded-md bg-background"
                 required
-              />
+              >
+                <option value="">-- Pilih Kesulitan --</option>
+                <option value="100">Easy (100 XP)</option>
+                <option value="150">Medium (150 XP)</option>
+                <option value="200">Hard (200 XP)</option>
+              </select>
             </div>
+            
+
           </div>
 
           <div className="space-y-2">
@@ -188,7 +177,7 @@ export default function CreateQuizForm({ categories }: { categories: any[] }) {
             </select>
           </div>
 
-          {/* Bagian Thumbnail (disesuaikan seperti form edit) */}
+          
           <div className="space-y-3">
             <Label className="flex items-center gap-2 text-sm font-medium">
               <ImageIcon className="w-4 h-4" />
@@ -237,7 +226,8 @@ export default function CreateQuizForm({ categories }: { categories: any[] }) {
               type="file"
               accept="image/*"
               className="sr-only"
-              onChange={handleImageChange} // <-- Hubungkan ke fungsi handler
+              required
+              onChange={handleImageChange} 
             />
             <p className="text-sm text-muted-foreground">
               Thumbnail akan menjadi gambar sampul untuk kuis Anda.

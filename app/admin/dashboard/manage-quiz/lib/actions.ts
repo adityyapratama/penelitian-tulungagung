@@ -1,5 +1,6 @@
 "use server";
 
+import { File } from "buffer"
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
 import {
@@ -37,7 +38,7 @@ export async function CreateQuiz(
   const file = parse.data.thumbnail;
   if (!(file instanceof File)) return { error: "Thumbnail invalid" };
 
-  // Validasi tambahan (opsional)
+    
   const allowedExt = [".jpg", ".jpeg", ".png", ".webp"];
   const fileExt = path.extname(file.name).toLowerCase();
   if (!allowedExt.includes(fileExt)) {
