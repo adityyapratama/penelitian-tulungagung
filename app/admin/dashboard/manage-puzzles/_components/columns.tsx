@@ -23,7 +23,6 @@ export type TPuzzle = {
   xp_reward: number
   is_published: boolean
   created_by: number
-  is_published: boolean
   created_at: Date
 }
 
