@@ -323,3 +323,97 @@ export async function GetLeaderboard(id: string, content_type: ContentType) {
     return [];
   }
 }
+
+
+export async function GetQuizzes() {
+  try {
+      const quizzes = await prisma.$queryRaw<
+    Array<{
+      kuis_id: number;
+      judul: string;
+      xp_reward: number;
+      level: string;
+    }>
+  >`
+    SELECT 
+      kuis_id,
+      judul,
+      thumbnail,
+      CASE
+        WHEN xp_reward < 100 THEN 'easy'
+        WHEN xp_reward >= 100 AND xp_reward < 200 THEN 'medium'
+        ELSE 'hard'
+      END AS level
+    FROM "Quiz"
+    WHERE is_published = true
+  `;
+
+  return quizzes;
+  } catch {
+    return {error : "terjadi kesalahan"}
+  }
+}
+
+export async function GetCerita(){
+  try {
+      const cerita = await prisma.$queryRaw<
+      Array<{
+        cerita_id: number;
+        judul: string;
+        xp_reward: number;
+        level: string;
+      }>
+    >`
+      SELECT
+        cerita_id,
+        judul,
+        thumbnail,
+        CASE
+          WHEN xp_reward < 100 THEN 'easy'
+          WHEN xp_reward >= 100 AND xp_reward < 200 THEN 'medium'
+          ELSE 'hard'
+        END AS level
+      FROM "cerita_interaktif"
+      WHERE is_published = true
+    `;
+
+    return cerita;
+  } catch {
+    return {error : "terjadi kesalahan"}
+  }
+}
+
+
+export async function GetPuzzle(){
+  try {
+    const puzzles = await prisma.$queryRaw<
+    Array<{
+      puzzle_id: number;
+      judul: string;
+      xp_reward: number;
+      level: string;
+    }>
+  >`
+    SELECT
+      puzzle_id,
+      judul,
+      thumbnail,
+      CASE
+        WHEN xp_reward < 100 THEN 'easy'
+        WHEN xp_reward >= 100 AND xp_reward < 200 THEN 'medium'
+        ELSE 'hard'
+      END AS level
+    FROM "Puzzle"
+    WHERE is_published = true
+  `;
+
+  return puzzles;
+  } catch {
+    return {error : "terjadi kesalahan"}
+  }
+}
+
+
+
+
+
