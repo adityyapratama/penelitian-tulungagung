@@ -7,6 +7,7 @@ import { ActionResult } from "@/lib/executeAction";
 import fs from "fs";
 import path from "path";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
 export async function CreateArticle(
   _: unknown,
@@ -51,12 +52,12 @@ export async function CreateArticle(
         thumbnail: "/uploads/" + validate.data.thumbnail.name,
       },
     });
-
-    return { success: "true" };
   } catch (error) {
-    console.log(error);
-    return { error: "Gagal Membuat Article" };
+    console.error("Database Create Error:", error);
+    return { error: "Gagal membuat artikel." };
   }
+  revalidatePath("/admin/dashboard/manage-articles");
+  return { success: "Artikel berhasil dibuat." };
 }
 
 export async function UpdateArticle(
@@ -106,12 +107,13 @@ export async function UpdateArticle(
         ...(thumbnailPath && { thumbnail: thumbnailPath }),
       },
     });
-
-    return { success: "true" };
   } catch (error) {
-    console.error(error);
-    return { error: "failed to update data" };
+    console.error("Database Update Error:", error);
+    return { error: "Gagal memperbarui artikel." };
   }
+
+  revalidatePath("/admin/dashboard/manage-articles");
+  return { success: "Artikel berhasil diperbarui." };
 }
 
 export async function DeleteArticle(id: number): Promise<ActionResult> {
@@ -134,12 +136,13 @@ export async function DeleteArticle(id: number): Promise<ActionResult> {
     await prisma.artikel.delete({
       where: { artikel_id: id },
     });
-
-    return redirect("/admin/dashboard/manage-articles");
   } catch (error) {
-    console.log(error);
-    return { error: "Gagal menghapus artikel" };
+    console.error("Database Delete Error:", error);
+    return { error: "Gagal menghapus artikel." };
   }
+
+  revalidatePath("/admin/dashboard/manage-articles");
+  return { success: "Artikel berhasil dihapus." };
 }
 
 export async function CreateArticleCategory(
@@ -161,12 +164,12 @@ export async function CreateArticleCategory(
         created_by: Number(session.user.id),
       },
     });
-
-    return redirect("/admin/dashboard/manage-articles");
   } catch (error) {
-    console.log(error);
-    return { error: "Gagal Membuat Category" };
+    console.error("Database Create Error:", error);
+    return { error: "Gagal membuat kategori." };
   }
+  revalidatePath("/admin/dashboard/manage-articles/categories");
+  return { success: "Kategori berhasil dibuat." };
 }
 
 export async function UpdateArticleCategory(
@@ -190,10 +193,10 @@ export async function UpdateArticleCategory(
       },
     });
 
-    return redirect("/admin/dashboard/manage-articles");
+    return redirect("/admin/dashboard/manage-articles/categories");
   } catch (error) {
     console.log(error);
-    return { error: "Gagal Update Category" };
+    return { error: "Gagal Update Kategori" };
   }
 }
 
@@ -208,10 +211,17 @@ export async function DeleteArticleCategory(id: number): Promise<ActionResult> {
     await prisma.kategoriArtikel.delete({
       where: { KategoriArtikel_id: id },
     });
-
-    return { success: "true" };
   } catch (error) {
-    console.log(error);
-    return { error: "Gagal Menghapus Category" };
+    console.error("Database Error:", error);
+    if ((error as any).code === "P2003") {
+      return {
+        error:
+          "Tidak dapat menghapus kategori karena digunakan oleh satu atau lebih artikel.",
+      };
+    }
+    return { error: "Gagal menghapus kategori." };
   }
+
+  revalidatePath("/admin/dashboard/manage-articles/categories");
+  return { success: "Kategori berhasil dihapus." };
 }

@@ -45,6 +45,10 @@ const navData: NavItem[] = [
     title: "Manajemen Artikel",
     url: "/admin/dashboard/manage-articles",
     icon: FileEdit,
+    subItems: [
+      { title: "Daftar Kategori", url: "/admin/dashboard/manage-articles/categories" },
+      { title: "Daftar Artikel", url: "/admin/dashboard/manage-articles" },
+    ],
   },
   {
     title: "Manajemen Puzzle",
@@ -60,7 +64,7 @@ const navData: NavItem[] = [
         title: "Daftar Kategori",
         url: "/admin/dashboard/manage-stories/category",
       },
-      { title: "Daftar Cerita", url: "/admin/dashboard/manage-stories/list" },
+      { title: "Daftar Cerita", url: "/admin/dashboard/manage-stories" },
     ],
   },
   {

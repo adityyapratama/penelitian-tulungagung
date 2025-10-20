@@ -15,10 +15,8 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogCancel,
-  AlertDialogAction
+  AlertDialogAction,
 } from "@/components/ui/alert-dialog";
-
-
 
 import {
   Tooltip,
@@ -61,7 +59,9 @@ export function CellActions({ row }: CellActionsProps) {
         <Tooltip>
           <TooltipTrigger asChild>
             <Button asChild variant="ghost" size="icon" className="w-8 h-8">
-              <Link href={`/admin/dashboard/manage-quiz/quiz/edit/${quiz.kuis_id}/question/create`}>
+              <Link
+                href={`/admin/dashboard/manage-quiz/quiz/edit/${quiz.kuis_id}/question/create`}
+              >
                 <ListPlus className="w-4 h-4 text-sky-600" />
               </Link>
             </Button>
@@ -75,7 +75,9 @@ export function CellActions({ row }: CellActionsProps) {
         <Tooltip>
           <TooltipTrigger asChild>
             <Button asChild variant="outline" size="icon" className="w-8 h-8">
-              <Link href={`/admin/dashboard/manage-quiz/quiz/edit/${quiz.kuis_id}`}>
+              <Link
+                href={`/admin/dashboard/manage-quiz/quiz/edit/${quiz.kuis_id}`}
+              >
                 <Edit className="w-4 h-4" />
               </Link>
             </Button>
@@ -104,14 +106,14 @@ export function CellActions({ row }: CellActionsProps) {
         </Tooltip>
       </div>
 
-     <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Apakah Anda Yakin?</AlertDialogTitle>
             <AlertDialogDescription>
               Tindakan ini akan menghapus kategori{" "}
-              <span className="font-semibold">{quiz.judul}</span>{" "}
-              secara permanen.
+              <span className="font-semibold">{quiz.judul}</span> secara
+              permanen.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -122,7 +124,6 @@ export function CellActions({ row }: CellActionsProps) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-      </TooltipProvider>
+    </TooltipProvider>
   );
-  }
-  
+}

@@ -35,30 +35,32 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const session = await auth();
-
   if (session?.user.role != "super_admin") {
     return <p>You are not authorized to view this page!</p>;
   }
-
   return (
     <SidebarProvider>
+      {" "}
       <div className="flex min-h-screen w-full bg-muted/40">
-        <AppSidebar />
+        {" "}
+        <AppSidebar />{" "}
         <SidebarInset className="flex flex-1 flex-col min-w-0">
+          {" "}
           <header className="flex h-16 shrink-0 items-center gap-2 border-b bg-background px-4">
-            <SidebarTrigger className="-ml-1" />
+            {" "}
+            <SidebarTrigger className="-ml-1" />{" "}
             <Separator
               orientation="vertical"
               className="mr-2 data-[orientation=vertical]:h-4"
-            />
-            <DynamicBreadcrumb />
-          </header>
+            />{" "}
+            <DynamicBreadcrumb />{" "}
+          </header>{" "}
           <main className="flex-1 overflow-y-auto p-4 pt-0">
-            <Toaster position="top-right" />
-            {children}
-          </main>
-        </SidebarInset>
-      </div>
+            {" "}
+            <Toaster position="top-right" /> {children}{" "}
+          </main>{" "}
+        </SidebarInset>{" "}
+      </div>{" "}
     </SidebarProvider>
   );
 }

@@ -6,15 +6,27 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Upload, FileImage, Star, BookOpen, CheckCircle } from "lucide-react";
-import { GetCategories } from "../lib/data"; 
+import { GetCategories } from "../lib/data";
 import { createStory } from "../lib/actions";
 import { useFormStatus } from "react-dom";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -105,9 +117,12 @@ export default function CreateStoryForm() {
   return (
     <div className="max-w-2xl mx-auto p-6">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-foreground mb-2">Buat Cerita Interaktif</h1>
+        <h1 className="text-3xl font-bold text-foreground mb-2">
+          Buat Cerita Interaktif
+        </h1>
         <p className="text-muted-foreground">
-          Buat cerita interaktif baru dengan thumbnail menarik dan deskripsi yang engaging
+          Buat cerita interaktif baru dengan thumbnail menarik dan deskripsi
+          yang engaging
         </p>
       </div>
 
@@ -117,7 +132,9 @@ export default function CreateStoryForm() {
             <BookOpen className="h-5 w-5" />
             Detail Cerita
           </CardTitle>
-          <CardDescription>Isi informasi lengkap untuk cerita interaktif Anda</CardDescription>
+          <CardDescription>
+            Isi informasi lengkap untuk cerita interaktif Anda
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form action={handleSubmit} className="space-y-6">
@@ -131,7 +148,9 @@ export default function CreateStoryForm() {
               <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
                 <div className="flex items-center gap-2">
                   <CheckCircle className="h-4 w-4 text-green-600" />
-                  <p className="text-green-800 text-sm font-medium">Cerita berhasil dibuat!</p>
+                  <p className="text-green-800 text-sm font-medium">
+                    Cerita berhasil dibuat!
+                  </p>
                 </div>
               </div>
             )}
@@ -173,9 +192,12 @@ export default function CreateStoryForm() {
                     <div className="flex flex-col items-center justify-center pt-5 pb-6">
                       <Upload className="w-8 h-8 mb-2 text-muted-foreground" />
                       <p className="mb-2 text-sm text-muted-foreground">
-                        <span className="font-semibold">Klik untuk upload</span> atau drag & drop
+                        <span className="font-semibold">Klik untuk upload</span>{" "}
+                        atau drag & drop
                       </p>
-                      <p className="text-xs text-muted-foreground">PNG, JPG, JPEG (MAX. 5MB)</p>
+                      <p className="text-xs text-muted-foreground">
+                        PNG, JPG, JPEG (MAX. 5MB)
+                      </p>
                     </div>
                   </Label>
                 </div>
@@ -186,9 +208,13 @@ export default function CreateStoryForm() {
                     <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg border">
                       <FileImage className="h-5 w-5 text-muted-foreground" />
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate">{selectedFile?.name}</p>
+                        <p className="text-sm font-medium truncate">
+                          {selectedFile?.name}
+                        </p>
                         <p className="text-xs text-muted-foreground">
-                          {selectedFile && (selectedFile.size / 1024 / 1024).toFixed(2)} MB
+                          {selectedFile &&
+                            (selectedFile.size / 1024 / 1024).toFixed(2)}{" "}
+                          MB
                         </p>
                       </div>
                       <Badge variant="secondary" className="font-medium">
@@ -220,14 +246,20 @@ export default function CreateStoryForm() {
                 </SelectTrigger>
                 <SelectContent>
                   {categories.map((category) => (
-                    <SelectItem key={category.KategoriId} value={category.KategoriId.toString()}>
+                    <SelectItem
+                      key={category.KategoriId}
+                      value={category.KategoriId.toString()}
+                    >
                       {category.NamaKategori}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
               {categories.length === 0 && (
-                <p className="text-destructive text-sm">Tidak ada kategori tersedia. Silakan tambahkan kategori terlebih dahulu.</p>
+                <p className="text-destructive text-sm">
+                  Tidak ada kategori tersedia. Silakan tambahkan kategori
+                  terlebih dahulu.
+                </p>
               )}
             </div>
 
@@ -248,7 +280,10 @@ export default function CreateStoryForm() {
 
             {/* XP Reward */}
             <div className="space-y-2">
-              <Label htmlFor="xp_reward" className="text-sm font-medium flex items-center gap-2">
+              <Label
+                htmlFor="xp_reward"
+                className="text-sm font-medium flex items-center gap-2"
+              >
                 <Star className="h-4 w-4" />
                 XP Reward
               </Label>
@@ -263,7 +298,8 @@ export default function CreateStoryForm() {
                 className="bg-background"
               />
               <p className="text-xs text-muted-foreground">
-                Jumlah XP yang akan diberikan kepada pemain setelah menyelesaikan cerita
+                Jumlah XP yang akan diberikan kepada pemain setelah
+                menyelesaikan cerita
               </p>
             </div>
 

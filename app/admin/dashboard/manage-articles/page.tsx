@@ -17,9 +17,7 @@ type TCategory = {
   nama_kategori: string;
 };
 
-
 export default async function ManageArticlesPage() {
-  // Ambil data artikel dan kategori dari fungsi di ./data
   const articles: TArticleColumn[] = await getArticle();
   const categories: TCategory[] = await GetArticleCategory();
 
