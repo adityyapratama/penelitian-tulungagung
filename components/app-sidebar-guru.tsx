@@ -6,6 +6,7 @@ import {
   LayoutDashboard,
   FileQuestion,
   BookOpen,
+  FileEdit,
   type LucideIcon,
 } from "lucide-react";
 
@@ -43,6 +44,11 @@ const guruNavData: {
     url: "/guru/dashboard/my-stories",
     icon: BookOpen,
   },
+  {
+    title: "Manajemen Artikel Saya", 
+    url: "/guru/dashboard/manage-articles",
+    icon: FileEdit,  
+  }
 ];
 
 const guruUserData = {

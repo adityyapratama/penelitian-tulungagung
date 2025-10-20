@@ -20,7 +20,16 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
-import { type NavItem } from "@/types/navigation";
+
+type NavItem = {
+  title: string;
+  url: string;
+  icon?: LucideIcon;
+  items?: {
+    title: string;
+    url: string;
+  }[];
+};
 
 type NavMainProps = {
   items: NavItem[];
@@ -34,10 +43,11 @@ export function NavMain({ items }: NavMainProps) {
       <SidebarGroupLabel>Main Menu</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => {
-          const active =
-            item.url === "/dashboard"
-              ? pathname === item.url
-              : pathname.startsWith(item.url);
+          const isDashboardRoot = item.url === '/guru/dashboard' || item.url === '/admin/dashboard';
+
+          const active = isDashboardRoot
+            ? pathname === item.url
+            : pathname.startsWith(item.url);
 
           return item.items && item.items.length > 0 ? (
             <Collapsible
