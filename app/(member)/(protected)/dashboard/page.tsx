@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation"
-import { GetMemberData } from "../lib/actions"
+import { GetMemberData } from "../../lib/actions"
 import UserDashboard from "./_components/UserDahsboard"
 
 export default async function Page(){
@@ -7,7 +7,10 @@ export default async function Page(){
 
     if (!member || "error" in member){
         redirect("/member/register")
+    }else if ('error' in member){
+        redirect("/member/register")
     }
+
     return (
         <UserDashboard member={member}/>
     )

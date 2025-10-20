@@ -1,5 +1,5 @@
 import { GetStories } from "./lib/data"
-import { columns } from "./columns"
+import { getColumns } from "./columns"
 import { DataTable } from "./data-table"
 import Link from "next/link"
 import { Plus, BookOpen } from "lucide-react"
@@ -55,7 +55,7 @@ export default async function ManageStoriesPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="px-2 md:px-6">
-          <DataTable columns={columns} data={stories} />
+          <DataTable columns={getColumns} data={stories} />
         </CardContent>
       </Card>
     </div>
