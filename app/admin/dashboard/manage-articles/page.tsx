@@ -12,7 +12,6 @@ import { Plus, FileText } from "lucide-react";
 import Link from "next/link";
 import { getArticle, GetArticleCategory } from "./lib/data";
 
-// Tipe untuk kategori, sesuai dengan data-table.tsx
 type TCategory = {
   KategoriArtikel_id: number;
   nama_kategori: string;
