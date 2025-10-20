@@ -15,7 +15,6 @@ import {
   Puzzle,
   ChevronDown,
 } from "lucide-react";
-
 import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
@@ -28,8 +27,9 @@ import {
   SidebarMenuButton,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { type NavItem } from "@/types/navigation";
 
-const navData = [
+const navData: NavItem[] = [
   {
     title: "Dashboard",
     url: "/admin/dashboard",
@@ -113,6 +113,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   return (
     <Sidebar collapsible="icon" {...props}>
+      {/* Header */}
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -142,6 +143,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
 
+      {/* Menu utama */}
       <SidebarContent>
         <SidebarMenu>
           {navData.map((item) => {
@@ -163,11 +165,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     )}
                   >
                     <div className="flex items-center gap-3">
-                      {" "}
-                      <Icon className="!size-4" />{" "}
+                      {Icon && <Icon className="!size-4" />}
                       <span className={cn(isCollapsed && "hidden")}>
                         {item.title}
-                      </span>{" "}
+                      </span>
                     </div>
                     <ChevronDown
                       className={cn(
@@ -177,6 +178,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                       )}
                     />
                   </SidebarMenuButton>
+
+                  {/* Submenu */}
                   <div
                     className={cn(
                       "w-full pl-5 mt-1 relative transition-all duration-300 ease-in-out overflow-hidden",
@@ -187,7 +190,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   >
                     <div className="absolute left-6 top-1 bottom-1 w-px bg-slate-300 dark:bg-slate-700" />
                     <div className="flex flex-col gap-1 pl-6">
-                      {item.subItems.map((subItem) => {
+                      {item.subItems.map((subItem: any) => {
                         const isSubItemActive = pathname === subItem.url;
                         return (
                           <Link
@@ -201,7 +204,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                                 : "text-muted-foreground hover:text-foreground"
                             )}
                           >
-                            <div className="w-1.5 h-1.5 rounded-full transition-colors bg-transparent" />
                             {isSubItemActive && (
                               <div className="absolute left-[21px] w-1.5 h-1.5 rounded-full bg-primary" />
                             )}
@@ -218,6 +220,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             const isActive = item.exact
               ? pathname === item.url
               : isParentActive;
+
             return (
               <SidebarMenuItem key={item.title}>
                 <SidebarMenuButton
@@ -229,7 +232,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   )}
                 >
                   <Link href={item.url!} className="flex items-center gap-3">
-                    <Icon className="!size-4" />
+                    {Icon && <Icon className="!size-4" />}
                     <span className={cn(isCollapsed && "hidden")}>
                       {item.title}
                     </span>
@@ -241,9 +244,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarContent>
 
+      {/* Footer */}
       <SidebarFooter>
         <NavUser user={userData} />
       </SidebarFooter>
+
       <SidebarRail />
     </Sidebar>
   );

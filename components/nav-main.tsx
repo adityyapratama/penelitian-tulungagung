@@ -20,16 +20,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
-
-type NavItem = {
-  title: string;
-  url: string;
-  icon?: LucideIcon;
-  items?: {
-    title: string;
-    url: string;
-  }[];
-};
+import { type NavItem } from "@/types/navigation";
 
 type NavMainProps = {
   items: NavItem[];
