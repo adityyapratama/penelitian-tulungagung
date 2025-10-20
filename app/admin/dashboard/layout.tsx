@@ -8,6 +8,17 @@ import {
 } from "@/components/ui/sidebar";
 import { Metadata } from "next";
 import { DynamicBreadcrumb } from "@/components/ui/dynamic-breadcrumb"; 
+import {
+  FileQuestion,
+  School2Icon,
+  FileEdit,
+  LayoutDashboard,
+  PersonStanding,
+  Puzzle,
+  BookAudioIcon,
+  BookOpen, 
+  MessageSquare, 
+} from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Pusaka Tulungagung - Dashboard Admin",
@@ -17,6 +28,7 @@ export const metadata: Metadata = {
 import { Toaster } from "sonner";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import { AppSidebarAdmin } from "@/components/app-sidebar-admin";
 
 export default async function DashboardLayout({
   children,
@@ -29,9 +41,10 @@ export default async function DashboardLayout({
     redirect("/")
   }
 
+
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebarAdmin/>
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2 px-4">

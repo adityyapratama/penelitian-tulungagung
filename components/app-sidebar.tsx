@@ -2,17 +2,9 @@
 
 import * as React from "react";
 import Image from "next/image";
-import { FileQuestion, School2Icon, FileEdit } from "lucide-react";
-import {
-  BookAudioIcon,
-  LayoutDashboard,
-  PersonStanding,
-  Puzzle,
-} from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
-
 import {
   Sidebar,
   SidebarContent,
@@ -23,75 +15,19 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
+import { type NavItem } from "@/types/navigation";
+interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
+  navData: NavItem[]; 
+}
 
-// This is sample data.
-const data = {
-  user: {
-    name: "Administrator",
-    email: "adminpusakatulungagung@gmail.com",
-    avatar: "/asset/avatars/avatar-image-1.jpg",
-  },
-  navMain: [
-    {
-      title: "Dashboard",
-      url: "/admin/dashboard",
-      icon: LayoutDashboard,
-    },
-    {
-      title: "Manajemen Pengguna",
-      url: "/admin/dashboard/manage-users",
-      icon: PersonStanding,
-    },
-    {
-      title: "Manajemen Artikel",
-      url: "/admin/dashboard/manage-articles",
-      icon: FileEdit,
-    },
-    {
-      title: "Manajemen Puzzle",
-      url: "/admin/dashboard/manage-puzzles",
-      icon: Puzzle,
-    },
-    {
-      title: "Manajemen Cerita",
-      url: "/admin/dashboard/manage-stories",
-      icon: BookAudioIcon,
-      items: [
-        {
-          title: "Daftar Cerita",
-          url: "/admin/dashboard/manage-stories",
-        },
-        {
-          title: "Daftar Kategori",
-          url: "/admin/dashboard/manage-stories/category",
-        },
-      ],
-    },
-    {
-      title: "Manajemen Kuis",
-      url: "/admin/dashboard/manage-quiz",
-      icon: FileQuestion,
-      items: [
-        {         
-          title: "Daftar Kuis Kategori",
-
-          url: "/admin/dashboard/manage-quiz/categories",
-        },
-        {
-          title: "Daftar Kuis",
-          url: "/admin/dashboard/manage-quiz/quiz",
-        },
-      ],
-    },
-    {
-      title: "Manajemen sekolah",
-      url: "/admin/dashboard/manage-sekolah",
-      icon: School2Icon,
-    },
-  ],
+const userData = {
+  name: "User Name",
+  email: "user@example.com",
+  avatar: "/asset/avatars/avatar-image-1.jpg",
 };
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+
+export function AppSidebar({ navData, ...props }: AppSidebarProps) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -119,10 +55,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
 
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={navData} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={userData} /> 
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
