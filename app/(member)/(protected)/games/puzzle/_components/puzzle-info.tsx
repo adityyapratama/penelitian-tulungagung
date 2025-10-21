@@ -32,7 +32,8 @@ export function PuzzleInfo({ puzzle, stats }: { puzzle: Puzzle, stats: PuzzleSta
         <div className="flex items-center gap-6">
           <div className="w-24 h-24 relative rounded-lg overflow-hidden border-2 border-secondary/30 flex-shrink-0">
             <Image 
-              src={puzzle.gambar || "/placeholder.svg"} 
+              src={puzzle.gambar.replace(/\\/g, "/")
+                            .replace(/^\/+/, "") || "/placeholder.svg"} 
               alt={puzzle.judul} 
               fill 
               className="object-cover"

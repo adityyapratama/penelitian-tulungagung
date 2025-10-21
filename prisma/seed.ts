@@ -2,11 +2,20 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { PrismaClient, Prisma } from "../lib/generated/prisma";
+import { PuzzleCategory } from "../lib/generated/prisma";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
 const prisma = new PrismaClient();
+
+  const puzzles = Array.from({ length: 16 }).map((_, i) => ({
+    judul: `Motif ${i + 1}`,
+    gambar: `puzzle/MOTIF_${i + 1}.jpg`, // bisa .png jika perlu
+    kategori: PuzzleCategory.Budaya, 
+    xp_reward: 80,
+    is_published: true,
+  }));
 
 const KategoriKuisData = [
   {
@@ -652,9 +661,8 @@ const PertanyaanSulitData = [
   },
 ];
 
-// Data Pilihan untuk Pertanyaan Tingkat Sulit
+
 const PilihanSulitData = [
-  // Pertanyaan 1 (Sulit)
   {
     pertanyaan_id: 11,
     teks_jawaban: "Penambang marmer",
@@ -906,6 +914,12 @@ export async function main() {
       );
     }
   }
+
+    await prisma.puzzle.createMany({
+      data: puzzles,
+    });
+
+  console.log('✅ Seed puzzle berhasil dimasukkan!');
 
   console.log("\n🎉 Seeding kuis sejarah Tulungagung completed successfully!");
   console.log("📊 Summary:");
