@@ -15,7 +15,7 @@ import {
   FileQuestion,
   BookOpen,
 } from "lucide-react"; 
-import { AppSidebarGuru } from "@/components/app-sidebar-guru";
+import { GuruSidebar } from "@/components/app-sidebar-guru";
 
 export const metadata: Metadata = {
   title: "Pusaka Tulungagung - Dashboard Guru",
@@ -36,7 +36,7 @@ export default async function GuruDashboardLayout({
 
   return (
     <SidebarProvider>
-      <AppSidebarGuru />
+      <GuruSidebar />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2 px-4">

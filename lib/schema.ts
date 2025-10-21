@@ -81,6 +81,17 @@ export const SchemaQuiz = z.object({
   thumbnail: fileSchema,
 });
 
+export const SchemaQuizUpdate = z.object({
+  judul: z
+    .string({ message: "Judul is required" })
+    .min(8, { message: "Judul should have min 8 characters" }),
+  deskripsi: z.string({ message: "deskripsi is required" }),
+  kategori_id: z.number({ message: "kategori is required" }).int().min(1),
+  xp_reward: z.number({ message: "xp reward is required" }).int(),
+  is_published: myBooleanSchema,
+  thumbnail: optionalFileSchema,
+});
+
 export const SchemaPilihan = z.object({
   teks_jawaban: z.string().min(1, "Jawaban wajib diisi"),
   score: z.number().int().default(0),
