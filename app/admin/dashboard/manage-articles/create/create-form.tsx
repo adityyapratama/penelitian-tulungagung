@@ -1,19 +1,27 @@
 "use client";
 
-import { useTransition, useState } from "react";
+import { useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { useForm, Controller, SubmitHandler } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { toast } from "sonner";
+import { Loader2, Save } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { CreateArticle } from "../lib/actions";
-import { Loader2, Save } from "lucide-react";
-import { Controller, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { SchemaArticle } from "@/lib/schema";
-import { z } from "zod";
-import { useRouter } from "next/navigation";
+import { CreateArticle } from "../lib/actions";
 
-type FormData = z.infer<typeof SchemaArticle>;
+const ClientSchema = SchemaArticle.extend({
+  kategori: z.coerce
+    .number({ invalid_type_error: "Kategori harus dipilih." })
+    .min(1, { message: "Silakan pilih salah satu kategori." }),
+});
+
+type FormData = z.infer<typeof ClientSchema>;
 
 interface CreateArticleFormProps {
   categories: Array<{ KategoriArtikel_id: number; nama_kategori: string }>;
@@ -21,73 +29,60 @@ interface CreateArticleFormProps {
 
 export function CreateArticleForm({ categories }: CreateArticleFormProps) {
   const [isPending, startTransition] = useTransition();
-  const [success, setSuccess] = useState<string | null>(null);
   const router = useRouter();
 
   const form = useForm<FormData>({
-    resolver: zodResolver(SchemaArticle),
+    resolver: zodResolver(ClientSchema),
     defaultValues: {
-      kategori: categories[0]
-        ? BigInt(categories[0].KategoriArtikel_id)
-        : BigInt(0),
+      judul: "",
+      konten: "",
+      kategori: undefined,
     },
   });
 
-  const onSubmit = (data: FormData) => {
-    setSuccess(null);
-
-    console.log("🚀 Proses menyimpan dimulai...");
-    console.log("✅ Data hasil validasi react-hook-form:", data);
-
-    // bungkus ke FormData sebelum ke server action
+  const onSubmit: SubmitHandler<FormData> = (data) => {
     const formData = new FormData();
     formData.append("judul", data.judul);
     formData.append("konten", data.konten);
     formData.append("kategori", data.kategori.toString());
     formData.append("thumbnail", data.thumbnail as File);
 
-    console.log(
-      "📦 FormData siap dikirim ke server:",
-      Object.fromEntries(formData.entries())
-    );
-
     startTransition(async () => {
-      try {
-        const result = await CreateArticle(null, formData);
-        console.log("📥 Respons dari server:", result);
+      const result = await CreateArticle(null, formData);
 
-        if (result?.error) {
-          console.error("❌ Error dari server:", result.error);
-          form.setError("judul", { message: result.error });
-          return;
-        }
+      if (result?.error) {
+        toast.error("Gagal membuat artikel", {
+          description: result.error,
+        });
+      } else if (result?.success) {
+        toast.success("Artikel berhasil dibuat!", {
+          description: "Anda akan segera dialihkan...",
+        });
 
-        setSuccess("Artikel berhasil disimpan!");
-        router.push("/admin/dashboard/manage-articles");
-      } catch (err) {
-        console.error("🔥 Terjadi error saat memanggil CreateArticle:", err);
+        setTimeout(() => {
+          router.push("/admin/dashboard/manage-articles");
+          router.refresh();
+        }, 1500);
       }
     });
   };
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        console.log("🔥 FORM DIKIRIM!");
-        form.handleSubmit(onSubmit)(e);
-      }}
-      className="space-y-6"
-    >
-      {success && (
-        <div className="bg-green-100 text-green-700 p-3 rounded-md">
-          {success}
-        </div>
-      )}
+    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
       {/* Judul */}
       <div className="space-y-2">
         <Label htmlFor="judul">Judul Artikel *</Label>
-        <Input id="judul" {...form.register("judul")} required />
+        <Input
+          id="judul"
+          placeholder="Masukkan judul artikel..."
+          {...form.register("judul")}
+        />
+        {form.formState.errors.judul?.message && (
+          <p className="text-sm text-red-500">
+            {String(form.formState.errors.judul.message)}{" "}
+            {/* ✅ Dikonversi ke string */}
+          </p>
+        )}
       </div>
 
       {/* Kategori */}
@@ -95,10 +90,8 @@ export function CreateArticleForm({ categories }: CreateArticleFormProps) {
         <Label htmlFor="kategori">Kategori *</Label>
         <select
           id="kategori"
-          {...form.register("kategori", {
-            setValueAs: (v) => (v ? BigInt(v) : BigInt(0)),
-          })}
-          className="border rounded p-2 w-full"
+          {...form.register("kategori")}
+          className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <option value="">-- Pilih Kategori --</option>
           {categories.map((cat) => (
@@ -107,6 +100,11 @@ export function CreateArticleForm({ categories }: CreateArticleFormProps) {
             </option>
           ))}
         </select>
+        {form.formState.errors.kategori?.message && (
+          <p className="text-sm text-red-500">
+            {String(form.formState.errors.kategori.message)} {/* ✅ Fix */}
+          </p>
+        )}
       </div>
 
       {/* Thumbnail */}
@@ -120,19 +118,34 @@ export function CreateArticleForm({ categories }: CreateArticleFormProps) {
               type="file"
               accept="image/*"
               onChange={(e) => field.onChange(e.target.files?.[0])}
-              required
             />
           )}
         />
+        {form.formState.errors.thumbnail?.message && (
+          <p className="text-sm text-red-500">
+            {String(form.formState.errors.thumbnail.message)} {/* ✅ Fix */}
+          </p>
+        )}
       </div>
 
       {/* Konten */}
       <div className="space-y-2">
         <Label htmlFor="konten">Konten Artikel *</Label>
-        <Textarea id="konten" {...form.register("konten")} rows={10} required />
+        <Textarea
+          id="konten"
+          placeholder="Tulis isi artikel di sini..."
+          {...form.register("konten")}
+          rows={10}
+        />
+        {form.formState.errors.konten?.message && (
+          <p className="text-sm text-red-500">
+            {String(form.formState.errors.konten.message)} {/* ✅ Fix */}
+          </p>
+        )}
       </div>
 
-      <div className="flex justify-end">
+      {/* Tombol Submit */}
+      <div className="flex justify-end pt-4">
         <Button type="submit" disabled={isPending} className="min-w-[150px]">
           {isPending ? (
             <>

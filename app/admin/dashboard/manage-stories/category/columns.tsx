@@ -18,16 +18,16 @@ import {
 } from "@/components/ui/alert-dialog";
 
 // ✅ LANGKAH 1: Buat komponen baru untuk sel "Aksi"
-function ActionsCell({ 
-  row, 
-  onDelete, 
-  deletingIds 
-}: { 
-  row: Row<KategoriCerita>, 
-  onDelete: (id: string) => void, 
-  deletingIds: Set<string> 
+function ActionsCell({
+  row,
+  onDelete,
+  deletingIds,
+}: {
+  row: Row<KategoriCerita>;
+  onDelete: (id: string) => void;
+  deletingIds: Set<string>;
 }) {
-  const router = useRouter(); 
+  const router = useRouter();
   const category = row.original;
   const categoryId = category.KategoriId.toString();
 
@@ -36,13 +36,21 @@ function ActionsCell({
       <Button
         variant="outline"
         size="sm"
-        onClick={() => router.push(`/admin/dashboard/manage-stories/category/edit/${categoryId}`)}
+        onClick={() =>
+          router.push(
+            `/admin/dashboard/manage-stories/category/edit/${categoryId}`
+          )
+        }
       >
         <Edit className="h-4 w-4" />
       </Button>
       <AlertDialog>
         <AlertDialogTrigger asChild>
-          <Button variant="destructive" size="sm" disabled={deletingIds.has(categoryId)}>
+          <Button
+            variant="destructive"
+            size="sm"
+            disabled={deletingIds.has(categoryId)}
+          >
             <Trash2 className="h-4 w-4" />
           </Button>
         </AlertDialogTrigger>
@@ -50,15 +58,14 @@ function ActionsCell({
           <AlertDialogHeader>
             <AlertDialogTitle>Anda yakin ingin menghapus?</AlertDialogTitle>
             <AlertDialogDescription>
-              Tindakan ini tidak dapat dibatalkan. Kategori <span className="font-semibold">{category.NamaKategori}</span> akan dihapus permanen.
+              Tindakan ini tidak dapat dibatalkan. Kategori{" "}
+              <span className="font-semibold">{category.NamaKategori}</span>{" "}
+              akan dihapus permanen.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Batal</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => onDelete(categoryId)}
-              className="bg-red-600 hover:bg-red-700"
-            >
+            <AlertDialogAction onClick={() => onDelete(categoryId)}>
               Hapus
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -67,7 +74,6 @@ function ActionsCell({
     </div>
   );
 }
-
 
 export const getColumns = (
   onDelete: (id: string) => void,
@@ -85,20 +91,14 @@ export const getColumns = (
       </Button>
     ),
     cell: ({ row }) => {
-      return (
-        <span className="font-medium">{row.original.NamaKategori}</span>
-      );
+      return <span className="font-medium">{row.original.NamaKategori}</span>;
     },
   },
   {
     id: "actions",
     header: () => <div className="text-right">Aksi</div>,
     cell: ({ row }) => (
-      <ActionsCell 
-        row={row} 
-        onDelete={onDelete} 
-        deletingIds={deletingIds} 
-      />
+      <ActionsCell row={row} onDelete={onDelete} deletingIds={deletingIds} />
     ),
   },
 ];

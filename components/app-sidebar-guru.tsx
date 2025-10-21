@@ -8,6 +8,7 @@ import {
   BookOpen,
   FileEdit,
   type LucideIcon,
+  PuzzleIcon,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -48,7 +49,12 @@ const guruNavData: {
     title: "Manajemen Artikel Saya", 
     url: "/guru/dashboard/manage-articles",
     icon: FileEdit,  
-  }
+  },
+  {
+    title: "Manajemen Puzzle Saya",
+    url: "/guru/dashboard/my-puzzles",
+    icon: PuzzleIcon,
+  },
 ];
 
 const guruUserData = {
@@ -87,7 +93,7 @@ export function AppSidebarGuru({
       </SidebarHeader>
 
       <SidebarContent>
-        <NavMain items={guruNavData} /> 
+        <NavMain items={guruNavData} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={guruUserData} />

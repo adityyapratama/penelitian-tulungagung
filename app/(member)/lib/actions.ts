@@ -25,8 +25,8 @@ export async function GetMemberData() {
     });
 
     return member;
-  } catch (error) {
-    return { error };
+  } catch {
+    return { error : "terjadi kesalahan" };
   }
 }
 

@@ -43,16 +43,15 @@ export function CellActions({ row }: CellActionsProps) {
       }
     });
   };
-  
 
   return (
-    
     <>
       <div className="flex items-center justify-end space-x-2">
-        
         {/* Tombol Edit */}
         <Button asChild variant="outline" size="icon" className="w-8 h-8">
-          <Link href={`/admin/dashboard/manage-quiz/categories/edit/${category.kategori_id}`}>
+          <Link
+            href={`/admin/dashboard/manage-quiz/categories/edit/${category.kategori_id}`}
+          >
             <Edit className="w-4 h-4" />
           </Link>
         </Button>

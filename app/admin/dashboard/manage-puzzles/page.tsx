@@ -16,7 +16,6 @@ export const metadata = {
   title: "Manage-puzzles",
 };
 
-
 export default async function ManagePuzzlesPage() {
   const puzzles = await getPuzzle();
 

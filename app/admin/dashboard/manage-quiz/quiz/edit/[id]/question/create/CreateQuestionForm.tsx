@@ -144,6 +144,11 @@ export default function DynamicQuestionBuilder({ quizId, initialQuestions, quizT
     setQuestions(newQ);
   };
 
+  // Tambah pertanyaan di akhir daftar (untuk tombol global)
+  const addQuestionAtEnd = () => {
+    setQuestions((prev) => [...prev, createNewQuestion()]);
+  };
+
   // Hapus pertanyaan: jika baru, hapus dari state; jika lama, hapus dari DB dan state
   const removeQuestion = (id: string) => {
     if (id.startsWith("q_")) {
@@ -308,6 +313,14 @@ export default function DynamicQuestionBuilder({ quizId, initialQuestions, quizT
             <p className="mt-2 text-base text-white">{quizDescription}</p>
           </CardContent>
         </Card>
+
+        {/* Toolbar Tambah Pertanyaan (Global) */}
+        <div className="flex items-center justify-between">
+          <div className="text-sm text-gray-500">Total pertanyaan: {questions.length}</div>
+          <Button onClick={addQuestionAtEnd} className="px-4 py-2 font-medium text-white bg-black rounded-lg hover:bg-gray-700">
+            <Plus className="w-4 h-4 mr-2" /> Tambah Pertanyaan
+          </Button>
+        </div>
 
         {/* Daftar Pertanyaan Dinamis */}
         <div className="space-y-6">

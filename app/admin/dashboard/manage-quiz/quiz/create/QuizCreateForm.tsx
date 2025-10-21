@@ -1,5 +1,6 @@
 "use client"
 
+
 import { useState } from "react"
 import { useFormStatus } from "react-dom"
 import { useRouter } from "next/navigation"
@@ -14,7 +15,7 @@ import { CreateQuiz } from "@/app/admin/dashboard/manage-quiz/lib/actions"
 
 // Komponen Tombol Submit (sudah bagus, tidak ada perubahan)
 function SubmitButton() {
-  const { pending } = useFormStatus()
+  const { pending } = useFormStatus();
   return (
     <Button type="submit" disabled={pending} className="w-full">
       {pending ? (
@@ -29,15 +30,15 @@ function SubmitButton() {
         </>
       )}
     </Button>
-  )
+  );
 }
 
 // Form Utama
 export default function CreateQuizForm({ categories }: { categories: any[] }) {
-  const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState<boolean>(false)
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<boolean>(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null); // <-- Perbaikan: inisialisasi dengan null
-  const router = useRouter()
+  const router = useRouter();
 
   // Fungsi untuk handle preview gambar
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,22 +53,22 @@ export default function CreateQuizForm({ categories }: { categories: any[] }) {
   };
 
   const handleSubmit = async (formData: FormData) => {
-    setError(null)
-    setSuccess(false)
+    setError(null);
+    setSuccess(false);
     try {
-      const result = await CreateQuiz(null, formData)
+      const result = await CreateQuiz(null, formData);
       if (result?.error) {
-        setError(result.error)
+        setError(result.error);
       } else {
-        setSuccess(true)
+        setSuccess(true);
         setTimeout(() => {
-          router.push('/admin/dashboard/manage-quiz/quiz')
-        }, 1500)
+          router.push("/admin/dashboard/manage-quiz/quiz");
+        }, 1500);
       }
     } catch {
-      setError("Terjadi kesalahan saat membuat kuis")
+      setError("Terjadi kesalahan saat membuat kuis");
     }
-  }
+  };
 
   return (
     <Card className="border bg-card">
@@ -76,11 +77,13 @@ export default function CreateQuizForm({ categories }: { categories: any[] }) {
           <ListChecks className="w-5 h-5" />
           Buat Kuis Baru
         </CardTitle>
-        <CardDescription>Isi informasi lengkap kuis Anda di bawah ini.</CardDescription>
+        <CardDescription>
+          Isi informasi lengkap kuis Anda di bawah ini.
+        </CardDescription>
       </CardHeader>
 
       <CardContent>
-        <form action={handleSubmit} className="space-y-6" encType="multipart/form-data">
+  <form action={handleSubmit} encType="multipart/form-data" className="space-y-6">
           {error && (
             <div className="p-4 border rounded-lg bg-destructive/10 border-destructive/20">
               <p className="text-sm font-medium text-destructive">{error}</p>
@@ -91,14 +94,21 @@ export default function CreateQuizForm({ categories }: { categories: any[] }) {
             <div className="p-4 border border-green-200 rounded-lg bg-green-50">
               <div className="flex items-center gap-2">
                 <CheckCircle className="w-4 h-4 text-green-600" />
-                <p className="text-sm font-medium text-green-800">Kuis berhasil dibuat!</p>
+                <p className="text-sm font-medium text-green-800">
+                  Kuis berhasil dibuat!
+                </p>
               </div>
             </div>
           )}
 
           <div className="space-y-2">
             <Label htmlFor="judul">Judul Kuis</Label>
-            <Input id="judul" name="judul" placeholder="Contoh: Kuis Sejarah Indonesia" required />
+            <Input
+              id="judul"
+              name="judul"
+              placeholder="Contoh: Kuis Sejarah Indonesia"
+              required
+            />
           </div>
 
           <div className="space-y-2">
@@ -131,13 +141,26 @@ export default function CreateQuizForm({ categories }: { categories: any[] }) {
               </select>
             </div>
 
+           
             <div className="space-y-2">
               <Label htmlFor="xp_reward" className="flex items-center gap-2">
                 <Star className="w-4 h-4" />
-                XP Reward
+                XP Reward / Kesulitan
               </Label>
-              <Input id="xp_reward" name="xp_reward" type="number" min="0" placeholder="Contoh: 100" required />
+              <select
+                id="xp_reward"
+                name="xp_reward"
+                className="w-full p-2 border rounded-md bg-background"
+                required
+              >
+                <option value="">-- Pilih Kesulitan --</option>
+                <option value="100">Easy (100 XP)</option>
+                <option value="150">Medium (150 XP)</option>
+                <option value="200">Hard (200 XP)</option>
+              </select>
             </div>
+            
+
           </div>
 
           <div className="space-y-2">
@@ -154,7 +177,7 @@ export default function CreateQuizForm({ categories }: { categories: any[] }) {
             </select>
           </div>
 
-          {/* Bagian Thumbnail (disesuaikan seperti form edit) */}
+          
           <div className="space-y-3">
             <Label className="flex items-center gap-2 text-sm font-medium">
               <ImageIcon className="w-4 h-4" />
@@ -179,7 +202,9 @@ export default function CreateQuizForm({ categories }: { categories: any[] }) {
                     className="absolute z-10 top-2 right-2 h-7 w-7"
                     onClick={(e) => {
                       e.preventDefault();
-                      const inputFile = document.getElementById("thumbnail") as HTMLInputElement;
+                      const inputFile = document.getElementById(
+                        "thumbnail"
+                      ) as HTMLInputElement;
                       if (inputFile) inputFile.value = "";
                       setImagePreview(null);
                     }}
@@ -201,7 +226,8 @@ export default function CreateQuizForm({ categories }: { categories: any[] }) {
               type="file"
               accept="image/*"
               className="sr-only"
-              onChange={handleImageChange} // <-- Hubungkan ke fungsi handler
+              required
+              onChange={handleImageChange} 
             />
             <p className="text-sm text-muted-foreground">
               Thumbnail akan menjadi gambar sampul untuk kuis Anda.
@@ -214,5 +240,5 @@ export default function CreateQuizForm({ categories }: { categories: any[] }) {
         </form>
       </CardContent>
     </Card>
-  )
+  );
 }

@@ -5,6 +5,19 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowUpDown, Edit, Trash2, Eye, Image } from "lucide-react";
 import Link from "next/link";
+import { toast } from "sonner";
+import { DeleteArticle } from "@/app/admin/dashboard/manage-articles/lib/actions";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export type TArticleColumn = {
   artikel_id: number;
@@ -15,13 +28,6 @@ export type TArticleColumn = {
   created_by: number | null;
   created_at: Date;
   updated_at?: Date;
-};
-
-const handleDelete = (articleId: number) => {
-  if (confirm("Apakah Anda yakin ingin menghapus artikel ini?")) {
-    console.log(`Menghapus artikel dengan ID: ${articleId}`);
-    alert(`Artikel dengan ID ${articleId} telah dihapus (simulasi).`);
-  }
 };
 
 export const articleColumns: ColumnDef<TArticleColumn>[] = [
@@ -48,18 +54,16 @@ export const articleColumns: ColumnDef<TArticleColumn>[] = [
   },
   {
     accessorKey: "judul",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="h-auto p-0 font-semibold hover:bg-transparent"
-        >
-          Judul Artikel
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className="h-auto p-0 font-semibold hover:bg-transparent"
+      >
+        Judul Artikel
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
     cell: ({ row }) => {
       const judul = row.getValue("judul") as string;
       const konten = row.original.konten;
@@ -76,10 +80,8 @@ export const articleColumns: ColumnDef<TArticleColumn>[] = [
   {
     accessorKey: "kategori",
     header: "Kategori",
-    // ... (definisi header kategori tetap sama)
     cell: ({ row }) => {
       const kategori = row.getValue("kategori") as number | null;
-      // Asumsi Anda akan memetakan ID kategori ke nama kategori di sini
       return (
         <Badge
           variant="outline"
@@ -98,9 +100,9 @@ export const articleColumns: ColumnDef<TArticleColumn>[] = [
 
       return (
         <div className="flex items-center space-x-2">
-          {/* Tombol Lihat/Detail */}
+          {/* Tombol Lihat */}
           <Button
-            asChild // <-- Gunakan asChild untuk meneruskan props ke Link
+            asChild
             variant="outline"
             size="sm"
             className="h-8 px-2 bg-transparent hover:bg-blue-500 hover:text-white"
@@ -115,7 +117,7 @@ export const articleColumns: ColumnDef<TArticleColumn>[] = [
 
           {/* Tombol Edit */}
           <Button
-            asChild // <-- Gunakan asChild
+            asChild
             variant="outline"
             size="sm"
             className="h-8 px-2 bg-transparent hover:bg-primary hover:text-white"
@@ -128,16 +130,49 @@ export const articleColumns: ColumnDef<TArticleColumn>[] = [
             </Link>
           </Button>
 
-          {/* Tombol Hapus */}
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-8 px-2 bg-transparent hover:bg-destructive hover:text-white"
-            title="Hapus Artikel"
-            onClick={() => handleDelete(article.artikel_id)} // <-- Panggil fungsi handleDelete
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
+          {/* Tombol Hapus dengan AlertDialog */}
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 px-2 bg-transparent hover:bg-destructive hover:text-white"
+                title="Hapus Artikel"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  Apakah Anda yakin ingin menghapus artikel ini?
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  Tindakan ini tidak dapat dibatalkan. Artikel akan dihapus
+                  permanen dari sistem.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Batal</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={async () => {
+                    try {
+                      const res = await DeleteArticle(article.artikel_id);
+                      if (res.success) {
+                        toast.success("Artikel berhasil dihapus!");
+                      } else {
+                        toast.error(res.error || "Gagal menghapus artikel.");
+                      }
+                    } catch (error) {
+                      toast.error("Terjadi kesalahan saat menghapus artikel.");
+                    }
+                  }}
+                >
+                  Hapus
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       );
     },

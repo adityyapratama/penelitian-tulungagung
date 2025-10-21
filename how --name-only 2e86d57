@@ -1,0 +1,57 @@
+[33m2e86d57[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mbackup-before-reset-v3[m[33m)[m modified admin
+[33mcee77bf[m Resolve merge conflicts in layout, app-sidebar, and nav-main
+[33m073cc1c[m Resolve merge conflicts and conclude merge
+[33m2508df7[m[33m ([m[1;32mupdate-manage-article[m[33m)[m add: guru dashboard layout
+[33m3484394[m updating query
+[33m267af5c[m Resolve merge conflict
+[33m52f7d0f[m update view dashboard user
+[33m0ca627f[m new view for dashboard
+[33m8d9c339[m Merge pull request #51 from adityyapratama/stories
+[33m9e4cb9d[m[33m ([m[1;31morigin/stories[m[33m)[m last
+[33m1678d67[m final stories
+[33meae7a9c[m Merge pull request #50 from adityyapratama/stories
+[33m2d533a5[m add stories
+[33mca68d8e[m Merge branch 'main' into stories
+[33mbed8b3d[m add stories and modify games path
+[33mcbd9c35[m fixing error logic
+[33m74b3942[m Resolve merge conflict in layout.tsx after stash pop
+[33ma06bb6f[m add progress group
+[33m7483a7a[m create Group Content
+[33me471f3a[m fixing buggy and edit migration
+[33mcec9381[m fixing buggy and edit migration
+[33mccd6af5[m Merge pull request #49 from adityyapratama/stories
+[33mebcae30[m updated: crud for stories category
+[33m5e02a1f[m fix bug for quiz
+[33mc4a0793[m improve query
+[33me6ae557[m fix bug for quiz, fix validation member and logic flow sign in
+[33mf619013[m feat: puzzle game
+[33md57060c[m[33m ([m[1;31morigin/puzzle[m[33m)[m Merge branch 'main' into puzzle
+[33m67e59ee[m feat: puzzle game
+[33me2eb208[m Merge pull request #46 from adityyapratama/member
+[33m00635bb[m[33m ([m[1;31morigin/member[m[33m)[m Merge branch 'main' into member
+[33me1eb618[m add progress member
+[33m9bc224a[m Merge pull request #44 from adityyapratama/create-read-only
+[33m067ca94[m[33m ([m[1;31morigin/create-read-only[m[33m)[m Merge branch 'main' into create-read-only
+[33m56dbf4f[m tambah fitur read-only
+[33m09ab01d[m Merge pull request #43 from adityyapratama/member
+[33m4f73bde[m fixing bug
+[33m5b1e279[m Merge pull request #42 from adityyapratama/puzzle
+[33m239ac6d[m add:new user dashboard and temp puzzle
+[33m4c46b96[m fix quiz 1
+[33md40c42e[m fix quiz 1
+[33m2b4c820[m Add Seeder For Kuis
+[33md25b560[m add seeder content for kuis
+[33ma8297dd[m Merge pull request #40 from adityyapratama/update-manage-article
+[33md0742a6[m Merge branch 'main' into update-manage-article
+[33m23867ba[m add: temporary dashboard ui
+[33m2606482[m[33m ([m[1;31morigin/dashboard-admin[m[33m)[m add: temporary dashboard ui
+[33m95e0ea3[m Merge pull request #38 from adityyapratama/manage-puzzle
+[33m8e3563a[m[33m ([m[1;31morigin/manage-puzzle[m[33m)[m Merge branch 'main' into manage-puzzle
+[33m64b6371[m add : list games
+[33m53a1f50[m validasi user-demo
+[33mcfc86d4[m crud sekolah2
+[33m8ec3094[m crud sekolah
+[33m5e3b827[m Merge branch 'main' of https://github.com/adityyapratama/penelitian-tulungagung
+[33m85a51b8[m Merge pull request #37 from adityyapratama/member
+[33m0b96658[m fixing bug
+[33m7357f8e[m sync puzzle

@@ -13,10 +13,22 @@ import {
   type VisibilityState,
   type RowSelectionState,
 } from "@tanstack/react-table";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { Search, Trash2, Eye } from "lucide-react";
 import { useState, useTransition } from "react";
@@ -34,31 +46,34 @@ import { DeleteMultipleQuizzes } from "@/app/admin/dashboard/manage-quiz/lib/act
 import { toast } from "sonner";
 
 export type TQuizColumn = {
-  kuis_id: number
-  judul: string
-  is_published: boolean 
-  created_at: Date
-  KategoriKuis: { 
-    nama_kategori: string
-  } | null
-  User: { 
-    username: string
-  } | null
-}
+  kuis_id: number;
+  judul: string;
+  is_published: boolean;
+  created_at: Date;
+  KategoriKuis: {
+    nama_kategori: string;
+  } | null;
+  User: {
+    username: string;
+  } | null;
+};
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
 }
 
-export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
+export function DataTable<TData, TValue>({
+  columns,
+  data,
+}: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [globalFilter, setGlobalFilter] = useState("");
 
-  // State untuk logika hapus massal 
+  // State untuk logika hapus massal
   const [isPending, startTransition] = useTransition();
   const [isBulkDeleteDialogOpen, setIsBulkDeleteDialogOpen] = useState(false);
 
@@ -95,8 +110,10 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
   const handleBulkDelete = () => {
     startTransition(async () => {
       const selectedRows = table.getFilteredSelectedRowModel().rows;
-      const selectedIds = selectedRows.map(row => (row.original as TQuizColumn).kuis_id.toString());
-      
+      const selectedIds = selectedRows.map((row) =>
+        (row.original as TQuizColumn).kuis_id.toString()
+      );
+
       const result = await DeleteMultipleQuizzes(selectedIds);
 
       if (result.success) {
@@ -130,16 +147,19 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            {table.getAllColumns().filter(column => column.getCanHide()).map(column => (
-              <DropdownMenuCheckboxItem
-                key={column.id}
-                className="capitalize"
-                checked={column.getIsVisible()}
-                onCheckedChange={(value) => column.toggleVisibility(!!value)}
-              >
-                {column.id.replace("_", " ")}
-              </DropdownMenuCheckboxItem>
-            ))}
+            {table
+              .getAllColumns()
+              .filter((column) => column.getCanHide())
+              .map((column) => (
+                <DropdownMenuCheckboxItem
+                  key={column.id}
+                  className="capitalize"
+                  checked={column.getIsVisible()}
+                  onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                >
+                  {column.id.replace("_", " ")}
+                </DropdownMenuCheckboxItem>
+              ))}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -166,11 +186,16 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
       <div className="border border-border rounded-lg bg-card overflow-hidden ">
         <Table>
           <TableHeader>
-            {table.getHeaderGroups().map(headerGroup => (
+            {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map(header => (
+                {headerGroup.headers.map((header) => (
                   <TableHead className="border-b border-border" key={header.id}>
-                    {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                   </TableHead>
                 ))}
               </TableRow>
@@ -178,18 +203,27 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map(row => (
-                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
-                  {row.getVisibleCells().map(cell => (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                >
+                  {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
                   Tidak ada data.
                 </TableCell>
               </TableRow>
@@ -198,12 +232,11 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
         </Table>
       </div>
 
-
-
       {/* Paginasi */}
       <div className="flex items-center justify-end space-x-2">
         <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} dari {table.getFilteredRowModel().rows.length} baris dipilih.
+          {table.getFilteredSelectedRowModel().rows.length} dari{" "}
+          {table.getFilteredRowModel().rows.length} baris dipilih.
         </div>
         <Button
           variant="outline"
@@ -223,10 +256,11 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
         </Button>
       </div>
 
-      
-
       {/* -- BARU: Dialog Konfirmasi untuk Hapus Massal -- */}
-       <AlertDialog open={isBulkDeleteDialogOpen} onOpenChange={setIsBulkDeleteDialogOpen}>
+      <AlertDialog
+        open={isBulkDeleteDialogOpen}
+        onOpenChange={setIsBulkDeleteDialogOpen}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Apakah Anda Benar-Benar Yakin?</AlertDialogTitle>
@@ -240,7 +274,9 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isPending}>Batal</AlertDialogCancel>
             <AlertDialogAction onClick={handleBulkDelete} disabled={isPending}>
-              {isPending ? "Menghapus..." : `Ya, Hapus ${selectedRowsCount} item`}
+              {isPending
+                ? "Menghapus..."
+                : `Ya, Hapus ${selectedRowsCount} item`}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

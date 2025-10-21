@@ -35,23 +35,36 @@ export function GameRow({ title, description, games, href }: GameRowProps) {
   const getGameUrl = (game: GameCardData) => {
     const id = game.id.split("-")[1];
     if (game.type === "kuis") return `/games/quiz/${id}`;
-    if (game.type === "cerita") return `/games/stories/${id}`;
+    if (game.type === "cerita") return `/games/cerita/${id}`;
     return `/games/puzzle/${id}`;
+  };
+
+  const getBadgeColor = (type: string) => {
+    switch (type) {
+      case "puzzle":
+        return "#F44336";
+      case "kuis":
+        return "#2957A4";
+      case "cerita":
+        return "#4CAF50";
+      default:
+        return "#2957A4";
+    }
   };
 
   const getDifficultyBadge = (difficulty: string) => {
     switch (difficulty) {
       case "Mudah":
-        return { backgroundColor: "#4CAF50", color: "white" }; // Hijau
+        return { backgroundColor: "#4CAF50", color: "white" };
       case "Sedang":
-        return { backgroundColor: "#FFC107", color: "#212121" }; // Kuning
+        return { backgroundColor: "#FFC107", color: "#212121" };
       case "Sulit":
-        return { backgroundColor: "#F44336", color: "white" }; // Merah
+        return { backgroundColor: "#F44336", color: "white" };
       default:
-        return { backgroundColor: "#607D8B", color: "white" }; // Abu-abu
+        return { backgroundColor: "#607D8B", color: "white" };
     }
   };
-  
+
   return (
     <section className="space-y-6">
       <div className="space-y-2">
@@ -60,8 +73,10 @@ export function GameRow({ title, description, games, href }: GameRowProps) {
             <div
               className="flex items-center justify-center w-10 h-10 shadow-lg rounded-xl animate-bounce-in"
               style={{
-                backgroundColor: "#2957A4",
-                boxShadow: `0 4px 20px #2957A440`,
+                backgroundColor: getBadgeColor(games[0]?.type || "puzzle"),
+                boxShadow: `0 4px 20px ${getBadgeColor(
+                  games[0]?.type || "puzzle"
+                )}40`,
               }}
             >
               <Puzzle className="w-5 h-5 text-white" />
@@ -70,7 +85,11 @@ export function GameRow({ title, description, games, href }: GameRowProps) {
               {title}
             </h2>
           </div>
-          <Button asChild variant="ghost" className="text-sm hover:text-primary">
+          <Button
+            asChild
+            variant="ghost"
+            className="text-sm hover:text-primary"
+          >
             <Link href={href}>
               Lihat Semua
               <ArrowRight className="w-4 h-4 ml-2" />
@@ -83,7 +102,6 @@ export function GameRow({ title, description, games, href }: GameRowProps) {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {games.slice(0, 4).map((game, index) => {
           const isLocked = false;
-          
           const difficulties = ["Mudah", "Sedang", "Sulit", "Mudah"];
           const difficulty = difficulties[index % difficulties.length];
           const badgeStyle = getDifficultyBadge(difficulty);
@@ -91,7 +109,9 @@ export function GameRow({ title, description, games, href }: GameRowProps) {
           const GameButton = (
             <Button
               size="sm"
-              className={`w-full gap-1 transition-all duration-300 text-xs h-8 text-white shadow-lg ${isLocked ? "bg-gray-300 text-gray-600 cursor-not-allowed" : ""}`}
+              className={`w-full gap-1 transition-all duration-300 text-xs h-8 text-white shadow-lg ${
+                isLocked ? "bg-gray-300 text-gray-600 cursor-not-allowed" : ""
+              }`}
               style={{
                 backgroundColor: isLocked ? "#D1D5DB" : "#2957A4",
                 boxShadow: isLocked ? "none" : `0 4px 12px #2957A440`,
@@ -106,7 +126,7 @@ export function GameRow({ title, description, games, href }: GameRowProps) {
           return (
             <Card
               key={game.id}
-              className="relative flex flex-col pt-0 overflow-hidden transition-all duration-500 border-0 group hover:shadow-2xl hover:-translate-y-2 animate-bounce-in "
+              className="relative flex flex-col pt-0 overflow-hidden transition-all duration-500 border-0 group hover:shadow-2xl hover:-translate-y-2 animate-bounce-in"
               style={{
                 animationDelay: `${index * 0.1}s`,
                 background: "linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)",
@@ -115,13 +135,22 @@ export function GameRow({ title, description, games, href }: GameRowProps) {
             >
               <div className="relative flex-shrink-0 w-full overflow-hidden rounded-t-lg h-42">
                 <Image
-                  src={game.image || "/placeholder.svg"}
+                  src={
+                    game.image
+                      ? game.image.startsWith("http")
+                        ? game.image
+                        : `/${game.image
+                            .replace(/\\/g, "/")
+                            .replace(/^\/+/, "")}`
+                      : "/placeholder.svg"
+                  }
                   alt={game.title}
                   fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-110"
-                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
                 />
-                <div className="absolute flex items-center px-2 py-1 text-xs font-bold rounded-full shadow-md top-2 right-2" style={{ backgroundColor: "#FFCC29", color: "#2957A4" }}>
+                <div
+                  className="absolute flex items-center px-2 py-1 text-xs font-bold rounded-full shadow-md top-2 right-2"
+                  style={{ backgroundColor: "#FFCC29", color: "#2957A4" }}
+                >
                   <Trophy className="w-3 h-3 mr-1" />
                   {game.xp_reward}
                 </div>
@@ -129,12 +158,18 @@ export function GameRow({ title, description, games, href }: GameRowProps) {
 
               <div className="flex flex-col flex-grow p-4 space-y-3">
                 <div className="flex-grow space-y-2">
-                  <h3 className="text-sm font-semibold line-clamp-2" style={{ color: "#2957A4" }}>
+                  <h3
+                    className="text-sm font-semibold line-clamp-2"
+                    style={{ color: "#2957A4" }}
+                  >
                     {game.title}
                   </h3>
                 </div>
+
                 <div className="flex items-center justify-between text-xs">
-                  <span className="mr-2 font-medium truncate text-muted-foreground">{game.category}</span>
+                  <span className="mr-2 font-medium truncate text-muted-foreground">
+                    {game.category}
+                  </span>
                   <Badge
                     className="px-2 py-1 text-xs"
                     style={{
@@ -147,8 +182,11 @@ export function GameRow({ title, description, games, href }: GameRowProps) {
                   </Badge>
                 </div>
 
-                {status === 'authenticated' ? (
-                  <Link href={isLocked ? "#" : getGameUrl(game)} className={isLocked ? "pointer-events-none" : ""}>
+                {status === "authenticated" ? (
+                  <Link
+                    href={isLocked ? "#" : getGameUrl(game)}
+                    className={isLocked ? "pointer-events-none" : ""}
+                  >
                     {GameButton}
                   </Link>
                 ) : (
@@ -160,12 +198,15 @@ export function GameRow({ title, description, games, href }: GameRowProps) {
                       <AlertDialogHeader>
                         <AlertDialogTitle>Anda Belum Login</AlertDialogTitle>
                         <AlertDialogDescription>
-                          Untuk memainkan game, Anda perlu login terlebih dahulu.
+                          Untuk memainkan game, Anda perlu login terlebih
+                          dahulu.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel>Nanti Saja</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => router.push('/sign-in')}>
+                        <AlertDialogAction
+                          onClick={() => router.push("/sign-in")}
+                        >
                           <LogIn className="w-4 h-4 mr-2" />
                           Login Sekarang
                         </AlertDialogAction>
@@ -175,9 +216,9 @@ export function GameRow({ title, description, games, href }: GameRowProps) {
                 )}
               </div>
             </Card>
-          )
+          );
         })}
       </div>
     </section>
-  )
+  );
 }
