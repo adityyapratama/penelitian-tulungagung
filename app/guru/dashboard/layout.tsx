@@ -10,7 +10,7 @@ import { Toaster } from "sonner";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { GuruSidebar } from "@/components/app-sidebar-guru";
-import { GetGuruById } from "../lib/actions";
+import { GetGuruById, InviteByEmail } from "../lib/actions";
 
 export const metadata: Metadata = {
   title: "Pusaka Tulungagung - Dashboard Guru",
@@ -28,7 +28,6 @@ export default async function GuruDashboardLayout({
     redirect("/");
   }
    const guru = await GetGuruById(session.user.id!)
-   console.log(guru)
   if (guru == null){
           redirect("/guru/register")
   }

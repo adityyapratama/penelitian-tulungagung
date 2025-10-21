@@ -7,7 +7,7 @@ import path from "path";
 import { revalidatePath } from "next/cache";
 import { v4 as uuidv4 } from "uuid";
 import prisma from "@/lib/prisma";
-
+import nodemailer from "nodemailer"
 
 
 
@@ -15,6 +15,10 @@ export async function CreateGroup(_: unknown, formData: FormData) {
   const session = await auth();
   if (!session) {
     return { error: "Not Authorized" };
+  }
+  const guru =  await GetGuruById(session.user.id!)
+  if (guru == null || "error" in guru){
+    return { error: "lengkapi data guru terlebih dahulu" };
   }
 
   const parse = SchemaGroup.safeParse({
@@ -59,7 +63,7 @@ export async function CreateGroup(_: unknown, formData: FormData) {
       data: {
         group_name: parse.data.group_name,
         group_thumbnail: relativePath,
-        created_by: Number(session.user.id),
+        created_by: guru.guru_id!,
       },
     });
 
@@ -281,6 +285,25 @@ export async function GetGuruById(id:string) {
   } catch {
     return {error : "User bukan seorang guru"}
   }
+}
+
+export async function InviteByEmail(email:string){
+  const transporter = nodemailer.createTransport({
+    host:"smtp.gmail.com",
+    port: 465,
+    secure: true,
+    auth:{
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    }
+  });
+
+  await transporter.sendMail({
+    from: process.env.SMTP_USER,
+    to : email,
+    subject : "email test",
+    text : "Haloo Dunia",
+  });
 }
 
 
