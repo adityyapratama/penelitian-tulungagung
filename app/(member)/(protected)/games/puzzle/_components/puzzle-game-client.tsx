@@ -147,7 +147,7 @@ export function PuzzleGameClient({
           "puzzle"
         );
         setLeaderboardData(finalLeaderboardData);
-      } catch (error) {
+      } catch {
         toast.error("Gagal memuat papan peringkat.");
         setLeaderboardData([]);
       }
