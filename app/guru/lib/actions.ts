@@ -11,6 +11,7 @@ import nodemailer from "nodemailer"
 
 
 
+
 export async function CreateGroup(_: unknown, formData: FormData) {
   const session = await auth();
   if (!session) {
@@ -287,7 +288,22 @@ export async function GetGuruById(id:string) {
   }
 }
 
-export async function InviteByEmail(email:string){
+export async function InviteByEmail(email:string,id:string){
+  // const group = await prisma.group.findFirst({
+  //   where:{
+  //     group_id:id
+  //   }
+  // })
+
+  // if (!group) {
+  //   return {error:"invalid id"}
+  // }
+
+
+
+  const inviteLink = `http://discord.com/invite/${id}`
+
+  
   const transporter = nodemailer.createTransport({
     host:"smtp.gmail.com",
     port: 465,
@@ -298,12 +314,37 @@ export async function InviteByEmail(email:string){
     }
   });
 
+  const htmlContent = `
+  <div style="font-family: Arial, sans-serif; background:#f5f5f5; padding:20px;">
+    <div style="max-width:600px; margin:auto; background:white; border-radius:10px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+      <div style="background:#4CAF50; color:white; padding:15px 25px;">
+        <h2 style="margin:0;">Undangan Bergabung ke Grup</h2>
+      </div>
+      <div style="padding:25px;">
+        <p>Halo 👋,</p>
+        <p>Kamu diundang untuk bergabung ke grup <b>${id}</b>.</p>
+        <p>Klik tombol di bawah ini untuk menerima undangan:</p>
+        <a href="${inviteLink}"
+          style="display:inline-block; background:#4CAF50; color:white; padding:10px 20px; border-radius:6px;
+                 text-decoration:none; font-weight:bold; margin-top:10px;">
+          Bergabung ke Grup
+        </a>
+        <p style="margin-top:20px; font-size:13px; color:#777;">
+          Jika kamu tidak mengenal grup ini, abaikan saja email ini.
+        </p>
+      </div>
+    </div>
+  </div>
+  `;
+  
   await transporter.sendMail({
     from: process.env.SMTP_USER,
     to : email,
-    subject : "email test",
-    text : "Haloo Dunia",
+    subject : `Undangan Bergabung ke Grup ${id}`,
+    html: htmlContent,
   });
+
+  console.log("executed")
 }
 
 

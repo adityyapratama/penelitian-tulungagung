@@ -147,7 +147,7 @@ model Member {
   sekolah_id    Int?
   nis           String?       @db.VarChar(20)
   total_xp      Int           @default(0)
-  level         Int           @default(1)
+  level         Int           @default(0)
   foto_profil   String?       @db.VarChar(255)
   bio           String?       @db.Text
   tanggal_lahir DateTime?     @db.Date

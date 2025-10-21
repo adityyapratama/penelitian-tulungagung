@@ -10,7 +10,7 @@ import { Toaster } from "sonner";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { GuruSidebar } from "@/components/app-sidebar-guru";
-import { GetGuruById, InviteByEmail } from "../lib/actions";
+import { GetGuruById} from "../lib/actions";
 
 export const metadata: Metadata = {
   title: "Pusaka Tulungagung - Dashboard Guru",
@@ -23,6 +23,7 @@ export default async function GuruDashboardLayout({
   children: React.ReactNode;
 }) {
   const session = await auth();
+ 
 
   if (session?.user.role !== "guru") {
     redirect("/");
@@ -36,7 +37,6 @@ export default async function GuruDashboardLayout({
     <SidebarProvider>
       <GuruSidebar />
       <SidebarInset>
-        {/* Header */}
         <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
@@ -48,7 +48,6 @@ export default async function GuruDashboardLayout({
           </div>
         </header>
 
-        {/* Konten utama */}
         <div className="flex flex-col flex-1 gap-4 p-4 pt-0">
           <Toaster position="top-right" />
           {children}

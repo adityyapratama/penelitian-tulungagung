@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-import { GetGuruById } from "./lib/actions";
+import { GetGuruById,InviteByEmail } from "./lib/actions";
+
 
 
 export default async function GuruLayout({
@@ -10,6 +11,7 @@ export default async function GuruLayout({
 }){
 
     const session = await auth();
+     await InviteByEmail("helloadityapratamaa@gmail.com","D5462")
     if(!session){
         redirect("/")
     }else if(session.user.role != "guru"){
