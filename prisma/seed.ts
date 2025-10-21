@@ -11,7 +11,7 @@ const prisma = new PrismaClient();
 
   const puzzles = Array.from({ length: 16 }).map((_, i) => ({
     judul: `Motif ${i + 1}`,
-    gambar: `puzzle/MOTIF_${i + 1}.jpg`, // bisa .png jika perlu
+    gambar: `/puzzle/MOTIF_${i + 1}.jpg`,
     kategori: PuzzleCategory.Budaya, 
     xp_reward: 80,
     is_published: true,

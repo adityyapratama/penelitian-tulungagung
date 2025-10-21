@@ -205,8 +205,7 @@ export function PuzzleGameClient({
     (piece) => piece.currentPosition === null
   );
   const placedPieces = pieces.filter((piece) => piece.currentPosition !== null);
-  const imageUrl = gameData.gambar.replace(/\\/g, "/")
-                            .replace(/^\/+/, "") || "/placeholder.svg";
+  const imageUrl = gameData.gambar || "/placeholder.svg";
 
   if (gameCompleted && leaderboardData) {
     return (
