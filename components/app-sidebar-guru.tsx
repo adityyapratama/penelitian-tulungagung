@@ -42,7 +42,7 @@ const guruNavData: {
   },
   {
     title: "Manajemen Cerita Saya",
-    url: "/guru/dashboard/my-stories",
+    url: "/guru/dashboard/manage-stories",
     icon: BookOpen,
   },
   {

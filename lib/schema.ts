@@ -1,18 +1,23 @@
 import { z } from "zod";
 
 // Helper for file validation that works on both client and server
-const fileSchema = z.any().refine(
-  (file) => {
-    // On client side, check if it's a File instance
-    if (typeof File !== 'undefined' && file instanceof File) return true;
-    // On server side, allow any value (will be validated during form processing)
-    if (typeof File === 'undefined') return true;
-    return false;
-  },
-  { message: "Invalid file" }
-);
+const fileSchema = z.instanceof(File, { message: "Invalid file" })
+  .refine((file) => file.size > 0, { message: "Thumbnail is required" });
 
-const optionalFileSchema = z.any().optional();
+// Helper untuk file upload OPSIONAL (untuk update)
+const optionalFileSchema = z.any()
+  .refine((file) => {
+    // Izinkan jika file tidak ada (undefined) atau berupa string (path file lama)
+    if (!file || typeof file === 'string') return true;
+    // Jika ada file baru, validasi sebagai File
+    if (file instanceof File && file.size > 0) return true;
+    if (file instanceof File && file.size === 0) return true; 
+    return false;
+  }, { message: "New file is invalid" })
+  .transform(file => {
+    if (file instanceof File && file.size === 0) return undefined;
+    return file;
+  });
 
 const myBooleanSchema = z.preprocess(
   (val) => val === 'true' || val === '1',
@@ -99,6 +104,17 @@ export const SchemaStory = z.object({
     .string({ message: "Judul is required" })
     .min(8, { message: "Judul should have min 8 characters" }),
   thumbnail: fileSchema,
+  category: z.string({ message: "category is required" }),
+  deskripsi: z.string({ message: "deskripsi is required" }),
+  xp_reward: z.number({ message: "xp reward is required" }).int(),
+  is_published: myBooleanSchema
+});
+
+export const SchemaStoryUpdate = z.object({
+  judul: z
+    .string({ message: "Judul is required" })
+    .min(8, { message: "Judul should have min 8 characters" }),
+  thumbnail: optionalFileSchema, 
   category: z.string({ message: "category is required" }),
   deskripsi: z.string({ message: "deskripsi is required" }),
   xp_reward: z.number({ message: "xp reward is required" }).int(),
