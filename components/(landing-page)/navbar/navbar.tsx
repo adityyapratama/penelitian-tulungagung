@@ -16,9 +16,9 @@ import { useSession } from "next-auth/react";
 
 export function NavbarDemo() {
   const navItems = [
-    { name: "Beranda", link: "/" },
-    { name: "Fitur", link: "/games" },
-    { name: "Artikel", link: "/article" },
+    { name: "Beranda", link: "#hero" },
+    { name: "Fitur", link: "#our-feature" },
+    { name: "Artikel", link: "#article" },
   ];
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -44,14 +44,13 @@ export function NavbarDemo() {
           <div className="flex items-center gap-4">
             {!session ? (
             <Link href="/sign-in" passHref>
-              <NavbarButton variant="secondary">Login</NavbarButton>
+              <NavbarButton variant="primary">Login</NavbarButton>
             </Link>
           ) : (
             <Link href={dashboardUrl} passHref>
               <NavbarButton variant="secondary">Dashboard</NavbarButton>
             </Link>
           )}
-            <NavbarButton variant="primary">Book a call</NavbarButton>
           </div>
         </NavBody>
 
@@ -101,13 +100,6 @@ export function NavbarDemo() {
                   </NavbarButton>
                 </Link>
               )}
-              <NavbarButton
-                onClick={() => setIsMobileMenuOpen(false)}
-                variant="primary"
-                className="w-full"
-              >
-                Book a call
-              </NavbarButton>
             </div>
           </MobileNavMenu>
         </MobileNav>

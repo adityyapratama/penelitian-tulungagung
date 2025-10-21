@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { Home, Book, Trophy, User, Menu, X, Flame, Zap, LogOut, Settings, Bell, HelpCircle, ChevronDown } from "lucide-react";
+import { signOut, useSession } from "next-auth/react";
+import { useState, useEffect } from "react";
+import { Home, Book, Trophy, User, Menu, X, Flame, Zap, LogOut, Settings, Bell } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -13,20 +14,68 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-// import { handleLogout } from "@/lib/auth-actions";
+import { GetMemberData, GetExpMember } from "@/app/(member)/lib/actions";
 
 const navItems = [
   { title: "Home", url: "/games", icon: Home },
-  { title: "Games", url: "/learn", icon: Zap },
-  { title: "Article", url: "/article", icon: Book },
+  { title: "Learn", url: "/learn", icon: Book },
   { title: "Leaderboard", url: "/profile/leaderboard", icon: Trophy },
   { title: "Profile", url: "/profile", icon: User },
 ];
 
+const handleLogout = async () => {
+  await signOut({ callbackUrl: "/" });
+};
+
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
+  const { data: session } = useSession();
+  
+  // State untuk data member
+  const [memberData, setMemberData] = useState<{
+    username: string;
+    email: string;
+    level: number;
+    foto_profil: string | null;
+  } | null>(null);
+  const [totalXp, setTotalXp] = useState<number>(0);
+
+  useEffect(() => {
+    const fetchMemberData = async () => {
+      if (!session?.user) return;
+
+      const memberResult = await GetMemberData();
+      
+      if (!memberResult || 'error' in memberResult) return;
+
+      // Set member data
+      setMemberData({
+        username: memberResult.User?.username || session.user.name || "User",
+        email: memberResult.User?.email || session.user.email || "",
+        level: memberResult.level || 1,
+        foto_profil: memberResult.foto_profil || session.user.image || null,
+      });
+
+      // Get XP
+      if (memberResult.member_id) {
+        const xp = await GetExpMember(String(memberResult.member_id));
+        setTotalXp(xp || 0);
+      }
+    };
+
+    fetchMemberData();
+  }, [session]);
+
+  // Fallback values
+  const username = memberData?.username || session?.user?.name || "User";
+  const email = memberData?.email || session?.user?.email || "";
+  const level = memberData?.level || 1;
+  const fotoProfil = memberData?.foto_profil || session?.user?.image || "";
+  const avatarFallback = username.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -63,67 +112,58 @@ const Navbar = () => {
             })}
           </div>
 
-          {/* Stats & CTA */}
+          {/* Stats & Profile */}
           <div className="hidden md:flex items-center gap-3">
             <div className="flex items-center gap-4 px-4 py-2 bg-muted rounded-xl">
               <div className="flex items-center gap-1.5">
                 <Flame className="h-5 w-5 text-secondary animate-bounce-subtle" />
-                <span className="font-bold text-sm">7</span>
+                <span className="font-bold text-sm">0</span>
               </div>
               <div className="h-4 w-px bg-border" />
               <div className="flex items-center gap-1.5">
                 <Zap className="h-5 w-5 text-accent" />
-                <span className="font-bold text-sm">1,250</span>
+                <span className="font-bold text-sm">{totalXp.toLocaleString()}</span>
               </div>
             </div>
             
-            {/* Dropdown Menu */}
+            {/* Profile Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button 
-                  size="sm" 
-                  className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all gap-1"
-                >
-                  Lainnya
-                  <ChevronDown className="h-4 w-4" />
+                <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                  <Avatar className="h-10 w-10 border-2 border-primary">
+                    <AvatarImage src={fotoProfil} alt="Profile" />
+                    <AvatarFallback className="bg-primary text-primary-foreground">
+                      {avatarFallback}
+                    </AvatarFallback>
+                  </Avatar>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel>Menu</DropdownMenuLabel>
+              <DropdownMenuContent className="w-56" align="end" forceMount>
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">{username}</p>
+                    <p className="text-xs leading-none text-muted-foreground">
+                      Level {level} • {totalXp.toLocaleString()} XP
+                    </p>
+                  </div>
+                </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 
-                <DropdownMenuItem asChild>
-                  <Link href="/profile" className="cursor-pointer">
-                    <User className="mr-2 h-4 w-4" />
-                    <span>Profile</span>
-                  </Link>
+                <DropdownMenuItem className="cursor-pointer">
+                  <Bell className="mr-2 h-4 w-4" />
+                  <span>Notifications</span>
+                  <Badge variant="secondary" className="ml-auto">3</Badge>
                 </DropdownMenuItem>
                 
-                <DropdownMenuItem asChild>
-                  <Link href="/settings" className="cursor-pointer">
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Settings</span>
-                  </Link>
-                </DropdownMenuItem>
-                
-                <DropdownMenuItem asChild>
-                  <Link href="/notifications" className="cursor-pointer">
-                    <Bell className="mr-2 h-4 w-4" />
-                    <span>Notifications</span>
-                  </Link>
-                </DropdownMenuItem>
-                
-                <DropdownMenuItem asChild>
-                  <Link href="/help" className="cursor-pointer">
-                    <HelpCircle className="mr-2 h-4 w-4" />
-                    <span>Help & Support</span>
-                  </Link>
+                <DropdownMenuItem className="cursor-pointer">
+                  <Settings className="mr-2 h-4 w-4" />
+                  <span>Settings</span>
                 </DropdownMenuItem>
                 
                 <DropdownMenuSeparator />
                 
-                {/* <DropdownMenuItem 
-                  className="text-destructive focus:text-destructive cursor-pointer"
+                <DropdownMenuItem 
+                  className="cursor-pointer text-destructive focus:text-destructive"
                   onClick={async () => {
                     try {
                       await handleLogout();
@@ -134,7 +174,7 @@ const Navbar = () => {
                 >
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Logout</span>
-                </DropdownMenuItem> */}
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -174,57 +214,42 @@ const Navbar = () => {
               <div className="flex items-center justify-between px-4 py-3 bg-muted rounded-xl mt-2">
                 <div className="flex items-center gap-2">
                   <Flame className="h-5 w-5 text-secondary" />
-                  <span className="font-bold">7 day streak</span>
+                  <span className="font-bold">0 day streak</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Zap className="h-5 w-5 text-accent" />
-                  <span className="font-bold">1,250 XP</span>
+                  <span className="font-bold">{totalXp.toLocaleString()} XP</span>
                 </div>
               </div>
               
-              {/* Mobile Menu Items */}
-              <div className="mt-4 pt-4 border-t space-y-2">
-                <Link
-                  href="/settings"
-                  onClick={() => setIsOpen(false)}
-                  className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-muted transition-all"
-                >
-                  <Settings className="h-5 w-5" />
-                  <span>Settings</span>
-                </Link>
+              {/* Mobile Profile & Menu Items */}
+              <div className="flex flex-col gap-2 mt-2">
+                <Button variant="outline" className="justify-start">
+                  <Bell className="mr-2 h-4 w-4" />
+                  Notifications
+                  <Badge variant="secondary" className="ml-auto">3</Badge>
+                </Button>
                 
-                <Link
-                  href="/notifications"
-                  onClick={() => setIsOpen(false)}
-                  className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-muted transition-all"
-                >
-                  <Bell className="h-5 w-5" />
-                  <span>Notifications</span>
-                </Link>
+                <Button variant="outline" className="justify-start">
+                  <Settings className="mr-2 h-4 w-4" />
+                  Settings
+                </Button>
                 
-                <Link
-                  href="/help"
-                  onClick={() => setIsOpen(false)}
-                  className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-muted transition-all"
+                <Button 
+                  variant="destructive" 
+                  className="justify-start"
+                  // onClick={async () => {
+                  //   setIsOpen(false);
+                  //   try {
+                  //     await handleLogout();
+                  //   } catch (error) {
+                  //     console.error("Failed to logout:", error);
+                  //   }
+                  // }}
                 >
-                  <HelpCircle className="h-5 w-5" />
-                  <span>Help & Support</span>
-                </Link>
-                
-                {/* <button
-                  onClick={async () => {
-                    setIsOpen(false);
-                    try {
-                      await handleLogout();
-                    } catch (error) {
-                      console.error("Failed to logout:", error);
-                    }
-                  }}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-destructive/10 text-destructive transition-all"
-                >
-                  <LogOut className="h-5 w-5" />
-                  <span>Logout</span>
-                </button> */}
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Logout
+                </Button>
               </div>
             </div>
           </div>

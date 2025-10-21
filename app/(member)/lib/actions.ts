@@ -22,6 +22,19 @@ export async function GetMemberData() {
       where: {
         user_id: parseInt(session.user.id!),
       },
+      include: {
+        Sekolah: {
+          select: {
+            nama_sekolah: true,
+          },
+        },
+        User:{
+          select: {
+            email: true,
+            username: true,
+          }
+        }
+      },
     });
 
     return member;
@@ -191,6 +204,7 @@ export async function GetDetailsProgressMember(id: string) {
   }
 }
 
+
 export async function CreateProgress(_: unknown, data: ProgressData) {
   const session = await auth();
   if (!session) {
@@ -278,13 +292,9 @@ export async function CreateProgress(_: unknown, data: ProgressData) {
   }
 }
 
-export async function GetLeaderboard(id: string, content_type: ContentType) {
+export async function GetLeaderboard( ) {
   try {
     const progressList = await prisma.progresMember.findMany({
-      where: {
-        content_type,
-        content_id: parseInt(id),
-      },
       select: {
         member_id: true,
         skor: true,

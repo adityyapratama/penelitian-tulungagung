@@ -2,9 +2,16 @@ import { Suspense } from "react"
 import { getAllPuzzlesFormatted, getAllQuizzesFormatted, getAllStoriesFormatted } from "./lib/data"
 import { GameBrowser } from "./_components/game-browser"
 import { LoginUpdate } from "@/app/(landing-page)/article/lib/actions"
+import { auth } from "@/auth"
+import { redirect } from "next/navigation"
 
 
-export default function GamesPage() {
+export default async function GamesPage() {
+  const session = await auth()
+  
+  if (!session || !session.user) {
+    redirect("/sign-in")
+  }
   return (
     <>
       <main className="min-h-screen bg-background">

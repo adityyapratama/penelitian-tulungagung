@@ -2,12 +2,149 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { PrismaClient, Prisma } from "../lib/generated/prisma";
-import { PuzzleCategory } from "../lib/generated/prisma";
+import { PuzzleCategory, ContentType } from "../lib/generated/prisma";
+import bcrypt from "bcryptjs";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
 const prisma = new PrismaClient();
+
+// Helper function untuk generate random XP
+function getRandomXP(min: number, max: number): number {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+// Helper function untuk calculate level dari XP
+function calculateLevel(xp: number): number {
+  // Formula: Level = floor(XP / 100) + 1
+  // Setiap 100 XP = 1 level
+  return Math.floor(xp / 100) + 1;
+}
+
+// Data Member dengan XP random (dari tinggi ke rendah)
+const MemberUsersData = [
+  {
+    username: "ahmad_rizki",
+    email: "ahmad.rizki@example.com",
+    password: "password123",
+    nis: "2024001",
+    foto_profil: "/users/ahmad.jpg",
+    bio: "Suka belajar sejarah dan budaya Indonesia",
+    tanggal_lahir: new Date("2008-03-15"),
+    jenis_kelamin: "L" as const,
+    minat: "Sejarah, Budaya, Seni",
+    xp: getRandomXP(2000, 3000), // XP Tinggi
+  },
+  {
+    username: "siti_nurhaliza",
+    email: "siti.nur@example.com",
+    password: "password123",
+    nis: "2024002",
+    foto_profil: "/users/siti.jpg",
+    bio: "Pencinta cerita rakyat Nusantara",
+    tanggal_lahir: new Date("2008-07-20"),
+    jenis_kelamin: "P" as const,
+    minat: "Sastra, Cerita Rakyat, Musik",
+    xp: getRandomXP(1500, 2000),
+  },
+  {
+    username: "budi_santoso",
+    email: "budi.santoso@example.com",
+    password: "password123",
+    nis: "2024003",
+    foto_profil: "/users/budi.jpg",
+    bio: "Gemar bermain kuis dan puzzle",
+    tanggal_lahir: new Date("2008-11-05"),
+    jenis_kelamin: "L" as const,
+    minat: "Game Edukatif, Logika, Matematika",
+    xp: getRandomXP(1200, 1500),
+  },
+  {
+    username: "dewi_kartika",
+    email: "dewi.kartika@example.com",
+    password: "password123",
+    nis: "2024004",
+    foto_profil: "/users/dewi.jpg",
+    bio: "Aktif dalam kompetisi sejarah",
+    tanggal_lahir: new Date("2008-05-12"),
+    jenis_kelamin: "P" as const,
+    minat: "Sejarah, Geografi, Seni Rupa",
+    xp: getRandomXP(1000, 1200),
+  },
+  {
+    username: "eko_prasetyo",
+    email: "eko.prasetyo@example.com",
+    password: "password123",
+    nis: "2024005",
+    foto_profil: "/users/eko.jpg",
+    bio: "Senang mempelajari candi-candi kuno",
+    tanggal_lahir: new Date("2008-09-18"),
+    jenis_kelamin: "L" as const,
+    minat: "Arkeologi, Sejarah, Fotografi",
+    xp: getRandomXP(800, 1000),
+  },
+  {
+    username: "fitri_amanda",
+    email: "fitri.amanda@example.com",
+    password: "password123",
+    nis: "2024006",
+    foto_profil: "/users/fitri.jpg",
+    bio: "Hobi membaca buku sejarah",
+    tanggal_lahir: new Date("2008-02-28"),
+    jenis_kelamin: "P" as const,
+    minat: "Literasi, Sejarah, Menulis",
+    xp: getRandomXP(600, 800),
+  },
+  {
+    username: "gilang_ramadhan",
+    email: "gilang.rama@example.com",
+    password: "password123",
+    nis: "2024007",
+    foto_profil: "/users/gilang.jpg",
+    bio: "Pemain game edukatif berbakat",
+    tanggal_lahir: new Date("2008-06-10"),
+    jenis_kelamin: "L" as const,
+    minat: "Gaming, Teknologi, Sejarah",
+    xp: getRandomXP(500, 600),
+  },
+  {
+    username: "hani_safira",
+    email: "hani.safira@example.com",
+    password: "password123",
+    nis: "2024008",
+    foto_profil: "/users/hani.jpg",
+    bio: "Suka berkunjung ke museum",
+    tanggal_lahir: new Date("2008-12-03"),
+    jenis_kelamin: "P" as const,
+    minat: "Museum, Seni, Traveling",
+    xp: getRandomXP(400, 500),
+  },
+  {
+    username: "irfan_hakim",
+    email: "irfan.hakim@example.com",
+    password: "password123",
+    nis: "2024009",
+    foto_profil: "/users/irfan.jpg",
+    bio: "Anggota baru yang antusias belajar",
+    tanggal_lahir: new Date("2008-04-22"),
+    jenis_kelamin: "L" as const,
+    minat: "Sejarah, Olahraga, Musik",
+    xp: getRandomXP(200, 400),
+  },
+  {
+    username: "julia_permata",
+    email: "julia.permata@example.com",
+    password: "password123",
+    nis: "2024010",
+    foto_profil: "/users/julia.jpg",
+    bio: "Baru mulai belajar tentang budaya lokal",
+    tanggal_lahir: new Date("2008-08-15"),
+    jenis_kelamin: "P" as const,
+    minat: "Budaya, Tari, Fashion",
+    xp: getRandomXP(100, 200),
+  },
+];
 
   const puzzles = Array.from({ length: 16 }).map((_, i) => ({
     judul: `Motif ${i + 1}`,
@@ -920,6 +1057,124 @@ export async function main() {
     });
 
   console.log('✅ Seed puzzle berhasil dimasukkan!');
+
+  // ========================================
+  // SEED USER, MEMBER, DAN PROGRES MEMBER
+  // ========================================
+  console.log("\n🚀 Mulai seeding User, Member, dan ProgresMember...");
+
+  // Sort MemberUsersData berdasarkan XP dari tinggi ke rendah
+  const sortedMembers = [...MemberUsersData].sort((a, b) => b.xp - a.xp);
+
+  // Array untuk menyimpan ID member yang sudah dibuat
+  const createdMemberIds: number[] = [];
+
+  // Buat User dan Member untuk setiap data
+  for (let i = 0; i < sortedMembers.length; i++) {
+    const memberData = sortedMembers[i];
+    const hashedPassword = await bcrypt.hash(memberData.password, 10);
+
+    // Pilih sekolah secara random
+    const randomSekolahIndex = Math.floor(Math.random() * SekolahData.length) + 1;
+
+    // Buat User
+    const user = await prisma.user.create({
+      data: {
+        username: memberData.username,
+        email: memberData.email,
+        password_hash: hashedPassword,
+        role: "member",
+        created_at: dayjs().toDate(),
+        last_login: dayjs().toDate(),
+        is_active: true,
+      },
+    });
+
+    // Buat Member
+    const member = await prisma.member.create({
+      data: {
+        user_id: user.user_id,
+        sekolah_id: randomSekolahIndex,
+        nis: memberData.nis,
+        bio: memberData.bio,
+        foto_profil: memberData.foto_profil,
+        tanggal_lahir: memberData.tanggal_lahir,
+        jenis_kelamin: memberData.jenis_kelamin,
+        minat: memberData.minat,
+        level: calculateLevel(memberData.xp),
+        total_xp: memberData.xp,
+      },
+    });
+
+    createdMemberIds.push(member.member_id);
+
+    console.log(
+      `✅ Created User & Member: ${memberData.username} (Level ${calculateLevel(
+        memberData.xp
+      )}, XP ${memberData.xp})`
+    );
+
+    // Generate ProgresMember untuk member ini
+    // Buat beberapa progress entry dengan total skor = total_xp
+    let remainingXp = memberData.xp;
+    const contentTypes: ContentType[] = ["kuis", "cerita", "puzzle"];
+    const progressEntries = [];
+
+    // Buat 5-10 progress entries secara random
+    const numEntries = Math.floor(Math.random() * 6) + 5; // 5-10 entries
+
+    for (let j = 0; j < numEntries && remainingXp > 0; j++) {
+      // Hitung skor untuk entry ini (10-200 XP per activity)
+      const maxSkor = Math.min(remainingXp, 200);
+      const minSkor = Math.min(10, maxSkor);
+      const skor = Math.floor(Math.random() * (maxSkor - minSkor + 1)) + minSkor;
+
+      // Pilih content type random
+      const contentType = contentTypes[Math.floor(Math.random() * contentTypes.length)];
+
+      // Generate content_id random (1-10)
+      const contentId = Math.floor(Math.random() * 10) + 1;
+
+      // Generate tanggal random dalam 30 hari terakhir
+      const daysAgo = Math.floor(Math.random() * 30);
+      const completedAt = dayjs().subtract(daysAgo, "day").toDate();
+
+      // Generate duration random (1-30 menit)
+      const duration = Math.floor(Math.random() * 29) + 1;
+
+      progressEntries.push({
+        member_id: member.member_id,
+        content_type: contentType,
+        content_id: contentId,
+        skor: skor,
+        duration: duration,
+        completed_at: completedAt,
+      });
+
+      remainingXp -= skor;
+    }
+
+    // Jika masih ada sisa XP, tambahkan ke entry terakhir
+    if (remainingXp > 0 && progressEntries.length > 0) {
+      progressEntries[progressEntries.length - 1].skor += remainingXp;
+    }
+
+    // Insert semua progress entries
+    await prisma.progresMember.createMany({
+      data: progressEntries,
+    });
+
+    console.log(
+      `   📊 Created ${progressEntries.length} progress entries for ${memberData.username}`
+    );
+  }
+
+  console.log("\n🎉 Seeding User, Member, dan ProgresMember completed!");
+  console.log("📊 Summary:");
+  console.log(`- ${sortedMembers.length} Users created (role: member)`);
+  console.log(`- ${sortedMembers.length} Members created`);
+  console.log(`- XP Range: ${Math.min(...sortedMembers.map(m => m.xp))} - ${Math.max(...sortedMembers.map(m => m.xp))}`);
+  console.log(`- Level Range: ${calculateLevel(Math.min(...sortedMembers.map(m => m.xp)))} - ${calculateLevel(Math.max(...sortedMembers.map(m => m.xp)))}`);
 
   console.log("\n🎉 Seeding kuis sejarah Tulungagung completed successfully!");
   console.log("📊 Summary:");

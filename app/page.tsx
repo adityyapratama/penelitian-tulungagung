@@ -57,7 +57,7 @@ export default function Home() {
           </Suspense>
         </section> */}
 
-          <section id="hero-video" className="flex items-center justify-center min-h-screen">
+          <section id="article" className="flex items-center justify-center min-h-screen">
           <Suspense fallback={<div className="w-full h-screen" />}>
             <AnimationWrapper>
               <ArticlePage />

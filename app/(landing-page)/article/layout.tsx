@@ -1,12 +1,17 @@
 import Navbar from "@/components/game/NavbarDemo";
-export default function ProtectedLayout({
+import { NavbarDemo } from "@/components/(landing-page)/navbar/navbar";
+import { auth } from "@/auth";
+
+export default async function ProtectedLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await auth();
+
   return (
     <>
-      <Navbar />
+      {session ? <Navbar /> : <NavbarDemo />}
       <main>{children}</main>
     </>
   );
