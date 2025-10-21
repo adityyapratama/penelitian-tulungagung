@@ -9,8 +9,22 @@ import { v4 as uuidv4 } from "uuid";
 import prisma from "@/lib/prisma";
 import nodemailer from "nodemailer"
 
+export type SimpleActionResult = {
+  success?: string;
+  error?: string;
+};
 
+export type FlattenedErrors = {
+  group_name?: string[];
+  group_thumbnail?: string[];
+};
 
+export type GroupActionResult = {
+  success?: string;
+  error?: string;
+  errors?: FlattenedErrors; 
+  groupId?: string;
+};
 
 export async function CreateGroup(_: unknown, formData: FormData) {
   const session = await auth();
@@ -86,6 +100,11 @@ export async function UpdateGroup(_: unknown, formData: FormData) {
     return { error: "Not Authorized" };
   }
 
+  const guru =  await GetGuruById(session.user.id!)
+  if (guru == null || "error" in guru){
+    return { error: "lengkapi data guru terlebih dahulu" };
+  }
+
   const groupId = formData.get("group_id")?.toString();
   if (!groupId) {
     return { error: "Group ID diperlukan" };
@@ -100,7 +119,7 @@ export async function UpdateGroup(_: unknown, formData: FormData) {
     return { error: "Group tidak ditemukan" };
   }
 
-  if (existingGroup.created_by !== Number(session.user.id)) {
+  if (existingGroup.created_by !== guru.guru_id!) {
     return { error: "Anda tidak memiliki akses untuk mengubah group ini" };
   }
 
@@ -158,7 +177,7 @@ export async function UpdateGroup(_: unknown, formData: FormData) {
       },
     });
 
-    revalidatePath("/groups");
+    revalidatePath("/guru/dashboard/manage-group");
     return { success: "Group berhasil diperbarui" };
   } catch (error) {
     console.error(error);
@@ -244,7 +263,7 @@ export async function GroupPerformance(id:string){
 
 export async function CreateGuru(_:unknown,formData:FormData) {
   const session = await auth()
-  
+
   if (!session){
     return {error:"Not Authorized"}
   }
@@ -257,7 +276,7 @@ export async function CreateGuru(_:unknown,formData:FormData) {
   })
 
   if(!parse.success){
-    return { error: parse.error.errors[0].message };
+    return { error: `Input tidak valid: ${parse.error.errors[0]?.message || 'Periksa isian Anda.'}` };
   }
 
   try {
@@ -265,26 +284,38 @@ export async function CreateGuru(_:unknown,formData:FormData) {
       data: {
         user_id     : Number(parse.data.user_id),
         sekolah_id  : Number(parse.data.sekolah_id),
-        nip         :parse.data.nip,
+        nip         : parse.data.nip,
         bidang_ajar : parse.data.bidang_ajar
       }
     })
-  } catch {
-    return {error:"terjadi kesalahan saat membuat guru"}
+    revalidatePath("/guru/dashboard");
+    return { success: "Data guru berhasil disimpan!" };
+  } catch(e: unknown) {
+     console.error("CreateGuru Error:", e);
+      if (e instanceof Error && (e as any).code === 'P2002') {
+         const target = (e as any).meta?.target;
+         if (target && target.includes('nip')) return { error: "NIP sudah terdaftar." };
+         if (target && target.includes('user_id')) return { error: "User ini sudah terdaftar sebagai guru." };
+         return { error: "Data unik sudah ada (NIP atau User ID)." };
+     }
+    return {error:"Terjadi kesalahan saat menyimpan data guru."}
   }
 }
 
-export async function GetGuruById(id:string) {
+export async function GetGuruById(id:string): Promise<any | null | {error: string}> {
+   if (!id || isNaN(Number(id))) {
+      return { error: "ID User tidak valid" };
+   }
   try {
-    const data = prisma.guru.findFirst({
+    const data = await prisma.guru.findUnique({
       where:{
         user_id:Number(id)
       }
     })
-
-    return data
-  } catch {
-    return {error : "User bukan seorang guru"}
+    return data ?? null;
+  } catch(e: unknown) {
+     console.error("GetGuruById Error:", e);
+    return {error : "Terjadi kesalahan saat mencari data guru."}
   }
 }
 

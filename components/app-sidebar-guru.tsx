@@ -85,6 +85,11 @@ const guruNavData: NavItem[] = [
     url: "/guru/dashboard/manage-puzzles",
     icon: PuzzleIcon,
   },
+  {
+    title: "Manajemen Group",
+    url: "/guru/dashboard/manage-group",
+    icon: PuzzleIcon,
+  },
 ];
 
 // Dummy data user (bisa diganti nanti dengan session)
