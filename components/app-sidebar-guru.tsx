@@ -2,16 +2,19 @@
 
 import * as React from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
   FileQuestion,
   BookOpen,
   FileEdit,
-  type LucideIcon,
   PuzzleIcon,
+  ChevronDown,
+  LucideIcon,
 } from "lucide-react";
 
-import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
@@ -22,68 +25,128 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  useSidebar,
 } from "@/components/ui/sidebar";
 
-const guruNavData: {
+// Struktur navigasi
+interface NavItem {
   title: string;
   url: string;
   icon: LucideIcon;
+  exact?: boolean;
   items?: { title: string; url: string }[];
-}[] = [
+}
+
+const guruNavData: NavItem[] = [
   {
     title: "Dashboard Guru",
     url: "/guru/dashboard",
     icon: LayoutDashboard,
+    exact: true,
   },
   {
-    title: "Manajemen Kuis Saya",
-    url: "/guru/dashboard/my-quiz",
+    title: "Manajemen Kuis",
+    url: "/guru/dashboard/manage-quiz",
     icon: FileQuestion,
+    items: [
+      {
+        title: "Daftar Kategori",
+        url: "/guru/dashboard/manage-quiz/categories",
+      },
+      { title: "Daftar Kuis", url: "/guru/dashboard/manage-quiz" },
+    ],
   },
   {
-    title: "Manajemen Cerita Saya",
+    title: "Manajemen Cerita",
     url: "/guru/dashboard/manage-stories",
     icon: BookOpen,
+    items: [
+      {
+        title: "Daftar Kategori",
+        url: "/guru/dashboard/manage-stories/category",
+      },
+      { title: "Daftar Cerita", url: "/guru/dashboard/manage-stories" },
+    ],
   },
   {
-    title: "Manajemen Artikel Saya", 
+    title: "Manajemen Artikel",
     url: "/guru/dashboard/manage-articles",
-    icon: FileEdit,  
+    icon: FileEdit,
+    items: [
+      {
+        title: "Daftar Kategori",
+        url: "/guru/dashboard/manage-articles/categories",
+      },
+      { title: "Daftar Artikel", url: "/guru/dashboard/manage-articles" },
+    ],
   },
   {
-    title: "Manajemen Puzzle Saya",
-    url: "/guru/dashboard/my-puzzles",
+    title: "Manajemen Puzzle",
+    url: "/guru/dashboard/manage-puzzles",
     icon: PuzzleIcon,
   },
 ];
 
+// Dummy data user (bisa diganti nanti dengan session)
 const guruUserData = {
   name: "Guru Pengajar",
-  email: "guru@pusakatulungagung.com",
-  avatar: "/asset/avatars/avatar-image-2.jpg",
+  email: "guru@example.com",
+  avatar: "/asset/avatars/avatar-placeholder.png",
 };
 
-export function AppSidebarGuru({
-  ...props
-}: React.ComponentProps<typeof Sidebar>) {
+// Komponen utama sidebar guru
+export function GuruSidebar(props: React.ComponentProps<typeof Sidebar>) {
+  const pathname = usePathname();
+  const { state } = useSidebar();
+  const isCollapsed = state === "collapsed";
+
+  // State untuk kontrol submenu
+  const [openMenus, setOpenMenus] = React.useState<{ [key: string]: boolean }>(
+    {}
+  );
+
+  // Buka submenu jika sedang di dalam salah satu halaman submenu
+  React.useEffect(() => {
+    const newOpenMenus: { [key: string]: boolean } = {};
+    guruNavData.forEach((item) => {
+      if (item.items && pathname.startsWith(item.url)) {
+        const isSubItemActive = item.items.some((sub) => sub.url === pathname);
+        if (isSubItemActive || pathname !== item.url) {
+          newOpenMenus[item.title] = true;
+        }
+      }
+    });
+    setOpenMenus(newOpenMenus);
+  }, [pathname]);
+
+  const handleMenuToggle = (title: string) => {
+    setOpenMenus((prev) => ({ ...prev, [title]: !prev[title] }));
+  };
+
   return (
     <Sidebar collapsible="icon" {...props}>
+      {/* Header */}
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
-              className="data-[slot=sidebar-menu-button]:!p-1.5"
+              className="hover:bg-primary/10 data-[slot=sidebar-menu-button]:!p-1.5"
             >
-              <a href="#">
+              <a href="/guru/dashboard" className="flex items-center gap-3">
                 <Image
                   alt="logo-dashboard"
                   src={"/asset/unair.png"}
                   width={24}
                   height={24}
-                  className="!size-5"
+                  className="!size-4"
                 />
-                <span className="text-base font-semibold">
+                <span
+                  className={cn(
+                    "text-base font-semibold",
+                    isCollapsed && "hidden"
+                  )}
+                >
                   Pusaka Tulungagung
                 </span>
               </a>
@@ -92,12 +155,118 @@ export function AppSidebarGuru({
         </SidebarMenu>
       </SidebarHeader>
 
+      {/* Sidebar content */}
       <SidebarContent>
-        <NavMain items={guruNavData} />
+        <SidebarMenu>
+          {guruNavData.map((item) => {
+            const Icon = item.icon;
+            const isParentActive =
+              item.url &&
+              pathname.startsWith(item.url) &&
+              !(item.exact && pathname !== item.url);
+
+            // Jika punya submenu
+            if (item.items) {
+              return (
+                <SidebarMenuItem
+                  key={item.title}
+                  className="flex flex-col items-start"
+                >
+                  <SidebarMenuButton
+                    onClick={() => handleMenuToggle(item.title)}
+                    className={cn(
+                      "w-full justify-between hover:bg-primary/10",
+                      isParentActive &&
+                        !isCollapsed &&
+                        "bg-muted text-foreground"
+                    )}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Icon className="!size-4" />
+                      <span className={cn(isCollapsed && "hidden")}>
+                        {item.title}
+                      </span>
+                    </div>
+                    <ChevronDown
+                      className={cn(
+                        "h-4 w-4 transition-transform duration-300",
+                        openMenus[item.title] && "rotate-180",
+                        isCollapsed && "hidden"
+                      )}
+                    />
+                  </SidebarMenuButton>
+
+                  {/* Submenu */}
+                  <div
+                    className={cn(
+                      "w-full pl-5 mt-1 relative transition-all duration-300 ease-in-out overflow-hidden",
+                      openMenus[item.title] && !isCollapsed
+                        ? "max-h-96"
+                        : "max-h-0"
+                    )}
+                  >
+                    <div className="absolute left-6 top-1 bottom-1 w-px bg-slate-300 dark:bg-slate-700" />
+                    <div className="flex flex-col gap-1 py-1 pl-6">
+                      {item.items.map((subItem) => {
+                        const isSubItemActive = pathname === subItem.url;
+                        return (
+                          <Link
+                            key={subItem.title}
+                            href={subItem.url}
+                            className={cn(
+                              "flex items-center gap-3 px-3 py-1.5 text-sm rounded-md transition-colors relative",
+                              "hover:bg-primary/10",
+                              isSubItemActive
+                                ? "text-primary font-semibold"
+                                : "text-muted-foreground hover:text-foreground"
+                            )}
+                          >
+                            {isSubItemActive && (
+                              <div className="absolute left-[-13px] w-1.5 h-1.5 rounded-full bg-primary" />
+                            )}
+                            <span>{subItem.title}</span>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </SidebarMenuItem>
+              );
+            }
+
+            // Jika tidak punya submenu
+            const isActive = item.exact
+              ? pathname === item.url
+              : pathname.startsWith(item.url);
+
+            return (
+              <SidebarMenuItem key={item.title}>
+                <SidebarMenuButton
+                  asChild
+                  className={cn(
+                    "hover:bg-primary/10",
+                    isActive &&
+                      "bg-primary text-primary-foreground hover:bg-primary/90"
+                  )}
+                >
+                  <Link href={item.url} className="flex items-center gap-3">
+                    <Icon className="!size-4" />
+                    <span className={cn(isCollapsed && "hidden")}>
+                      {item.title}
+                    </span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            );
+          })}
+        </SidebarMenu>
       </SidebarContent>
+
+      {/* Footer */}
       <SidebarFooter>
         <NavUser user={guruUserData} />
       </SidebarFooter>
+
       <SidebarRail />
     </Sidebar>
   );

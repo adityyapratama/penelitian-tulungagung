@@ -1,4 +1,3 @@
-import { AppSidebar } from "@/components/app-sidebar";
 import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
@@ -10,19 +9,13 @@ import { DynamicBreadcrumb } from "@/components/ui/dynamic-breadcrumb";
 import { Toaster } from "sonner";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-import {
-  LayoutDashboard,
-  FileQuestion,
-  BookOpen,
-} from "lucide-react"; 
-import { AppSidebarGuru } from "@/components/app-sidebar-guru";
+import { GuruSidebar } from "@/components/app-sidebar-guru";
 import { GetGuruById } from "../lib/actions";
 
 export const metadata: Metadata = {
   title: "Pusaka Tulungagung - Dashboard Guru",
   description: "Pusaka Tulungagung Dashboard Guru",
 };
-
 
 export default async function GuruDashboardLayout({
   children,
@@ -31,7 +24,7 @@ export default async function GuruDashboardLayout({
 }) {
   const session = await auth();
 
-  if (session?.user.role != "guru") {
+  if (session?.user.role !== "guru") {
     redirect("/");
   }
    const guru = await GetGuruById(session.user.id!)
@@ -42,8 +35,9 @@ export default async function GuruDashboardLayout({
 
   return (
     <SidebarProvider>
-      <AppSidebarGuru />
+      <GuruSidebar />
       <SidebarInset>
+        {/* Header */}
         <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
@@ -54,6 +48,8 @@ export default async function GuruDashboardLayout({
             <DynamicBreadcrumb />
           </div>
         </header>
+
+        {/* Konten utama */}
         <div className="flex flex-col flex-1 gap-4 p-4 pt-0">
           <Toaster position="top-right" />
           {children}

@@ -7,7 +7,7 @@ import path from "path";
 import { revalidatePath } from "next/cache";
 import { v4 as uuidv4 } from "uuid";
 import prisma from "@/lib/prisma";
-import { error } from "console";
+
 
 
 
@@ -264,7 +264,7 @@ export async function CreateGuru(_:unknown,formData:FormData) {
         bidang_ajar : parse.data.bidang_ajar
       }
     })
-  } catch (error) {
+  } catch {
     return {error:"terjadi kesalahan saat membuat guru"}
   }
 }
