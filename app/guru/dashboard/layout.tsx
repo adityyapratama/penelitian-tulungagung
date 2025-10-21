@@ -16,6 +16,7 @@ import {
   BookOpen,
 } from "lucide-react"; 
 import { AppSidebarGuru } from "@/components/app-sidebar-guru";
+import { GetGuruById } from "../lib/actions";
 
 export const metadata: Metadata = {
   title: "Pusaka Tulungagung - Dashboard Guru",
@@ -32,6 +33,11 @@ export default async function GuruDashboardLayout({
 
   if (session?.user.role != "guru") {
     redirect("/");
+  }
+   const guru = await GetGuruById(session.user.id!)
+   console.log(guru)
+  if (guru == null){
+          redirect("/guru/register")
   }
 
   return (

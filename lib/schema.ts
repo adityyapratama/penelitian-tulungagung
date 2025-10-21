@@ -197,3 +197,10 @@ export const SchemaGroupContent = z.object({
     })
   ).min(1, "minimal 1 konten harus dipilih"),
 });
+
+export const SchemaGuru = z.object({
+  user_id : z.string({message:"user tidak ditemukan"}),
+  sekolah_id : z.string({message:"sekolah tidak ditemukan"}),
+  nip : z.string({message:"nip tidak valid"}).min(18,{message:"nip minimal 18 digit"}),
+  bidang_ajar : z.string({message:"bidang ajar is required"})
+})

@@ -104,7 +104,7 @@ model Session {
 }
 
 model Guru {
-  guru_id     Int      @id
+  guru_id     Int      @id @default(autoincrement())
   user_id     Int?     @unique // user_id di Guru adalah foreign key dan juga unique
   sekolah_id  Int?
   nip         String?  @unique @db.VarChar(20)

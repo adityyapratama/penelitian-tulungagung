@@ -1,12 +1,13 @@
 'use server'
 
 import { auth } from "@/auth"
-import { SchemaGroup, SchemaGroupContent } from "@/lib/schema"
+import { SchemaGroup, SchemaGroupContent, SchemaGuru } from "@/lib/schema"
 import fs from "fs";
 import path from "path";
 import { revalidatePath } from "next/cache";
 import { v4 as uuidv4 } from "uuid";
 import prisma from "@/lib/prisma";
+import { error } from "console";
 
 
 
@@ -233,6 +234,52 @@ export async function GroupPerformance(id:string){
     return data;  
   } catch {
     return {error:"terjadi kesalahan saat mengambil member"}
+  }
+}
+
+export async function CreateGuru(_:unknown,formData:FormData) {
+  const session = await auth()
+  
+  if (!session){
+    return {error:"Not Authorized"}
+  }
+
+  const parse = SchemaGuru.safeParse({
+    user_id : formData.get("user_id"),
+    sekolah_id : formData.get("sekolah_id"),
+    nip : formData.get("nip"),
+    bidang_ajar : formData.get("bidang_ajar")
+  })
+
+  if(!parse.success){
+    return { error: parse.error.errors[0].message };
+  }
+
+  try {
+    await prisma.guru.create({
+      data: {
+        user_id     : Number(parse.data.user_id),
+        sekolah_id  : Number(parse.data.sekolah_id),
+        nip         :parse.data.nip,
+        bidang_ajar : parse.data.bidang_ajar
+      }
+    })
+  } catch (error) {
+    return {error:"terjadi kesalahan saat membuat guru"}
+  }
+}
+
+export async function GetGuruById(id:string) {
+  try {
+    const data = prisma.guru.findFirst({
+      where:{
+        user_id:Number(id)
+      }
+    })
+
+    return data
+  } catch {
+    return {error : "User bukan seorang guru"}
   }
 }
 
