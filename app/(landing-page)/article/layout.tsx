@@ -1,3 +1,4 @@
+import Navbar from "@/components/game/NavbarDemo";
 export default function ProtectedLayout({
   children,
 }: {
@@ -5,9 +6,8 @@ export default function ProtectedLayout({
 }) {
   return (
     <>
-      <main>
-        {children}
-      </main>
+      <Navbar />
+      <main>{children}</main>
     </>
   );
 }

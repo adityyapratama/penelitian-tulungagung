@@ -6,7 +6,6 @@ import LoadingIndicator from "@/components/(landing-page)/article/loader";
 import Image from "next/image";
 import type { Metadata } from "next";
 
-
 export const metadata: Metadata = {
   title: "Daftar Artikel",
   description:
@@ -14,7 +13,7 @@ export const metadata: Metadata = {
 };
 
 async function Articles() {
-  const articles = await getArticles();
+  const articles = await getArticles(); 
   await LoginUpdate();
   return <ArticleGridClient articles={articles} />;
 }
@@ -22,7 +21,6 @@ async function Articles() {
 export default function ArticlePage() {
   return (
     <main className="container py-8 mx-auto">
-      
       <div className="flex flex-col overflow-hidden">
         <ContainerScroll
           titleComponent={
