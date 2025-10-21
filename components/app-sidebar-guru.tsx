@@ -12,8 +12,9 @@ import {
   FileEdit,
   PuzzleIcon,
   ChevronDown,
-  LucideIcon
+  LucideIcon,
 } from "lucide-react";
+
 import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
@@ -27,6 +28,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 
+// Struktur navigasi
 interface NavItem {
   title: string;
   url: string;
@@ -51,10 +53,7 @@ const guruNavData: NavItem[] = [
         title: "Daftar Kategori",
         url: "/guru/dashboard/manage-quiz/categories",
       },
-      {
-        title: "Daftar Kuis",
-        url: "/guru/dashboard/manage-quiz",
-      },
+      { title: "Daftar Kuis", url: "/guru/dashboard/manage-quiz" },
     ],
   },
   {
@@ -66,10 +65,7 @@ const guruNavData: NavItem[] = [
         title: "Daftar Kategori",
         url: "/guru/dashboard/manage-stories/category",
       },
-      {
-        title: "Daftar Cerita",
-        url: "/guru/dashboard/manage-stories",
-      },
+      { title: "Daftar Cerita", url: "/guru/dashboard/manage-stories" },
     ],
   },
   {
@@ -81,10 +77,7 @@ const guruNavData: NavItem[] = [
         title: "Daftar Kategori",
         url: "/guru/dashboard/manage-articles/categories",
       },
-      {
-        title: "Daftar Artikel",
-        url: "/guru/dashboard/manage-articles",
-      },
+      { title: "Daftar Artikel", url: "/guru/dashboard/manage-articles" },
     ],
   },
   {
@@ -94,28 +87,32 @@ const guruNavData: NavItem[] = [
   },
 ];
 
+// Dummy data user (bisa diganti nanti dengan session)
 const guruUserData = {
   name: "Nama Guru",
   email: "guru@example.com",
   avatar: "/asset/avatars/avatar-placeholder.png",
 };
 
-export function GuruSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+// Komponen utama sidebar guru
+export function GuruSidebar(props: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
 
+  // State untuk kontrol submenu
   const [openMenus, setOpenMenus] = React.useState<{ [key: string]: boolean }>(
     {}
   );
 
+  // Buka submenu jika sedang di dalam salah satu halaman submenu
   React.useEffect(() => {
     const newOpenMenus: { [key: string]: boolean } = {};
     guruNavData.forEach((item) => {
-      if (item.items && item.url && pathname.startsWith(item.url)) {
-        const isSubItemActive = item.items.some(sub => sub.url === pathname);
+      if (item.items && pathname.startsWith(item.url)) {
+        const isSubItemActive = item.items.some((sub) => sub.url === pathname);
         if (isSubItemActive || pathname !== item.url) {
-           newOpenMenus[item.title] = true;
+          newOpenMenus[item.title] = true;
         }
       }
     });
@@ -128,12 +125,13 @@ export function GuruSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) 
 
   return (
     <Sidebar collapsible="icon" {...props}>
+      {/* Header */}
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
-              className="data-[slot=sidebar-menu-button]:!p-1.5 hover:bg-primary/10"
+              className="hover:bg-primary/10 data-[slot=sidebar-menu-button]:!p-1.5"
             >
               <a href="/guru/dashboard" className="flex items-center gap-3">
                 <Image
@@ -141,7 +139,7 @@ export function GuruSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) 
                   src={"/asset/unair.png"}
                   width={24}
                   height={24}
-                  className="!size-5"
+                  className="!size-4"
                 />
                 <span
                   className={cn(
@@ -157,15 +155,18 @@ export function GuruSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) 
         </SidebarMenu>
       </SidebarHeader>
 
+      {/* Sidebar content */}
       <SidebarContent>
         <SidebarMenu>
           {guruNavData.map((item) => {
             const Icon = item.icon;
-            const isParentPotentiallyActive = item.url && pathname.startsWith(item.url) && !(item.exact && pathname !== item.url);
+            const isParentActive =
+              item.url &&
+              pathname.startsWith(item.url) &&
+              !(item.exact && pathname !== item.url);
 
+            // Jika punya submenu
             if (item.items) {
-               const isParentActive = isParentPotentiallyActive;
-
               return (
                 <SidebarMenuItem
                   key={item.title}
@@ -175,11 +176,13 @@ export function GuruSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) 
                     onClick={() => handleMenuToggle(item.title)}
                     className={cn(
                       "w-full justify-between hover:bg-primary/10",
-                      isParentActive && !isCollapsed && "bg-muted text-foreground",
+                      isParentActive &&
+                        !isCollapsed &&
+                        "bg-muted text-foreground"
                     )}
                   >
                     <div className="flex items-center gap-3">
-                      {Icon && <Icon className="!size-4" />}
+                      <Icon className="!size-4" />
                       <span className={cn(isCollapsed && "hidden")}>
                         {item.title}
                       </span>
@@ -193,6 +196,7 @@ export function GuruSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) 
                     />
                   </SidebarMenuButton>
 
+                  {/* Submenu */}
                   <div
                     className={cn(
                       "w-full pl-5 mt-1 relative transition-all duration-300 ease-in-out overflow-hidden",
@@ -230,9 +234,10 @@ export function GuruSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) 
               );
             }
 
-             const isActive = item.exact
+            // Jika tidak punya submenu
+            const isActive = item.exact
               ? pathname === item.url
-              : isParentPotentiallyActive;
+              : pathname.startsWith(item.url);
 
             return (
               <SidebarMenuItem key={item.title}>
@@ -240,11 +245,12 @@ export function GuruSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) 
                   asChild
                   className={cn(
                     "hover:bg-primary/10",
-                    isActive && "bg-primary text-primary-foreground hover:bg-primary/90"
+                    isActive &&
+                      "bg-primary text-primary-foreground hover:bg-primary/90"
                   )}
                 >
-                  <Link href={item.url!} className="flex items-center gap-3">
-                    {Icon && <Icon className="!size-4" />}
+                  <Link href={item.url} className="flex items-center gap-3">
+                    <Icon className="!size-4" />
                     <span className={cn(isCollapsed && "hidden")}>
                       {item.title}
                     </span>
@@ -256,6 +262,7 @@ export function GuruSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) 
         </SidebarMenu>
       </SidebarContent>
 
+      {/* Footer */}
       <SidebarFooter>
         <NavUser user={guruUserData} />
       </SidebarFooter>
