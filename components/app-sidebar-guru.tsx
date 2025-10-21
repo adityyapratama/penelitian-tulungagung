@@ -89,7 +89,7 @@ const guruNavData: NavItem[] = [
 
 // Dummy data user (bisa diganti nanti dengan session)
 const guruUserData = {
-  name: "Nama Guru",
+  name: "Guru Pengajar",
   email: "guru@example.com",
   avatar: "/asset/avatars/avatar-placeholder.png",
 };
