@@ -57,8 +57,15 @@ async function GroupDataContainer({ selectedGroupId }: { selectedGroupId?: strin
 }
 
 
-export default function GroupsPage({ searchParams }: GroupsPageProps) {
-    const selectedGroupId = searchParams?.group_id;
+export default async function GroupsPage({ searchParams }: GroupsPageProps) {
+    let selectedGroupId = searchParams?.group_id;
+
+    if (!selectedGroupId) {
+        const groupsResult = await getMemberGroups();
+        if (Array.isArray(groupsResult) && groupsResult.length > 0) {
+            selectedGroupId = groupsResult[0].group_id;
+        }
+    }
 
     return (
         <main className="min-h-screen bg-background">

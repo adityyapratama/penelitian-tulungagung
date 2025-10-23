@@ -226,49 +226,54 @@ export async function CreateProgress(_: unknown, data: ProgressData) {
   }
 
   try {
+    const completedAt = new Date();
+    const duration = data.startedAt instanceof Date
+      ? Math.max(0, Math.floor((completedAt.getTime() - data.startedAt.getTime()) / 1000))
+      : 0;
     const existingProgress = await prisma.progresMember.findFirst({
       where: {
         member_id: id,
         content_id: data.contentId,
-        content_type: data.contentType, 
-      },
+        content_type: data.contentType,
+      }
     });
 
-    if (existingProgress) {
-      if (data.skor > existingProgress.skor!) {
-        const completedAt = new Date();
-        const duration = Math.floor(
-          (completedAt.getTime() - data.startedAt.getTime()) / 1000
-        );
-        await prisma.progresMember.update({
-          where: {
-            progres_id: existingProgress.progres_id,
-          },
-          data: {
-            skor: data.skor,
-            completed_at: completedAt,
-            group_id : data.group_id || null,
-            duration: duration,
-          },
-        });
-      }
-    } else {
-      const completedAt = new Date();
-      const duration = Math.floor(
-        (completedAt.getTime() - data.startedAt.getTime()) / 1000
-      );
+    if (!existingProgress) {
       await prisma.progresMember.create({
         data: {
           member_id: id,
           content_id: data.contentId,
           content_type: data.contentType,
-          group_id : data.group_id || null,
+          group_id: data.group_id || null,
           skor: data.skor,
           completed_at: completedAt,
           duration: duration,
         },
       });
-    }
+    } else {
+      const currentBestScore = existingProgress.skor ?? -1;
+
+      if (data.skor > currentBestScore) {
+        await prisma.progresMember.update({
+          where: { progres_id: existingProgress.progres_id },
+          data: {
+            skor: data.skor,
+            completed_at: completedAt,
+            duration: duration,
+            group_id: data.group_id || null, 
+          },
+        });
+      } else {
+        if (data.group_id && existingProgress.group_id === null) {
+          await prisma.progresMember.update({
+            where: { progres_id: existingProgress.progres_id },
+            data: {
+              group_id: data.group_id,
+            },
+          });
+        }
+      }
+    } 
 
     const score = await GetExpMember(String(id));
     if (score !== null) {
