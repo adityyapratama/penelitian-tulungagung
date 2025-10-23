@@ -505,7 +505,7 @@ const KuisSejarahData = [
     xp_reward: 100,
     created_by: 1, // User Aditya
     is_published: true,
-    thumbnail: "/quiz/thumb4.jpg",
+    thumbnail: "/quiz/thumb4.jpeg",
   },
   {
     judul: "Sejarah Kota Tulungagung - Tingkat Sedang",
@@ -515,7 +515,7 @@ const KuisSejarahData = [
     xp_reward: 150,
     created_by: 1, // User Aditya
     is_published: true,
-    thumbnail: "/quiz/thumb5.jpg",
+    thumbnail: "/quiz/thumb5.jpeg",
   },
   {
     judul: "Sejarah Kota Tulungagung - Tingkat Sulit",
@@ -525,7 +525,7 @@ const KuisSejarahData = [
     xp_reward: 200,
     created_by: 1, // User Aditya
     is_published: true,
-    thumbnail: "/quiz/thumb6.jpg",
+    thumbnail: "/quiz/thumb6.jpeg",
   },
 ];
 
@@ -855,13 +855,12 @@ const CategoryArticleData: Prisma.KategoriArtikelCreateInput[] = [
 const ArticleData: Prisma.ArtikelCreateInput[] = [
   {
     judul: "Sejarah Singkat Tulungagung",
-    konten: `## Sejarah Singkat Tulungagung
+    konten: `Sejarah Singkat Tulungagung
 
 Tulungagung, sebuah kabupaten di Provinsi Jawa Timur, memiliki perjalanan sejarah yang kaya dan menarik, menggabungkan fakta arkeologis, prasasti kerajaan, serta legenda rakyat yang membentuk identitas daerah hingga kini. Berikut ini uraian dalam bentuk artikel yang terstruktur: asal-usul, masa klasik, hingga perkembangan modern.
 
----
 
-### Asal-Usul Nama dan Hari Jadi
+Asal-Usul Nama dan Hari Jadi
 
 Nama “Tulungagung” berasal dari dua kata dalam bahasa Jawa/Kawi: *tulung* dan *agung*. “Tulung” dapat diartikan sebagai “pertolongan” atau “bantuan”, juga bisa bermakna “sumber air” dalam bahasa Sanskerta/Jawa Kuno. “Agung” berarti “besar”. Dengan demikian nama ini sering diartikan sebagai “pertolongan besar” atau “sumber air besar”.
 Menurut cerita rakyat, wilayah yang dahulu berupa rawa (disebut “Ngrowo” atau “Ngrawa”) berhasil ditata atau dikeringkan oleh tokoh setempat sehingga mendapatkan gelar yang mengandung unsur pertolongan atau sumber air besar. 
@@ -869,7 +868,7 @@ Hari jadi Tulungagung ditetapkan pada tanggal **18 November 1205 M**, berdasarka
 
 ---
 
-### Masa Klasik: Kerajaan, Prasasti, dan Jejak Sejarah
+Masa Klasik: Kerajaan, Prasasti, dan Jejak Sejarah
 
 Pada abad ke-10 hingga ke-15, wilayah Tulungagung berada di dalam pengaruh beberapa kerajaan besar di Jawa Timur seperti Kerajaan Daha (Kediri) dan Kerajaan Majapahit.
 Beberapa peninggalan sejarah yang masih dapat dijumpai di wilayah Tulungagung antara lain:
@@ -878,17 +877,15 @@ Beberapa peninggalan sejarah yang masih dapat dijumpai di wilayah Tulungagung an
 * Arkeologis dan prasasti yang menegaskan bahwa wilayah ini bukan sekadar hamparan rawa tapi sudah menjadi daerah administratif penting dalam kerajaan kuno.
   Pada masa tersebut, wilayah yang sekarang Tulungagung sempat bernama Kadipaten Ngrowo — yang pusat pemerintahan atau daerahnya berada di sekitar Kalangbret sebelum kemudian bergeser.
 
----
-
-### Masa Kolonial dan Modern
+Masa Kolonial dan Modern
 
 Seiring berjalannya waktu, masa kolonial membuka babak baru bagi Tulungagung. Pemindahan pusat pemerintahan dan perubahan nama administratif terjadi: sekitar tahun 1901 nama “Ngrowo” kemudian secara resmi diganti menjadi “Tulungagung” di bawah kepemimpinan Bupati Raden Tumenggung Patowidjoyo.
 Di era modern, Tulungagung dikenal tidak hanya sebagai daerah agraris tetapi juga sebagai pusat industri marmer — karena kekayaan batu kapur dan marmer di wilayah selatan.
 Penetapan hari jadi secara resmi melalui Peraturan Daerah terjadi pada 9 Oktober 2002 (Perda No. 27/2002) yang menetapkan 18 November sebagai hari jadi kabupaten.
 
----
 
-### Makna dan Cermin Budaya Lokal
+
+Makna dan Cermin Budaya Lokal
 
 Sejarah Tulungagung tidak hanya memberikan catatan masa lalu, tapi juga cermin nilai komunitas:
 
@@ -896,9 +893,8 @@ Sejarah Tulungagung tidak hanya memberikan catatan masa lalu, tapi juga cermin n
 * Keberadaan situs-situs candi dan prasasti menghubungkan masyarakat masa kini dengan leluhur yang punya hubungan administratif dan spiritual dalam kerajaan Jawa.
 * Transformasi administratif dari daerah rawa hingga menjadi kabupaten modern menunjukkan adaptasi sosial dan ekonomi yang cukup dinamis.
 
----
 
-### Penutup
+Penutup
 
 Dari rawa-rawa yang dulu disebut Ngrowo, hingga menjadi kabupaten dengan identitas kuat, Tulungagung menempuh perjalanan panjang. Nama yang mengandung makna besar — baik dari sisi bantuan maupun sumber air — merefleksikan bagaimana masyarakat lokal menghargai peran kolektif dan sumber daya alam. Jejak kerajaan, prasasti, hingga industri marmer menjadi lapisan-lapisan yang menjadikan Tulungagung unik dan kaya akan sejarah.
 `
@@ -930,7 +926,7 @@ Nam eu lacinia turpis. Pellentesque iaculis blandit tempus. Sed pharetra arcu et
 Aliquam pharetra molestie nulla, ut dignissim nisl efficitur nec. Interdum et malesuada fames ac ante ipsum primis in faucibus. Donec eget blandit dui. Fusce condimentum ante id quam pretium, non aliquam nisi laoreet. Etiam in risus molestie, eleifend quam id, facilisis libero. Ut mattis erat non justo bibendum pulvinar. Sed id lacinia purus. Phasellus molestie nisl rutrum, hendrerit metus vitae, dapibus arcu. Quisque ut elit eros. Aliquam sodales nunc ut odio interdum, at tincidunt libero tempus. Sed in magna feugiat, varius mauris laoreet, sodales nisl.`,
     created_at: dayjs().toDate(),
     thumbnail:
-      "/uploads/thumb8.jpg",
+      "/uploads/Mataram.jpg",
     KategoriArtikel: {
       connect: {
         KategoriArtikel_id: 1,
@@ -955,7 +951,7 @@ Nam eu lacinia turpis. Pellentesque iaculis blandit tempus. Sed pharetra arcu et
 Aliquam pharetra molestie nulla, ut dignissim nisl efficitur nec. Interdum et malesuada fames ac ante ipsum primis in faucibus. Donec eget blandit dui. Fusce condimentum ante id quam pretium, non aliquam nisi laoreet. Etiam in risus molestie, eleifend quam id, facilisis libero. Ut mattis erat non justo bibendum pulvinar. Sed id lacinia purus. Phasellus molestie nisl rutrum, hendrerit metus vitae, dapibus arcu. Quisque ut elit eros. Aliquam sodales nunc ut odio interdum, at tincidunt libero tempus. Sed in magna feugiat, varius mauris laoreet, sodales nisl.`,
     created_at: dayjs().toDate(),
     thumbnail:
-      "/uploads/thumb9.jpg",
+      "/uploads/lawadan.jpg",
     KategoriArtikel: {
       connect: {
         KategoriArtikel_id: 1,
@@ -1636,7 +1632,7 @@ export async function main() {
   const cerita = await prisma.ceritaInteraktif.create({
         data: {
           judul: "Sanggar Waru: Jejak Putri dan Pohon Waru",
-          thumbnail: "https://example.com/thumbnail_sanggar_waru.jpg",
+          thumbnail: "/story/thumb1.jpeg",
           deskripsi:
             "Versi modern dari legenda Sanggar Waru. Kamu bermain sebagai remaja yang kembali ke desa untuk menyelidiki cerita lama tentang pohon Waru yang dianggap keramat.",
           kategori: 1,
@@ -1650,7 +1646,7 @@ export async function main() {
   const cerita2 = await prisma.ceritaInteraktif.create({
     data: {
       judul: "Anak dan Ibu: Pilihan yang Tersisa",
-      thumbnail: "https://example.com/thumbnail-anak-ibu.jpg",
+      thumbnail: "/story/thumb2.jpeg",
       deskripsi:
         "Sebuah drama emosional tentang Joko yang dihadapkan pada pilihan: taat pada tradisi, patuh pada ibu, atau mengikuti kata hatinya. Pilihan kecil menimbulkan konsekuensi besar.",
       kategori: 1,
