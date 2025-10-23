@@ -43,6 +43,7 @@ export default function CreateMemberPage({ sekolah }: CreateMemberPageProps) {
   const [state, formAction] = useActionState(CreateMember, { error: "" });
 
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [selectedMinat, setSelectedMinat] = useState<string[]>([]);
 
   // Type guard untuk check apakah sekolah adalah array
   const sekolahList = Array.isArray(sekolah) ? sekolah : [];
@@ -75,6 +76,30 @@ export default function CreateMemberPage({ sekolah }: CreateMemberPageProps) {
       if (imagePreview) URL.revokeObjectURL(imagePreview);
     };
   }, [imagePreview]);
+
+  // Predefined minat options
+  const minatOptions = [
+    "Olahraga",
+    "Musik",
+    "Seni",
+    "Teknologi",
+    "Literatur",
+    "Game",
+    "Fotografi",
+    "Traveling",
+  ];
+
+  // Handle minat button click
+  const handleMinatToggle = (minat: string) => {
+    setSelectedMinat((prev) =>
+      prev.includes(minat)
+        ? prev.filter((item) => item !== minat)
+        : [...prev, minat]
+    );
+  };
+
+  // Convert selectedMinat array to comma-separated string for form submission
+  const minatValue = selectedMinat.join(", ");
 
   return (
     <div className="min-h-screen px-4 py-12 overflow-x-hidden bg-gray-50">
@@ -266,12 +291,27 @@ export default function CreateMemberPage({ sekolah }: CreateMemberPageProps) {
                   <Heart className="w-4 h-4 text-blue-600" />
                   Minat
                 </Label>
-                <Textarea
-                  id="minat"
+                <div className="flex flex-wrap gap-2">
+                  {minatOptions.map((minat) => (
+                    <Button
+                      key={minat}
+                      type="button"
+                      variant={selectedMinat.includes(minat) ? "default" : "outline"}
+                      className={`px-4 py-2 text-sm ${
+                        selectedMinat.includes(minat)
+                          ? "bg-blue-600 text-white hover:bg-blue-700"
+                          : "border-gray-300 text-gray-700 hover:bg-gray-50"
+                      }`}
+                      onClick={() => handleMinatToggle(minat)}
+                    >
+                      {minat}
+                    </Button>
+                  ))}
+                </div>
+                <input
+                  type="hidden"
                   name="minat"
-                  placeholder="Tuliskan minat atau hobi..."
-                  rows={3}
-                  className="px-4 py-3 border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  value={minatValue}
                 />
               </div>
             </div>
