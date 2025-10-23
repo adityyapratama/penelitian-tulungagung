@@ -498,34 +498,34 @@ const KategoriKuisData = [
 
 const KuisSejarahData = [
   {
-    judul: "Kuis Interaktif Sejarah Kota Tulungagung - Tingkat Rendah",
+    judul: "Sejarah Kota Tulungagung - Tingkat Rendah",
     deskripsi:
       "Uji pengetahuan dasar Anda tentang sejarah Kabupaten Tulungagung dari masa kerajaan kuno hingga modern. Cocok untuk pemula.",
     kategori_id: 1,
     xp_reward: 100,
     created_by: 1, // User Aditya
     is_published: true,
-    thumbnail: "/images/kuis/sejarah-tulungagung-rendah.jpg",
+    thumbnail: "/quiz/thumb4.jpg",
   },
   {
-    judul: "Kuis Interaktif Sejarah Kota Tulungagung - Tingkat Sedang",
+    judul: "Sejarah Kota Tulungagung - Tingkat Sedang",
     deskripsi:
       "Tantang diri Anda dengan pertanyaan sejarah Tulungagung tingkat sedang. Pelajari lebih dalam tentang budaya dan perkembangan wilayah ini.",
     kategori_id: 2,
     xp_reward: 150,
     created_by: 1, // User Aditya
     is_published: true,
-    thumbnail: "/images/kuis/sejarah-tulungagung-sedang.jpg",
+    thumbnail: "/quiz/thumb5.jpg",
   },
   {
-    judul: "Kuis Interaktif Sejarah Kota Tulungagung - Tingkat Sulit",
+    judul: "Sejarah Kota Tulungagung - Tingkat Sulit",
     deskripsi:
       "Kuis tantangan untuk para ahli sejarah Tulungagung. Uji pemahaman mendalam tentang etimologi, pengaruh kerajaan, dan peristiwa penting.",
     kategori_id: 3,
     xp_reward: 200,
     created_by: 1, // User Aditya
     is_published: true,
-    thumbnail: "/images/kuis/sejarah-tulungagung-sulit.jpg",
+    thumbnail: "/quiz/thumb6.jpg",
   },
 ];
 
@@ -854,19 +854,58 @@ const CategoryArticleData: Prisma.KategoriArtikelCreateInput[] = [
 
 const ArticleData: Prisma.ArtikelCreateInput[] = [
   {
-    judul: "Adit Makan Lontong Kupang",
-    konten: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque ut tempus ipsum, eu iaculis mi. In lacus ligula, convallis mollis semper eu, malesuada vel arcu. Vestibulum porta, augue vitae bibendum scelerisque, neque enim consequat turpis, nec dictum turpis ipsum non libero. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur tempus erat sit amet tincidunt blandit. Phasellus fermentum vitae dolor ut ultricies. Cras venenatis, enim vel auctor laoreet, lectus est vulputate dui, scelerisque rhoncus erat nibh eget ligula. Donec hendrerit mi ac mi ornare, in fringilla orci finibus. Etiam et lacus elementum lacus ullamcorper iaculis. Sed scelerisque maximus luctus. Etiam tempor arcu id finibus tristique. Pellentesque quis tristique augue. Maecenas suscipit eros et pretium convallis. Maecenas mauris elit, rutrum ac rhoncus in, tristique a ligula. Nunc fermentum fermentum mattis.
+    judul: "Sejarah Singkat Tulungagung",
+    konten: `## Sejarah Singkat Tulungagung
 
-Aliquam consectetur ex nunc, in faucibus augue aliquet vitae. Cras nec erat felis. Nam sit amet ligula mattis, ultrices nibh vitae, luctus orci. In in enim iaculis, eleifend enim et, iaculis turpis. Praesent bibendum nec leo sit amet semper. Phasellus scelerisque ex vitae augue accumsan dignissim. Ut accumsan euismod urna. Pellentesque tincidunt libero neque, id malesuada felis accumsan vitae. Nam tellus massa, fringilla a neque non, tincidunt accumsan mauris. Ut eu dapibus diam, in blandit purus. Donec ligula mauris, faucibus nec urna id, volutpat viverra purus. Cras id nunc ut metus tincidunt convallis. Sed in imperdiet leo, in elementum enim. Nullam quis risus dolor. In lacinia nisl est, vel fermentum tellus posuere in.
+Tulungagung, sebuah kabupaten di Provinsi Jawa Timur, memiliki perjalanan sejarah yang kaya dan menarik, menggabungkan fakta arkeologis, prasasti kerajaan, serta legenda rakyat yang membentuk identitas daerah hingga kini. Berikut ini uraian dalam bentuk artikel yang terstruktur: asal-usul, masa klasik, hingga perkembangan modern.
 
-Ut justo felis, semper ut laoreet vitae, scelerisque sed lorem. Donec hendrerit porta viverra. Nullam non aliquet urna. Nulla vulputate ut quam vel volutpat. Interdum et malesuada fames ac ante ipsum primis in faucibus. Fusce porttitor, ligula vel porttitor vestibulum, arcu diam sollicitudin ex, nec semper mi quam eu ligula. Mauris id ante enim. Etiam maximus pellentesque enim, eget vestibulum orci condimentum non. Aenean bibendum, massa nec euismod lobortis, mi velit mattis est, id viverra tellus ex vitae enim. Vestibulum ornare efficitur purus, quis hendrerit sapien porttitor et. Etiam lacinia vel turpis at suscipit. Donec nulla risus, faucibus eget rutrum non, ultricies sed dolor. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
+---
 
-Nam eu lacinia turpis. Pellentesque iaculis blandit tempus. Sed pharetra arcu et lectus imperdiet accumsan sed posuere ante. Maecenas leo eros, mollis vitae accumsan id, faucibus eget nisl. Donec efficitur tellus eget libero dictum fermentum sit amet quis est. Phasellus euismod mollis enim, nec blandit diam cursus non. Sed scelerisque nisi eget condimentum aliquam. Cras sagittis leo rutrum, imperdiet tellus sit amet, vulputate quam. Morbi maximus felis sit amet tristique tincidunt. Nam ultricies commodo arcu nec vulputate. Pellentesque ornare suscipit efficitur. Nulla eu fermentum massa. Nam venenatis porttitor dui eu placerat.
+### Asal-Usul Nama dan Hari Jadi
 
-Aliquam pharetra molestie nulla, ut dignissim nisl efficitur nec. Interdum et malesuada fames ac ante ipsum primis in faucibus. Donec eget blandit dui. Fusce condimentum ante id quam pretium, non aliquam nisi laoreet. Etiam in risus molestie, eleifend quam id, facilisis libero. Ut mattis erat non justo bibendum pulvinar. Sed id lacinia purus. Phasellus molestie nisl rutrum, hendrerit metus vitae, dapibus arcu. Quisque ut elit eros. Aliquam sodales nunc ut odio interdum, at tincidunt libero tempus. Sed in magna feugiat, varius mauris laoreet, sodales nisl.`,
+Nama “Tulungagung” berasal dari dua kata dalam bahasa Jawa/Kawi: *tulung* dan *agung*. “Tulung” dapat diartikan sebagai “pertolongan” atau “bantuan”, juga bisa bermakna “sumber air” dalam bahasa Sanskerta/Jawa Kuno. “Agung” berarti “besar”. Dengan demikian nama ini sering diartikan sebagai “pertolongan besar” atau “sumber air besar”.
+Menurut cerita rakyat, wilayah yang dahulu berupa rawa (disebut “Ngrowo” atau “Ngrawa”) berhasil ditata atau dikeringkan oleh tokoh setempat sehingga mendapatkan gelar yang mengandung unsur pertolongan atau sumber air besar. 
+Hari jadi Tulungagung ditetapkan pada tanggal **18 November 1205 M**, berdasarkan sebuah prasasti (Prasasti Lawadan) yang memuat bahwa raja Kerajaan Daha memberikan penghargaan kepada masyarakat di wilayah selatan Tulungagung atas kesetiaan mereka. 
+
+---
+
+### Masa Klasik: Kerajaan, Prasasti, dan Jejak Sejarah
+
+Pada abad ke-10 hingga ke-15, wilayah Tulungagung berada di dalam pengaruh beberapa kerajaan besar di Jawa Timur seperti Kerajaan Daha (Kediri) dan Kerajaan Majapahit.
+Beberapa peninggalan sejarah yang masih dapat dijumpai di wilayah Tulungagung antara lain:
+
+* Candi Gayatri di Boyolangu, yang dikaitkan dengan tokoh Gayatri Rajapatni (istri ke-4 Majapahit) dan tercatat dalam Kitab Negarakertagama.
+* Arkeologis dan prasasti yang menegaskan bahwa wilayah ini bukan sekadar hamparan rawa tapi sudah menjadi daerah administratif penting dalam kerajaan kuno.
+  Pada masa tersebut, wilayah yang sekarang Tulungagung sempat bernama Kadipaten Ngrowo — yang pusat pemerintahan atau daerahnya berada di sekitar Kalangbret sebelum kemudian bergeser.
+
+---
+
+### Masa Kolonial dan Modern
+
+Seiring berjalannya waktu, masa kolonial membuka babak baru bagi Tulungagung. Pemindahan pusat pemerintahan dan perubahan nama administratif terjadi: sekitar tahun 1901 nama “Ngrowo” kemudian secara resmi diganti menjadi “Tulungagung” di bawah kepemimpinan Bupati Raden Tumenggung Patowidjoyo.
+Di era modern, Tulungagung dikenal tidak hanya sebagai daerah agraris tetapi juga sebagai pusat industri marmer — karena kekayaan batu kapur dan marmer di wilayah selatan.
+Penetapan hari jadi secara resmi melalui Peraturan Daerah terjadi pada 9 Oktober 2002 (Perda No. 27/2002) yang menetapkan 18 November sebagai hari jadi kabupaten.
+
+---
+
+### Makna dan Cermin Budaya Lokal
+
+Sejarah Tulungagung tidak hanya memberikan catatan masa lalu, tapi juga cermin nilai komunitas:
+
+* Nilai *gotong-royong*, *pertolongan*, dan kerja kolektif terlihat dalam makna nama Tulungagung yang mengandung unsur “tolong besar”.
+* Keberadaan situs-situs candi dan prasasti menghubungkan masyarakat masa kini dengan leluhur yang punya hubungan administratif dan spiritual dalam kerajaan Jawa.
+* Transformasi administratif dari daerah rawa hingga menjadi kabupaten modern menunjukkan adaptasi sosial dan ekonomi yang cukup dinamis.
+
+---
+
+### Penutup
+
+Dari rawa-rawa yang dulu disebut Ngrowo, hingga menjadi kabupaten dengan identitas kuat, Tulungagung menempuh perjalanan panjang. Nama yang mengandung makna besar — baik dari sisi bantuan maupun sumber air — merefleksikan bagaimana masyarakat lokal menghargai peran kolektif dan sumber daya alam. Jejak kerajaan, prasasti, hingga industri marmer menjadi lapisan-lapisan yang menjadikan Tulungagung unik dan kaya akan sejarah.
+`
+,
     created_at: dayjs().toDate(),
     thumbnail:
-      "https://images.unsplash.com/photo-1596526145339-44043b497063?q=80&w=2070&auto=format&fit=crop",
+      "/uploads/tulungagung.jpg",
     KategoriArtikel: {
       connect: {
         KategoriArtikel_id: 1,
@@ -879,7 +918,7 @@ Aliquam pharetra molestie nulla, ut dignissim nisl efficitur nec. Interdum et ma
     },
   },
   {
-    judul: "Helmi Juga Ikut Makan",
+    judul: "Kerajaan Mataram Kuno",
     konten: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque ut tempus ipsum, eu iaculis mi. In lacus ligula, convallis mollis semper eu, malesuada vel arcu. Vestibulum porta, augue vitae bibendum scelerisque, neque enim consequat turpis, nec dictum turpis ipsum non libero. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur tempus erat sit amet tincidunt blandit. Phasellus fermentum vitae dolor ut ultricies. Cras venenatis, enim vel auctor laoreet, lectus est vulputate dui, scelerisque rhoncus erat nibh eget ligula. Donec hendrerit mi ac mi ornare, in fringilla orci finibus. Etiam et lacus elementum lacus ullamcorper iaculis. Sed scelerisque maximus luctus. Etiam tempor arcu id finibus tristique. Pellentesque quis tristique augue. Maecenas suscipit eros et pretium convallis. Maecenas mauris elit, rutrum ac rhoncus in, tristique a ligula. Nunc fermentum fermentum mattis.
 
 Aliquam consectetur ex nunc, in faucibus augue aliquet vitae. Cras nec erat felis. Nam sit amet ligula mattis, ultrices nibh vitae, luctus orci. In in enim iaculis, eleifend enim et, iaculis turpis. Praesent bibendum nec leo sit amet semper. Phasellus scelerisque ex vitae augue accumsan dignissim. Ut accumsan euismod urna. Pellentesque tincidunt libero neque, id malesuada felis accumsan vitae. Nam tellus massa, fringilla a neque non, tincidunt accumsan mauris. Ut eu dapibus diam, in blandit purus. Donec ligula mauris, faucibus nec urna id, volutpat viverra purus. Cras id nunc ut metus tincidunt convallis. Sed in imperdiet leo, in elementum enim. Nullam quis risus dolor. In lacinia nisl est, vel fermentum tellus posuere in.
@@ -891,7 +930,7 @@ Nam eu lacinia turpis. Pellentesque iaculis blandit tempus. Sed pharetra arcu et
 Aliquam pharetra molestie nulla, ut dignissim nisl efficitur nec. Interdum et malesuada fames ac ante ipsum primis in faucibus. Donec eget blandit dui. Fusce condimentum ante id quam pretium, non aliquam nisi laoreet. Etiam in risus molestie, eleifend quam id, facilisis libero. Ut mattis erat non justo bibendum pulvinar. Sed id lacinia purus. Phasellus molestie nisl rutrum, hendrerit metus vitae, dapibus arcu. Quisque ut elit eros. Aliquam sodales nunc ut odio interdum, at tincidunt libero tempus. Sed in magna feugiat, varius mauris laoreet, sodales nisl.`,
     created_at: dayjs().toDate(),
     thumbnail:
-      "https://images.unsplash.com/photo-1596526145339-44043b497063?q=80&w=2070&auto=format&fit=crop",
+      "/uploads/thumb8.jpg",
     KategoriArtikel: {
       connect: {
         KategoriArtikel_id: 1,
@@ -904,7 +943,7 @@ Aliquam pharetra molestie nulla, ut dignissim nisl efficitur nec. Interdum et ma
     },
   },
   {
-    judul: "Mufi Makan Lontong Kupang",
+    judul: "Prasasti Lawadan",
     konten: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque ut tempus ipsum, eu iaculis mi. In lacus ligula, convallis mollis semper eu, malesuada vel arcu. Vestibulum porta, augue vitae bibendum scelerisque, neque enim consequat turpis, nec dictum turpis ipsum non libero. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur tempus erat sit amet tincidunt blandit. Phasellus fermentum vitae dolor ut ultricies. Cras venenatis, enim vel auctor laoreet, lectus est vulputate dui, scelerisque rhoncus erat nibh eget ligula. Donec hendrerit mi ac mi ornare, in fringilla orci finibus. Etiam et lacus elementum lacus ullamcorper iaculis. Sed scelerisque maximus luctus. Etiam tempor arcu id finibus tristique. Pellentesque quis tristique augue. Maecenas suscipit eros et pretium convallis. Maecenas mauris elit, rutrum ac rhoncus in, tristique a ligula. Nunc fermentum fermentum mattis.
 
 Aliquam consectetur ex nunc, in faucibus augue aliquet vitae. Cras nec erat felis. Nam sit amet ligula mattis, ultrices nibh vitae, luctus orci. In in enim iaculis, eleifend enim et, iaculis turpis. Praesent bibendum nec leo sit amet semper. Phasellus scelerisque ex vitae augue accumsan dignissim. Ut accumsan euismod urna. Pellentesque tincidunt libero neque, id malesuada felis accumsan vitae. Nam tellus massa, fringilla a neque non, tincidunt accumsan mauris. Ut eu dapibus diam, in blandit purus. Donec ligula mauris, faucibus nec urna id, volutpat viverra purus. Cras id nunc ut metus tincidunt convallis. Sed in imperdiet leo, in elementum enim. Nullam quis risus dolor. In lacinia nisl est, vel fermentum tellus posuere in.
@@ -916,7 +955,7 @@ Nam eu lacinia turpis. Pellentesque iaculis blandit tempus. Sed pharetra arcu et
 Aliquam pharetra molestie nulla, ut dignissim nisl efficitur nec. Interdum et malesuada fames ac ante ipsum primis in faucibus. Donec eget blandit dui. Fusce condimentum ante id quam pretium, non aliquam nisi laoreet. Etiam in risus molestie, eleifend quam id, facilisis libero. Ut mattis erat non justo bibendum pulvinar. Sed id lacinia purus. Phasellus molestie nisl rutrum, hendrerit metus vitae, dapibus arcu. Quisque ut elit eros. Aliquam sodales nunc ut odio interdum, at tincidunt libero tempus. Sed in magna feugiat, varius mauris laoreet, sodales nisl.`,
     created_at: dayjs().toDate(),
     thumbnail:
-      "https://images.unsplash.com/photo-1596526145339-44043b497063?q=80&w=2070&auto=format&fit=crop",
+      "/uploads/thumb9.jpg",
     KategoriArtikel: {
       connect: {
         KategoriArtikel_id: 1,
