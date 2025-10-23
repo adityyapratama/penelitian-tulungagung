@@ -34,11 +34,13 @@ type Kuis = {
 type QuizComponentProps = {
   quizDetails: Kuis;
   questions: Pertanyaan[];
+  groupId?: string;
 };
 
 export function QuizClientComponent({
   quizDetails,
   questions,
+  groupId,
 }: QuizComponentProps) {
   const router = useRouter();
 
@@ -92,6 +94,7 @@ export function QuizClientComponent({
             contentType: "kuis" as const,
             skor: finalScore,
             startedAt: startedAt,
+            group_id: groupId || null,
           };
 
           const result = await CreateProgress(null, progressData);
@@ -111,7 +114,8 @@ export function QuizClientComponent({
     quizDetails.kuis_id,
     hasSubmitted,
     calculateFinalScore,
-  ]); // ✅ Dependency yang aman
+    groupId,
+  ]); 
 
   const handleAnswer = (choice: Pilihan) => {
     // Simpan jawaban user untuk pertanyaan ini

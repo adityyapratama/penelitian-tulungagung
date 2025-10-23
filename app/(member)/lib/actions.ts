@@ -10,6 +10,7 @@ import { ProgressData } from "@/types/index";
 import { ContentType } from "@/lib/generated/prisma";
 import { getMemberDetailsByIds } from "@/app/(member)/(protected)/games/lib/data";
 
+
 export async function GetMemberData() {
   const session = await auth();
 
@@ -229,6 +230,7 @@ export async function CreateProgress(_: unknown, data: ProgressData) {
       where: {
         member_id: id,
         content_id: data.contentId,
+        content_type: data.contentType, 
       },
     });
 

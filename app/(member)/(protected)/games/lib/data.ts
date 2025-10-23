@@ -10,6 +10,7 @@ export type GameCardData = {
   description: string;
   image: string;
   category: string;
+  groupId?: string;
   xp_reward: number;
   createdAt: Date;
 };

@@ -6,9 +6,12 @@ import { QuizClientComponent } from "@/app/(member)/(protected)/games/quiz/[id]/
 
 type PageProps = {
   params: { id: string };
+  searchParams?: { 
+    group_id?: string;
+  };
 };
 
-export default async function QuizDetailPage({ params }: PageProps) {
+export default async function QuizDetailPage({ params, searchParams }: PageProps) {
   const quizDetails = await getQuizById(params.id);
   const questions = await getQuizQuestionByQuizId(params.id);
 
@@ -52,6 +55,7 @@ export default async function QuizDetailPage({ params }: PageProps) {
             }>;
           }>
         }
+        groupId={searchParams?.group_id}
       />
     </div>
   );

@@ -116,7 +116,7 @@ export const columns: ColumnDef<TGroupColumn>[] = [
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
          className="px-2"
       >
-        Dibuat
+        Dibuat Pada
         <ArrowUpDown className="w-4 h-4 ml-2" />
       </Button>
     ),

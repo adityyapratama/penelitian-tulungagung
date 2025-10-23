@@ -8,7 +8,7 @@ export default async function PuzzlePlayPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>
-  searchParams: Promise<{ difficulty: string }>
+  searchParams: Promise<{ difficulty: string; group_id?: string }>;
 }) {
   const [{ id }, searchParamsObj] = await Promise.all([params, searchParams])
   return <GameLoader id={id} searchParams={searchParamsObj} />
@@ -19,7 +19,7 @@ async function GameLoader({
   searchParams,
 }: {
   id: string
-  searchParams: { difficulty: string }
+  searchParams: { difficulty: string; group_id?: string }
 }) {
   const session = await auth()
   if (!session?.user) {
@@ -28,6 +28,7 @@ async function GameLoader({
 
   const puzzle = await getPuzzleById(id)
   const difficulty = searchParams.difficulty || "easy"
+  const groupId = searchParams.group_id;
 
   if (!puzzle || "error" in puzzle) {
     notFound()
@@ -40,7 +41,7 @@ async function GameLoader({
     xp_reward: puzzle.xp_reward,
   }
 
-  return <PuzzleGameClient gameData={gameData} difficulty={difficulty} />
+  return <PuzzleGameClient gameData={gameData} difficulty={difficulty} groupId={groupId}/>
 }
 
 export type PuzzleGameData = {

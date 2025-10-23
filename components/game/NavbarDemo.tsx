@@ -2,7 +2,21 @@
 
 import { signOut, useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
-import { Home, Book, Trophy, User, Menu, X, Flame, Zap, LogOut, Settings, Bell } from "lucide-react";
+import {
+  Home,
+  Book,
+  Trophy,
+  User,
+  Menu,
+  X,
+  Flame,
+  Zap,
+  LogOut,
+  Settings,
+  Bell,
+  Group,
+  PersonStanding,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -23,7 +37,7 @@ const navItems = [
   { title: "Home", url: "/games", icon: Home },
   { title: "Learn", url: "/learn", icon: Book },
   { title: "Leaderboard", url: "/profile/leaderboard", icon: Trophy },
-  { title: "Profile", url: "/profile", icon: User },
+  { title: "My Group", url: "/my-group", icon: Group },
 ];
 
 const handleLogout = async () => {
@@ -34,7 +48,7 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
   const { data: session } = useSession();
-  
+
   // State untuk data member
   const [memberData, setMemberData] = useState<{
     username: string;
@@ -49,8 +63,8 @@ const Navbar = () => {
       if (!session?.user) return;
 
       const memberResult = await GetMemberData();
-      
-      if (!memberResult || 'error' in memberResult) return;
+
+      if (!memberResult || "error" in memberResult) return;
 
       // Set member data
       setMemberData({
@@ -75,7 +89,12 @@ const Navbar = () => {
   const email = memberData?.email || session?.user?.email || "";
   const level = memberData?.level || 1;
   const fotoProfil = memberData?.foto_profil || session?.user?.image || "";
-  const avatarFallback = username.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  const avatarFallback = username
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -122,14 +141,19 @@ const Navbar = () => {
               <div className="h-4 w-px bg-border" />
               <div className="flex items-center gap-1.5">
                 <Zap className="h-5 w-5 text-accent" />
-                <span className="font-bold text-sm">{totalXp.toLocaleString()}</span>
+                <span className="font-bold text-sm">
+                  {totalXp.toLocaleString()}
+                </span>
               </div>
             </div>
-            
+
             {/* Profile Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                <Button
+                  variant="ghost"
+                  className="relative h-10 w-10 rounded-full"
+                >
                   <Avatar className="h-10 w-10 border-2 border-primary">
                     <AvatarImage src={fotoProfil} alt="Profile" />
                     <AvatarFallback className="bg-primary text-primary-foreground">
@@ -141,28 +165,38 @@ const Navbar = () => {
               <DropdownMenuContent className="w-56" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">{username}</p>
+                    <p className="text-sm font-medium leading-none">
+                      {username}
+                    </p>
                     <p className="text-xs leading-none text-muted-foreground">
                       Level {level} • {totalXp.toLocaleString()} XP
                     </p>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                
+
                 <DropdownMenuItem className="cursor-pointer">
                   <Bell className="mr-2 h-4 w-4" />
                   <span>Notifications</span>
-                  <Badge variant="secondary" className="ml-auto">3</Badge>
+                  <Badge variant="secondary" className="ml-auto">
+                    3
+                  </Badge>
                 </DropdownMenuItem>
-                
+
                 <DropdownMenuItem className="cursor-pointer">
                   <Settings className="mr-2 h-4 w-4" />
                   <span>Settings</span>
                 </DropdownMenuItem>
-                
+                <DropdownMenuItem asChild className="cursor-pointer">
+                  <Link href="/profile">
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Profil</span>
+                  </Link>
+                </DropdownMenuItem>
+
                 <DropdownMenuSeparator />
-                
-                <DropdownMenuItem 
+
+                <DropdownMenuItem
                   className="cursor-pointer text-destructive focus:text-destructive"
                   onClick={async () => {
                     try {
@@ -210,7 +244,7 @@ const Navbar = () => {
                   </Link>
                 );
               })}
-              
+
               <div className="flex items-center justify-between px-4 py-3 bg-muted rounded-xl mt-2">
                 <div className="flex items-center gap-2">
                   <Flame className="h-5 w-5 text-secondary" />
@@ -218,25 +252,29 @@ const Navbar = () => {
                 </div>
                 <div className="flex items-center gap-2">
                   <Zap className="h-5 w-5 text-accent" />
-                  <span className="font-bold">{totalXp.toLocaleString()} XP</span>
+                  <span className="font-bold">
+                    {totalXp.toLocaleString()} XP
+                  </span>
                 </div>
               </div>
-              
+
               {/* Mobile Profile & Menu Items */}
               <div className="flex flex-col gap-2 mt-2">
                 <Button variant="outline" className="justify-start">
                   <Bell className="mr-2 h-4 w-4" />
                   Notifications
-                  <Badge variant="secondary" className="ml-auto">3</Badge>
+                  <Badge variant="secondary" className="ml-auto">
+                    3
+                  </Badge>
                 </Button>
-                
+
                 <Button variant="outline" className="justify-start">
                   <Settings className="mr-2 h-4 w-4" />
                   Settings
                 </Button>
-                
-                <Button 
-                  variant="destructive" 
+
+                <Button
+                  variant="destructive"
                   className="justify-start"
                   // onClick={async () => {
                   //   setIsOpen(false);

@@ -35,14 +35,33 @@ const difficulties = [
   },
 ];
 
-export function DifficultySelector({ puzzleId }: { puzzleId: number }) {
-  const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>("easy");
+export function DifficultySelector({
+  puzzleId,
+  groupId,
+}: {
+  puzzleId: number;
+  groupId?: string;
+}) {
+  const [selectedDifficulty, setSelectedDifficulty] =
+    useState<Difficulty>("easy");
+
+  const createPlayUrl = () => {
+    const baseUrl = `/games/puzzle/${puzzleId}/play?difficulty=${selectedDifficulty}`;
+    if (groupId) {
+      return `${baseUrl}&group_id=${groupId}`;
+    }
+    return baseUrl;
+  };
 
   return (
     <div className="w-full space-y-6">
       <div className="text-left">
-        <h2 className="text-3xl font-bold text-foreground">Pilih Tingkat Kesulitan</h2>
-        <p className="text-muted-foreground mt-1">Sesuaikan ukuran puzzle dengan kemampuan Anda.</p>
+        <h2 className="text-3xl font-bold text-foreground">
+          Pilih Tingkat Kesulitan
+        </h2>
+        <p className="text-muted-foreground mt-1">
+          Sesuaikan ukuran puzzle dengan kemampuan Anda.
+        </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -53,18 +72,23 @@ export function DifficultySelector({ puzzleId }: { puzzleId: number }) {
           return (
             <Card
               key={difficulty.id}
-              className={`cursor-pointer transition-all duration-300 text-center p-4 space-y-3 flex flex-col items-center justify-center border-2 ${
-                isSelected ? "border-primary shadow-lg bg-primary/5" : "border-border hover:border-primary/50"
+              className={`cursor-pointer transition-all duration-300 text-center p-4 space-y-3 flex flex-col items-center justify-center border-2 h-full ${
+                isSelected
+                  ? "border-primary shadow-lg bg-primary/5"
+                  : "border-border hover:border-primary/50"
               }`}
               onClick={() => setSelectedDifficulty(difficulty.id)}
             >
               <div className={`p-3 rounded-full ${difficulty.color}`}>
                 <IconComponent className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-foreground">{difficulty.label}</h3>
-              <p className="text-sm text-muted-foreground">{difficulty.stats.grid}</p>
-              
-              {/* Checkmark untuk yang terpilih */}
+              <h3 className="text-lg font-bold text-foreground">
+                {difficulty.label}
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                {difficulty.stats.grid}
+              </p>
+
               <div className="h-6 mt-2">
                 {isSelected && (
                   <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-primary-foreground">
@@ -82,9 +106,11 @@ export function DifficultySelector({ puzzleId }: { puzzleId: number }) {
         className="w-full mt-4 text-lg font-semibold py-6 bg-primary hover:bg-primary/90 text-primary-foreground"
         asChild
       >
-        <Link href={`/games/puzzle/${puzzleId}/play?difficulty=${selectedDifficulty}`}>
+        {/* 3. Gunakan URL dinamis */}
+        <Link href={createPlayUrl()}>
           <Play className="w-5 h-5 mr-2" />
-          Mulai Puzzle {difficulties.find((d) => d.id === selectedDifficulty)?.label}
+          Mulai Puzzle{" "}
+          {difficulties.find((d) => d.id === selectedDifficulty)?.label}
         </Link>
       </Button>
     </div>

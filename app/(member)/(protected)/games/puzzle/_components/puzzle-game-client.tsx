@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { X, RotateCcw, Timer } from "lucide-react";
-import { CreateProgress, GetLeaderboard } from "@/app/(member)/lib/actions";
+import { CreateProgress } from "@/app/(member)/lib/actions";
 import type { PuzzleGameData } from "../[id]/play/page";
 import confetti from "canvas-confetti";
 import toast from "react-hot-toast";
@@ -47,9 +47,11 @@ const DIFFICULTY_CONFIG = {
 export function PuzzleGameClient({
   gameData,
   difficulty: initialDifficulty,
+  groupId,
 }: {
   gameData: PuzzleGameData;
   difficulty: string;
+  groupId?: string;
 }) {
   const router = useRouter();
   const [pieces, setPieces] = useState<PuzzlePiece[]>([]);
@@ -132,6 +134,7 @@ export function PuzzleGameClient({
       contentType: "puzzle" as const,
       skor: calculatedFinalScore,
       startedAt: startTime,
+      group_id: groupId || null
     };
 
     const result = await CreateProgress(null, progressData);
@@ -140,24 +143,13 @@ export function PuzzleGameClient({
     if (result?.success) {
       confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
       toast.success(`${result.success}! Anda mendapatkan ${result.score} XP.`);
-
-      try {
-        const finalLeaderboardData = await GetLeaderboard(
-          String(gameData.puzzle_id),
-          "puzzle"
-        );
-        setLeaderboardData(finalLeaderboardData);
-      } catch {
-        toast.error("Gagal memuat papan peringkat.");
-        setLeaderboardData([]);
-      }
+      setLeaderboardData([]);
     } else {
       toast.error(result?.error || "Gagal menyimpan progres.");
-      setLeaderboardData([]);
     }
 
     setIsSubmitting(false);
-  }, [startTime, elapsedTime, gameData, config.scoreMultiplier, isSubmitting]);
+  }, [startTime, elapsedTime, gameData, config.scoreMultiplier, isSubmitting, groupId]);
 
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);

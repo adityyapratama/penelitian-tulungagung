@@ -5,9 +5,12 @@ import type { CeritaInteraktif, Scene } from "@/lib/generated/prisma";
 
 type PageProps = {
   params: { id: string };
+  searchParams?: { 
+    group_id?: string;
+  };
 };
 
-export default async function StoryDetailPage({ params }: PageProps) {
+export default async function StoryDetailPage({ params, searchParams }: PageProps) {
   const { id } = await params;
 
   const [storyDetails, scenes, recommendedArticles] = await Promise.all([
@@ -40,6 +43,7 @@ export default async function StoryDetailPage({ params }: PageProps) {
         storyDetails={storyDetails as CeritaInteraktif}
         scenes={scenes as Scene[]}
         recommendedArticles={recommendedArticles}
+        groupId={searchParams?.group_id}
       />
     </div>
   );

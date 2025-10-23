@@ -13,6 +13,8 @@ import {
   PuzzleIcon,
   ChevronDown,
   LucideIcon,
+  PersonStanding,
+  UsersRound,
 } from "lucide-react";
 
 import { NavUser } from "@/components/nav-user";
@@ -88,7 +90,7 @@ const guruNavData: NavItem[] = [
   {
     title: "Manajemen Group",
     url: "/guru/dashboard/manage-group",
-    icon: PuzzleIcon,
+    icon: UsersRound,
   },
 ];
 

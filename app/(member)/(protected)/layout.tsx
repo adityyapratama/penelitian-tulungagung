@@ -8,7 +8,7 @@ export default function ProtectedLayout({
   return (
     <>
       <Navbar/>
-      <main className="pt-20">
+      <main >
         {children}
       </main>
     </>

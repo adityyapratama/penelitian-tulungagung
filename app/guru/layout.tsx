@@ -1,6 +1,6 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-import { GetGuruById,InviteByEmail } from "./lib/actions";
+import { GetGuruById } from "./lib/actions";
 
 
 

@@ -76,14 +76,9 @@ export function PuzzleCompletionPage({
         </div>
 
         <div className="grid lg:grid-cols-5 gap-8">
-          {/* 3. Gunakan komponen RankingSection di sini */}
-          <div className="lg:col-span-2">
-            <RankingSection rankings={leaderboardData} />
-          </div>
-
           {/* Score Section */}
-          <div className="lg:col-span-3">
-            <Card className="game-card h-fit">
+          <div className="lg:col-span-3 lg:col-start-2">
+            <Card className="game-card h-fit">
               <CardContent className="p-12 text-center space-y-8">
                 {/* Score Display */}
                 <div className="space-y-4">

@@ -34,9 +34,17 @@ export function GameRow({ title, description, games, href }: GameRowProps) {
 
   const getGameUrl = (game: GameCardData) => {
     const id = game.id.split("-")[1];
-    if (game.type === "kuis") return `/games/quiz/${id}`;
-    if (game.type === "cerita") return `/games/cerita/${id}`;
-    return `/games/puzzle/${id}`;
+    let baseUrl = "";
+    
+    if (game.type === "kuis") baseUrl = `/games/quiz/${id}`;
+    else if (game.type === "cerita") baseUrl = `/games/stories/${id}`;
+    else baseUrl = `/games/puzzle/${id}`;
+
+    if (game.groupId) {
+      return `${baseUrl}?group_id=${game.groupId}`;
+    }
+
+    return baseUrl;
   };
 
   const getBadgeColor = (type: string) => {

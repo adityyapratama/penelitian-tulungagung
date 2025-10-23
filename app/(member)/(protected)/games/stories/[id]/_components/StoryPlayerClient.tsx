@@ -29,9 +29,10 @@ type StoryPlayerProps = {
   storyDetails: CeritaInteraktif;
   scenes: Scene[];
   recommendedArticles: Article[];
+  groupId?: string;
 };
 
-export function StoryPlayerClient({ storyDetails, scenes, recommendedArticles }: StoryPlayerProps) {
+export function StoryPlayerClient({ storyDetails, scenes, recommendedArticles, groupId }: StoryPlayerProps) {
   const router = useRouter();
 
   const [gameStarted, setGameStarted] = useState(false);
@@ -66,6 +67,7 @@ export function StoryPlayerClient({ storyDetails, scenes, recommendedArticles }:
           contentType: "cerita" as const,
           skor: finalScore,
           startedAt: startedAt,
+          group_id: groupId || null
         };
 
         const result = await CreateProgress(null, progressData);
@@ -74,7 +76,7 @@ export function StoryPlayerClient({ storyDetails, scenes, recommendedArticles }:
       };
       submitProgress();
     }
-  }, [storyComplete, startedAt, hasSubmitted, storyDetails.cerita_id, finalScore]);
+  }, [storyComplete, startedAt, hasSubmitted, storyDetails.cerita_id, finalScore, groupId]);
 
   const handleChoice = (nextSceneKey: string) => {
     const nextScene = scenes.find((s) => s.scene_key === nextSceneKey);
