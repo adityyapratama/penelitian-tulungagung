@@ -7,6 +7,16 @@ import fs from "fs";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
 import { ProgressData } from "@/types/index";
+import { ContentType } from "@prisma/client";
+
+export type LeaderboardEntry = {
+  rank: number;
+  member_id: number;
+  username: string | null;
+  foto_profil: string | null;
+  skor: number;
+  duration: number;
+};
 
 
 export async function GetMemberData() {
@@ -299,34 +309,95 @@ export async function CreateProgress(_: unknown, data: ProgressData) {
 
 export async function GetLeaderboard() {
   try {
-    // 1. Ambil skor tertinggi tiap user
-    const progressList = await prisma.progresMember.groupBy({
+    const data = prisma.$queryRaw`SELECT 
+              u.username,
+              SUM(p.skor) AS skor,
+              m.last_active
+              FROM Member m
+              JOIN User u ON m.user_id = u.user_id
+              JOIN ProgresMember p ON p.member_id = m.member_id
+              GROUP BY u.username, m.last_active
+              ORDER BY skor DESC;
+            `;
+
+    return data;
+  } catch (error) {
+    console.error("Error fetching leaderboard:", error);
+    return [];
+  }
+}
+
+export async function GetLeaderboardByGame(
+  content_type: ContentType,
+  content_id: number,
+  take = 10
+): Promise<LeaderboardEntry[]> {
+  try {
+    const grouped = await prisma.progresMember.groupBy({
       by: ["member_id"],
+      where: {
+        content_type,
+        content_id,
+      },
       _max: {
         skor: true,
-        duration: true,
       },
       orderBy: {
         _max: {
           skor: "desc",
         },
       },
-      take: 10,
+      take,
     });
 
-    if (progressList.length === 0) {
-      return [];
-    }
+    if (grouped.length === 0) return [];
 
-    // 2. Ambil member_id dan filter null agar jadi number[]
-    const memberIds = progressList
-      .map((p) => p.member_id)
-      .filter((id): id is number => id !== null);
+    const bestAttempts = await Promise.all(
+      grouped.map(async (g) => {
 
-    // 3. Ambil data member + username dari User
+        if (g.member_id == null || g._max.skor == null) return null;
+
+        const attempt = await prisma.progresMember.findFirst({
+          where: {
+            member_id: g.member_id,
+            content_type,
+            content_id,
+            skor: g._max.skor,
+          },
+          orderBy: {
+
+            duration: "asc",
+          },
+
+          select: {
+            progres_id: true,
+            member_id: true,
+            skor: true,
+            duration: true,
+          },
+        });
+
+        return (
+          attempt ?? {
+            progres_id: -1,
+            member_id: g.member_id,
+            skor: g._max.skor ?? 0,
+            duration: 0,
+          }
+        );
+      })
+    );
+
+    const attemptsFiltered = bestAttempts.filter(
+      (a): a is { progres_id: number; member_id: number; skor: number; duration: number } =>
+        a !== null && a.member_id !== null
+    );
+
+    const finalMemberIds = attemptsFiltered.map((a) => a.member_id);
+
     const memberDetails = await prisma.member.findMany({
       where: {
-        member_id: { in: memberIds },
+        member_id: { in: finalMemberIds },
       },
       select: {
         member_id: true,
@@ -339,26 +410,38 @@ export async function GetLeaderboard() {
       },
     });
 
-    // 4. Buat map agar cepat dicari berdasarkan member_id
-    const memberMap = new Map(memberDetails.map((m) => [m.member_id, m]));
+    const memberMap = new Map(
+      memberDetails.map((m) => [m.member_id, m])
+    );
 
-    // 5. Gabungkan data leaderboard + username
-    const fullLeaderboard = progressList.map((p, index) => {
-      const detail = p.member_id ? memberMap.get(p.member_id) ?? null : null;
-
+    const combined = attemptsFiltered.map((a) => {
+      const detail = memberMap.get(a.member_id) ?? null;
       return {
-        rank: index + 1,
-        member_id: p.member_id,
-        skor: p._max.skor ?? 0,
-        duration: p._max.duration ?? 0,
+        member_id: a.member_id,
+        skor: a.skor ?? 0,
+        duration: a.duration ?? 0,
         username: detail?.User?.username ?? null,
         avatar: detail?.foto_profil ?? null,
       };
     });
 
+    combined.sort((x, y) => {
+      if (y.skor !== x.skor) return y.skor - x.skor;
+      return x.duration - y.duration;
+    });
+
+    const fullLeaderboard: LeaderboardEntry[] = combined.map((c, idx) => ({
+      rank: idx + 1,
+      member_id: c.member_id,
+      username: c.username,
+      foto_profil: c.avatar,
+      skor: c.skor,
+      duration: c.duration,
+    }));
+
     return fullLeaderboard;
   } catch (error) {
-    console.error("Error fetching leaderboard:", error);
+    console.error("Error GetLeaderboardByGame:", error);
     return [];
   }
 }
