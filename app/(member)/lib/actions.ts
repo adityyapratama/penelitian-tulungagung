@@ -7,8 +7,6 @@ import fs from "fs";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
 import { ProgressData } from "@/types/index";
-import { ContentType } from "@/lib/generated/prisma";
-import { getMemberDetailsByIds } from "@/app/(member)/(protected)/games/lib/data";
 
 
 export async function GetMemberData() {
@@ -299,16 +297,19 @@ export async function CreateProgress(_: unknown, data: ProgressData) {
   }
 }
 
-export async function GetLeaderboard( ) {
+export async function GetLeaderboard() {
   try {
-    const progressList = await prisma.progresMember.findMany({
-      select: {
-        member_id: true,
+    // 1. Ambil skor tertinggi tiap user
+    const progressList = await prisma.progresMember.groupBy({
+      by: ["member_id"],
+      _max: {
         skor: true,
         duration: true,
       },
       orderBy: {
-        skor: "desc",
+        _max: {
+          skor: "desc",
+        },
       },
       take: 10,
     });
@@ -317,29 +318,52 @@ export async function GetLeaderboard( ) {
       return [];
     }
 
+    // 2. Ambil member_id dan filter null agar jadi number[]
     const memberIds = progressList
-      .map((score) => score.member_id)
+      .map((p) => p.member_id)
       .filter((id): id is number => id !== null);
 
-    const memberDetails = await getMemberDetailsByIds(memberIds);
+    // 3. Ambil data member + username dari User
+    const memberDetails = await prisma.member.findMany({
+      where: {
+        member_id: { in: memberIds },
+      },
+      select: {
+        member_id: true,
+        foto_profil: true,
+        User: {
+          select: {
+            username: true,
+          },
+        },
+      },
+    });
 
-    const memberDetailsMap = new Map(
-      memberDetails.map((m) => [m.member_id, m])
-    );
+    // 4. Buat map agar cepat dicari berdasarkan member_id
+    const memberMap = new Map(memberDetails.map((m) => [m.member_id, m]));
 
-    const fullLeaderboardData = progressList.map((score) => ({
-      ...score,
-      Member: score.member_id
-        ? memberDetailsMap.get(score.member_id) || null
-        : null,
-    }));
+    // 5. Gabungkan data leaderboard + username
+    const fullLeaderboard = progressList.map((p, index) => {
+      const detail = p.member_id ? memberMap.get(p.member_id) ?? null : null;
 
-    return fullLeaderboardData;
+      return {
+        rank: index + 1,
+        member_id: p.member_id,
+        skor: p._max.skor ?? 0,
+        duration: p._max.duration ?? 0,
+        username: detail?.User?.username ?? null,
+        avatar: detail?.foto_profil ?? null,
+      };
+    });
+
+    return fullLeaderboard;
   } catch (error) {
     console.error("Error fetching leaderboard:", error);
     return [];
   }
 }
+
+
 
 
 export async function GetQuizzes() {
