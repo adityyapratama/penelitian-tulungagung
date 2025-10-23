@@ -22,13 +22,13 @@ export interface SceneData {
 export async function saveScenesToDatabase(scenes: SceneData[], cerita_id: number) {
   try {
     // Delete existing scenes for this story
-    await prisma.Scene.deleteMany({
+    await prisma.scene.deleteMany({
       where: { cerita_id },
     })
 
     // Insert new scenes
     const scenePromises = scenes.map((scene, index) =>
-      prisma.Scene.create({
+      prisma.scene.create({
         data: {
           cerita_id,
           scene_key: scene.scene_key,
@@ -53,7 +53,7 @@ export async function saveScenesToDatabase(scenes: SceneData[], cerita_id: numbe
 
 export async function loadScenesFromDatabase(cerita_id: number) {
   try {
-    const scenes = await prisma.Scene.findMany({
+    const scenes = await prisma.scene.findMany({
       where: { cerita_id },
       orderBy: { urutan: "asc" },
     })
