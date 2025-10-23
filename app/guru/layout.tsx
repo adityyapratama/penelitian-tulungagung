@@ -11,6 +11,10 @@ export default async function GuruLayout({
 }){
 
     const session = await auth();
+<<<<<<< HEAD
+=======
+
+>>>>>>> b0f1f77 (add story seeder)
     if(!session){
         redirect("/")
     }else if(session.user.role != "guru"){

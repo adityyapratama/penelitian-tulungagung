@@ -4,147 +4,12 @@ import timezone from "dayjs/plugin/timezone";
 import { PrismaClient, Prisma } from "../lib/generated/prisma";
 import { PuzzleCategory, ContentType } from "../lib/generated/prisma";
 import bcrypt from "bcryptjs";
+import { SceneData } from "@/app/admin/dashboard/manage-stories/lib/database";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
 const prisma = new PrismaClient();
-
-// Helper function untuk generate random XP
-function getRandomXP(min: number, max: number): number {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-// Helper function untuk calculate level dari XP
-function calculateLevel(xp: number): number {
-  // Formula: Level = floor(XP / 100) + 1
-  // Setiap 100 XP = 1 level
-  return Math.floor(xp / 100) + 1;
-}
-
-// Data Member dengan XP random (dari tinggi ke rendah)
-const MemberUsersData = [
-  {
-    username: "ahmad_rizki",
-    email: "ahmad.rizki@example.com",
-    password: "password123",
-    nis: "2024001",
-    foto_profil: "/users/ahmad.jpg",
-    bio: "Suka belajar sejarah dan budaya Indonesia",
-    tanggal_lahir: new Date("2008-03-15"),
-    jenis_kelamin: "L" as const,
-    minat: "Sejarah, Budaya, Seni",
-    xp: getRandomXP(2000, 3000), // XP Tinggi
-  },
-  {
-    username: "siti_nurhaliza",
-    email: "siti.nur@example.com",
-    password: "password123",
-    nis: "2024002",
-    foto_profil: "/users/siti.jpg",
-    bio: "Pencinta cerita rakyat Nusantara",
-    tanggal_lahir: new Date("2008-07-20"),
-    jenis_kelamin: "P" as const,
-    minat: "Sastra, Cerita Rakyat, Musik",
-    xp: getRandomXP(1500, 2000),
-  },
-  {
-    username: "budi_santoso",
-    email: "budi.santoso@example.com",
-    password: "password123",
-    nis: "2024003",
-    foto_profil: "/users/budi.jpg",
-    bio: "Gemar bermain kuis dan puzzle",
-    tanggal_lahir: new Date("2008-11-05"),
-    jenis_kelamin: "L" as const,
-    minat: "Game Edukatif, Logika, Matematika",
-    xp: getRandomXP(1200, 1500),
-  },
-  {
-    username: "dewi_kartika",
-    email: "dewi.kartika@example.com",
-    password: "password123",
-    nis: "2024004",
-    foto_profil: "/users/dewi.jpg",
-    bio: "Aktif dalam kompetisi sejarah",
-    tanggal_lahir: new Date("2008-05-12"),
-    jenis_kelamin: "P" as const,
-    minat: "Sejarah, Geografi, Seni Rupa",
-    xp: getRandomXP(1000, 1200),
-  },
-  {
-    username: "eko_prasetyo",
-    email: "eko.prasetyo@example.com",
-    password: "password123",
-    nis: "2024005",
-    foto_profil: "/users/eko.jpg",
-    bio: "Senang mempelajari candi-candi kuno",
-    tanggal_lahir: new Date("2008-09-18"),
-    jenis_kelamin: "L" as const,
-    minat: "Arkeologi, Sejarah, Fotografi",
-    xp: getRandomXP(800, 1000),
-  },
-  {
-    username: "fitri_amanda",
-    email: "fitri.amanda@example.com",
-    password: "password123",
-    nis: "2024006",
-    foto_profil: "/users/fitri.jpg",
-    bio: "Hobi membaca buku sejarah",
-    tanggal_lahir: new Date("2008-02-28"),
-    jenis_kelamin: "P" as const,
-    minat: "Literasi, Sejarah, Menulis",
-    xp: getRandomXP(600, 800),
-  },
-  {
-    username: "gilang_ramadhan",
-    email: "gilang.rama@example.com",
-    password: "password123",
-    nis: "2024007",
-    foto_profil: "/users/gilang.jpg",
-    bio: "Pemain game edukatif berbakat",
-    tanggal_lahir: new Date("2008-06-10"),
-    jenis_kelamin: "L" as const,
-    minat: "Gaming, Teknologi, Sejarah",
-    xp: getRandomXP(500, 600),
-  },
-  {
-    username: "hani_safira",
-    email: "hani.safira@example.com",
-    password: "password123",
-    nis: "2024008",
-    foto_profil: "/users/hani.jpg",
-    bio: "Suka berkunjung ke museum",
-    tanggal_lahir: new Date("2008-12-03"),
-    jenis_kelamin: "P" as const,
-    minat: "Museum, Seni, Traveling",
-    xp: getRandomXP(400, 500),
-  },
-  {
-    username: "irfan_hakim",
-    email: "irfan.hakim@example.com",
-    password: "password123",
-    nis: "2024009",
-    foto_profil: "/users/irfan.jpg",
-    bio: "Anggota baru yang antusias belajar",
-    tanggal_lahir: new Date("2008-04-22"),
-    jenis_kelamin: "L" as const,
-    minat: "Sejarah, Olahraga, Musik",
-    xp: getRandomXP(200, 400),
-  },
-  {
-    username: "julia_permata",
-    email: "julia.permata@example.com",
-    password: "password123",
-    nis: "2024010",
-    foto_profil: "/users/julia.jpg",
-    bio: "Baru mulai belajar tentang budaya lokal",
-    tanggal_lahir: new Date("2008-08-15"),
-    jenis_kelamin: "P" as const,
-    minat: "Budaya, Tari, Fashion",
-    xp: getRandomXP(100, 200),
-  },
-];
 
   const puzzles = Array.from({ length: 16 }).map((_, i) => ({
     judul: `Motif ${i + 1}`,
@@ -153,6 +18,452 @@ const MemberUsersData = [
     xp_reward: 80,
     is_published: true,
   }));
+
+    const scenes2: SceneData[] = [
+    {
+      scene_key: "start",
+      scene_text:
+        "Joko kembali ke desa setelah lama merantau. Malam itu, ibu menunggu di serambi. Kala hujan turun, ibu memintanya menunaikan sebuah janji lama: bertapa di puncak bukit untuk memohon keselamatan keluarga.",
+      scene_choices: [
+        { text: "Taat: Pergi bertapa sesuai permintaan ibu", next: "taat_bertemu_pendeta" },
+        { text: "Berbicara: Tanyakan alasan ibu", next: "tanya_alasan" },
+        { text: "Tolak: Menolak karena sudah lelah merantau", next: "tolak_dengan_surat" },
+      ],
+      is_ending: false,
+      urutan: 1,
+    },
+
+    {
+      scene_key: "tanya_alasan",
+      scene_text:
+        "Joko duduk di hadapan ibu. Ibu bercerita tentang ketakutan lama—sebuah rahasia keluarga yang belum sempat diungkap sejak ayah meninggal.",
+      scene_choices: [
+        { text: "Mendengarkan lagi", next: "rahasia_ibu" },
+        { text: "Tetap pergi bertapa", next: "taat_bertemu_pendeta" },
+      ],
+      is_ending: false,
+      urutan: 2,
+    },
+
+    {
+      scene_key: "rahasia_ibu",
+      scene_text:
+        "Ibu berkata: 'Ada janji yang tak boleh diingkari. Jika tanah ini tak ditaati, nasib keluarga bisa berubah buruk.' Kata-kata itu mengguncang Joko.",
+      scene_choices: [
+        { text: "Percaya dan menuruti", next: "taat_bertemu_pendeta" },
+        { text: "Curiga, minta bukti", next: "minta_bukti" },
+      ],
+      is_ending: false,
+      urutan: 3,
+    },
+
+    {
+      scene_key: "minta_bukti",
+      scene_text:
+        "Ibu membuka sebuah peti kecil dan menunjukan sebentuk surat tua. Surat itu memuat permintaan leluhur: seorang anak sulung harus mengorbankan sesuatu setiap tujuh tahun.",
+      scene_choices: [
+        { text: "Ambil surat dan baca teliti", next: "baca_surat" },
+        { text: "Tolak tradisi", next: "tolak_dengan_surat" },
+      ],
+      is_ending: false,
+      urutan: 4,
+    },
+
+    {
+      scene_key: "baca_surat",
+      scene_text:
+        "Isi surat menyiratkan korban bukan harus nyawa, melainkan pengorbanan simbolis. Namun banyak yang salah tafsir di generasi sebelumnya.",
+      scene_choices: [
+        { text: "Coba klarifikasi ritual", next: "klarifikasi_ritual" },
+        { text: "Tetap menurut karena takut", next: "taat_bertemu_pendeta" },
+      ],
+      is_ending: false,
+      urutan: 5,
+    },
+
+    {
+      scene_key: "klarifikasi_ritual",
+      scene_text:
+        "Joko memutuskan menemui tokoh adat dan pendeta desa untuk mengklarifikasi maksud ritual. Mereka menerima menjelaskan namun memberi peringatan: 'Pilihanmu akan diuji.'",
+      scene_choices: [
+        { text: "Ikuti versi yang lebih ringan", next: "ritual_ringan" },
+        { text: "Tolak ritual sepenuhnya", next: "konflik_dengan_ibu" },
+      ],
+      is_ending: false,
+      urutan: 6,
+    },
+
+    {
+      scene_key: "taat_bertemu_pendeta",
+      scene_text:
+        "Joko berangkat ke puncak bukit saat fajar. Di sana ia bertemu seorang pendeta tua yang menatapnya tajam.",
+      scene_choices: [
+        { text: "Ikuti arahan pendeta", next: "ritual_penuh" },
+        { text: "Tanyakan tujuan ritual", next: "tanya_pendeta" },
+      ],
+      is_ending: false,
+      urutan: 7,
+    },
+
+    {
+      scene_key: "tanya_pendeta",
+      scene_text:
+        "Pendeta berkata: 'Ritual ini bukan menghukum tetapi menyeimbangkan. Tapi keseimbangan itu butuh pengorbanan yang sungguh-sungguh.'",
+      scene_choices: [
+        { text: "Terima penjelasan dan lanjut", next: "ritual_penuh" },
+        { text: "Menolak di tengah ritual", next: "tinggalkan_ritual" },
+      ],
+      is_ending: false,
+      urutan: 8,
+    },
+
+    {
+      scene_key: "ritual_penuh",
+      scene_text:
+        "Ritual dimulai. Angin menguat, suara-suara lama bergema. Saat ritual mencapai puncak, pendeta meminta Joko memilih satu simbol pengorbanan.",
+      scene_choices: [
+        { text: "Serahkan cincin kenangan ayah", next: "serah_cincin" },
+        { text: "Serahkan peta harta keluargamu", next: "serah_peta" },
+        { text: "Tolak menyerahkan apapun", next: "tolak_di_ritual" },
+      ],
+      is_ending: false,
+      urutan: 9,
+    },
+
+    {
+      scene_key: "serah_cincin",
+      scene_text:
+        "Joko melepaskan cincin ayahnya ke dalam api ritual. Ia merasakan beban turun—namun ada rasa kehilangan mendalam.",
+      scene_choices: [
+        { text: "Kembali ke rumah memberi tahu ibu", next: "kembali_bahagia" },
+        { text: "Tinggal lebih lama merenung di bukit", next: "renung_sendiri" },
+      ],
+      is_ending: false,
+      urutan: 10,
+    },
+
+    {
+      scene_key: "serah_peta",
+      scene_text:
+        "Peta tua dilemparkan ke api. Peta itu adalah harapan untuk masa depan yang berbeda. Seketika Joko merasa langkahnya kehilangan arah.",
+      scene_choices: [
+        { text: "Kembali tanpa berkata apa-apa", next: "kembali_diam" },
+        { text: "Beritahu ibu tentang pengorbanan", next: "kembali_bahagia" },
+      ],
+      is_ending: false,
+      urutan: 11,
+    },
+
+    {
+      scene_key: "tolak_di_ritual",
+      scene_text:
+        "Joko menolak menyerahkan apa pun. Pendeta menatap kecewa. Di jalan pulang, rumor menyebar: 'Anak yang menolak membawa malapetaka.'",
+      scene_choices: [
+        { text: "Hadapi rumor bersama ibu", next: "hadapi_rumor" },
+        { text: "Pergi merantau lagi", next: "merantau_lagi" },
+      ],
+      is_ending: false,
+      urutan: 12,
+    },
+
+    {
+      scene_key: "renung_sendiri",
+      scene_text:
+        "Di puncak bukit Joko menemukan sebuah goa kecil. Di dalamnya ada ukiran yang mengisahkan kisah cinta seorang ibu dan anak leluhur—ada yang hilang dari cerita itu.",
+      scene_choices: [
+        { text: "Telusuri ukiran lebih jauh", next: "temukan_catatan" },
+        { text: "Kembali dan berdamai dengan ibu", next: "kembali_bahagia" },
+      ],
+      is_ending: false,
+      urutan: 13,
+    },
+
+    {
+      scene_key: "temukan_catatan",
+      scene_text:
+        "Di balik ukiran, Joko menemukan catatan kecil: 'Jika anak menolak tetapi mencari kebenaran, rahasia akan terbuka.'",
+      scene_choices: [
+        { text: "Bawa pulang catatan itu", next: "bawa_catatan" },
+        { text: "Simpan diam-diam di bukit", next: "simpan_di_bukit" },
+      ],
+      is_ending: false,
+      urutan: 14,
+    },
+
+    {
+      scene_key: "bawa_catatan",
+      scene_text:
+        "Kembali ke desa, Joko membaca catatan bersama ibu. Ibu menangis—ternyata leluhur pernah dipaksa memilih antara keluarga dan amanah desa.",
+      scene_choices: [
+        { text: "Berterima kasih pada ibu & berdamai", next: "forgive_and_heal" },
+        { text: "Ungkap penyimpangan adat ke tokoh desa", next: "ungkap_ke_tokoh" },
+      ],
+      is_ending: false,
+      urutan: 15,
+    },
+
+    {
+      scene_key: "simpan_di_bukit",
+      scene_text:
+        "Joko menyimpan catatan sebagai jembatan antara kebenaran dan tradisi. Ia ragu ingin menggunakannya.",
+      scene_choices: [
+        { text: "Kembali dan pura-pura setuju", next: "kembali_bahagia" },
+        { text: "Kunjungi tokoh adat malam-malam", next: "kunjungi_adat_malam" },
+      ],
+      is_ending: false,
+      urutan: 16,
+    },
+
+    {
+      scene_key: "kembali_bahagia",
+      scene_text:
+        "Joko pulang, mengabarkan ritual selesai. Ibu lega. Seluruh desa mengucap syukur. Perasaan hangat melingkupi rumah.",
+      scene_choices: [
+        { text: "Buka usaha kecil bareng ibu", next: "usaha_bersama" },
+        { text: "Kembali merantau mencari peluang", next: "merantau_lagi" },
+      ],
+      is_ending: false,
+      urutan: 17,
+    },
+
+    {
+      scene_key: "kembali_diam",
+      scene_text:
+        "Joko pulang tanpa menjelaskan. Ibu merasa ada yang disembunyikan. Ketegangan halus mulai tumbuh.",
+      scene_choices: [
+        { text: "Akhiri ketegangan dengan bicara dari hati", next: "forgive_and_heal" },
+        { text: "Biarkan waktu yang menyelesaikan", next: "jarak_semakin_jauh" },
+      ],
+      is_ending: false,
+      urutan: 18,
+    },
+
+    {
+      scene_key: "forgive_and_heal",
+      scene_text:
+        "Mereka berbicara lama, mengenang masa kecil. Ibu meminta maaf atas tekanan masa lalu. Joko memeluk ibu. Ada harapan baru.",
+      scene_choices: [
+        { text: "Bangun rumah kecil bersama ibu", next: "good_ending_home" },
+        { text: "Jual lahan untuk masa depan", next: "good_ending_move" },
+      ],
+      is_ending: false,
+      urutan: 19,
+    },
+
+    {
+      scene_key: "good_ending_home",
+      scene_text:
+        "Joko dan ibu hidup sederhana tapi penuh kasih. Desa menerima perubahan kecil yang Joko bawa. Keluarga kembali utuh.",
+      scene_choices: [],
+      is_ending: true,
+      ending_point: 100,
+      ending_type: "good",
+      urutan: 20,
+    },
+
+    {
+      scene_key: "good_ending_move",
+      scene_text:
+        "Dengan lahan yang dijual, Joko membiayai pendidikan adik-adiknya. Ibu bangga. Joko merasa telah memenuhi tanggung jawabnya dengan cara modern.",
+      scene_choices: [],
+      is_ending: true,
+      ending_point: 95,
+      ending_type: "good",
+      urutan: 21,
+    },
+
+    {
+      scene_key: "hadapi_rumor",
+      scene_text:
+        "Rumor memicu konflik. Beberapa tetangga menjauh. Ibu sakit karena stres. Joko menyesal menolak ritual.",
+      scene_choices: [
+        { text: "Cari pengobatan tradisional untuk ibu", next: "obat_tradisional" },
+        { text: "Bawa ibu ke rumah sakit di kota", next: "rumah_sakit_kota" },
+      ],
+      is_ending: false,
+      urutan: 22,
+    },
+
+    {
+      scene_key: "obat_tradisional",
+      scene_text:
+        "Pengobatan tradisional menstabilkan kondisi ibu, tapi biaya ritual penenang tradisi tetap menimbulkan tuntutan masyarakat.",
+      scene_choices: [
+        { text: "Korbankan harta untuk menenangkan desa", next: "korbankan_harta" },
+        { text: "Ungkap kebenaran surat leluhur ke desa", next: "ungkap_ke_tengah_desa" },
+      ],
+      is_ending: false,
+      urutan: 23,
+    },
+
+    {
+      scene_key: "rumah_sakit_kota",
+      scene_text:
+        "Di rumah sakit, dokter menyatakan bahwa kondisi ibu bukan supranatural. Joko mulai meragukan semua adat yang menekan keluarga.",
+      scene_choices: [
+        { text: "Tinggalkan desa demi kebaikan ibu", next: "good_ending_move" },
+        { text: "Kembalikan bukti ke pendeta dan tuntut penjelasan", next: "konfrontasi_pendeta" },
+      ],
+      is_ending: false,
+      urutan: 24,
+    },
+
+    {
+      scene_key: "korbankan_harta",
+      scene_text:
+        "Joko menjual sebagian harta untuk menenangkan desanya—namun korban materi itu tidak menyembuhkan luka batin.",
+      scene_choices: [
+        { text: "Ibu sembuh, tapi hubungan renggang", next: "jarak_semakin_jauh" },
+        { text: "Masih resah, cari jawaban", next: "kunjungi_adat_malam" },
+      ],
+      is_ending: false,
+      urutan: 25,
+    },
+
+    {
+      scene_key: "jarak_semakin_jauh",
+      scene_text:
+        "Waktu berlalu. Joko sibuk mencari nafkah, ibu sering termenung. Rasa bersalah menebal. Suatu hari ibu pergi tanpa pesan.",
+      scene_choices: [
+        { text: "Cari ibu ke mana-mana", next: "cari_ibu" },
+        { text: "Terima dan lanjutkan hidup", next: "merantau_lagi" },
+      ],
+      is_ending: false,
+      urutan: 26,
+    },
+
+    {
+      scene_key: "cari_ibu",
+      scene_text:
+        "Joko menemui jejak: ibu pergi ke puncak bukit tempat ritual dulu. Di sana ia menemukan ibu duduk memandangi matahari terbenam.",
+      scene_choices: [
+        { text: "Mendekat dan bicara kecil", next: "last_confession" },
+        { text: "Diam mengamati dari jauh", next: "diam_dan_menyesal" },
+      ],
+      is_ending: false,
+      urutan: 27,
+    },
+
+    {
+      scene_key: "last_confession",
+      scene_text:
+        "Ibu mengakui bahwa takut kehilangan keluarga membuatnya menekan Joko. Ia menitipkan sebuah rahasia: ada surat tersembunyi yang mengubah tafsir ritual.",
+      scene_choices: [
+        { text: "Minta tunjukkan surat itu", next: "temukan_surat_tersembunyi" },
+        { text: "Peluk ibu dan pulang bersama", next: "good_ending_home" },
+      ],
+      is_ending: false,
+      urutan: 28,
+    },
+
+    {
+      scene_key: "temukan_surat_tersembunyi",
+      scene_text:
+        "Surat tersembunyi itu menyatakan bahwa leluhur menulis dua versi ritual: satu untuk mengekang keserakahan, satu untuk melindungi keluarga. Banyak generasi salah pilih.",
+      scene_choices: [
+        { text: "Buka ke publik: ungkap kebenaran", next: "ungkap_ke_tengah_desa" },
+        { text: "Simpan agar ibu tetap tenang", next: "hidden_ending_return" },
+      ],
+      is_ending: false,
+      urutan: 29,
+    },
+
+    // Hidden ending branch
+    {
+      scene_key: "hidden_ending_return",
+      scene_text:
+        "Joko memilih menyimpan surat agar ibu tetap tenang. Mereka hidup sisa hari dalam damai sederhana, rahasia tetap seperti rahasia. Hidup tenang tapi ada beban tak terucap.",
+      scene_choices: [],
+      is_ending: true,
+      ending_point: 60,
+      ending_type: "hidden",
+      urutan: 30,
+    },
+
+    // Confrontation & social reveal branch
+    {
+      scene_key: "ungkap_ke_tengah_desa",
+      scene_text:
+        "Joko membuka kebenaran di hadapan warga. Reaksi beragam: beberapa marah, beberapa lega. Perdebatan memanas hingga tokoh adat turun tangan.",
+      scene_choices: [
+        { text: "Tokoh adat mendamaikan dan ritual direvisi", next: "good_ending_move" },
+        { text: "Tokoh adat menuduh Joko mengacaukan adat", next: "konflik_besar" },
+      ],
+      is_ending: false,
+      urutan: 31,
+    },
+
+    {
+      scene_key: "konflik_besar",
+      scene_text:
+        "Konflik memuncak. Sebagian warga menuntut agar keluarga Joko dihukum. Malam itu rumah mereka diserang—ibu terluka parah.",
+      scene_choices: [
+        { text: "Selamatkan ibu tapi kalah dalam kerusuhan", next: "bad_ending_stone" },
+        { text: "Korbankan diri untuk tenangkan warga", next: "secret_true_ending" },
+      ],
+      is_ending: false,
+      urutan: 32,
+    },
+
+    {
+      scene_key: "bad_ending_stone",
+      scene_text:
+        "Ibu meninggal akibat luka. Desa membekukan kisah itu sebagai peringatan—nama Joko menjadi beban. Kehilangan dan rasa bersalah tak terobati.",
+      scene_choices: [],
+      is_ending: true,
+      ending_point: 0,
+      ending_type: "bad",
+      urutan: 33,
+    },
+
+    // Secret true ending
+    {
+      scene_key: "secret_true_ending",
+      scene_text:
+        "Untuk menenangkan warga, Joko memilih upacara pengorbanan simbolis yang mewakili dirinya—ia rela 'membekukan' dirinya secara simbolis agar desa menerima perubahan. Setelah upacara, muncul dokumen leluhur lain yang mengakui kelalaian generasi lama. Kebenaran terbuka, namun Joko memilih menghilang demi menutup luka.",
+      scene_choices: [],
+      is_ending: true,
+      ending_point: 120,
+      ending_type: "secret_true",
+      urutan: 34,
+    },
+
+    // Merantau branch
+    {
+      scene_key: "merantau_lagi",
+      scene_text:
+        "Joko pergi lagi, meninggalkan desa. Di kota ia membangun hidup, namun rindu ibu tak pernah padam. Kadang ia bertanya apakah ia memilih benar.",
+      scene_choices: [
+        { text: "Kirim kabar dan kembali", next: "kirim_kabar_kembali" },
+        { text: "Pilih hidup baru dan lupakan", next: "bad_lonely_ending" },
+      ],
+      is_ending: false,
+      urutan: 35,
+    },
+
+    {
+      scene_key: "kirim_kabar_kembali",
+      scene_text:
+        "Ia mengirim kabar, ibu membalas dengan doa. Suatu hari ia pulang, disambut sunyi tapi hangat. Mereka punya kesempatan memperbaiki.",
+      scene_choices: [
+        { text: "Berdamai dan rawat ibu sampai tua", next: "good_ending_home" },
+        { text: "Temukan surat lama di loteng yang mengguncang lagi", next: "temukan_surat_tersembunyi" },
+      ],
+      is_ending: false,
+      urutan: 36,
+    },
+
+    {
+      scene_key: "bad_lonely_ending",
+      scene_text:
+        "Joko sukses materi namun hatinya sepi. Di malam yang sunyi ia menyesal dan sadar bahwa beberapa keputusan tak bisa kembali. Ending hidup yang damai secara materi, hampa secara jiwa.",
+      scene_choices: [],
+      is_ending: true,
+      ending_point: 20,
+      ending_type: "bad",
+      urutan: 37,
+    },
+  ]
 
 const KategoriKuisData = [
   {
@@ -250,6 +561,227 @@ const userData: Prisma.UserCreateInput[] = [
     is_active: true,
   },
 ];
+const scenes: SceneData[] = [
+    {
+      scene_key: "start",
+      scene_text:
+        "Kamu sampai di desa kecil tempat Sanggar Waru berada. Malam ini ada festival ringan, tapi cerita lama tentang pohon Waru tetap menghantui warganya. Di gerbang desa, seorang nenek menyapamu: 'Kalau mau tahu, dengarkan hatimu.'",
+      scene_choices: [
+        { text: "Tanya nenek soal pohon Waru", next: "ask_grandma" },
+        { text: "Langsung menuju sanggar yang disebut orang-orang", next: "to_sanggar" },
+      ],
+      is_ending: false,
+      scene_image: null,
+      urutan: 1,
+    },
+    {
+      scene_key: "ask_grandma",
+      scene_text:
+        "Nenek bercerita singkat: 'Putri dulu menjaga Waru. Ada yang hilang ketika malam penuh bulan. Kalau kamu ke sanggar, hati-hati.'",
+      scene_choices: [
+        { text: "Minta petunjuk arah", next: "to_sanggar" },
+        { text: "Tinggalkan desa, ini terlalu menyeramkan", next: "leave_village" },
+      ],
+      is_ending: false,
+      scene_image: null,
+      urutan: 2,
+    },
+    {
+      scene_key: "to_sanggar",
+      scene_text:
+        "Sanggar terletak di tepi ladang. Di sana ada pohon Waru besar yang daunnya seolah berbisik ketika angin lewat.",
+      scene_choices: [
+        { text: "Periksa kaki pohon", next: "check_root" },
+        { text: "Masuk ke dalam sanggar (gedung)", next: "enter_sanggar" },
+        { text: "Duduk dan coba ngobrol dengan pohon (aneh, tapi nyoba)", next: "talk_tree" },
+      ],
+      is_ending: false,
+      scene_image: null,
+      urutan: 3,
+    },
+    {
+      scene_key: "check_root",
+      scene_text:
+        "Di bawah akar kamu menemukan sebuah kain batik lusuh dan sebuah kotak kecil. Kotak itu berisi surat setengah robek: 'Maafkan aku...' Tanda-tanda pergolakan lama.",
+      scene_choices: [
+        { text: "Bawa kotak untuk dibaca lebih lanjut", next: "read_box" },
+        { text: "Tinggalkan kotak—takut ada kutukan", next: "ignore_box" },
+      ],
+      is_ending: false,
+      scene_image: null,
+      urutan: 4,
+    },
+    {
+      scene_key: "enter_sanggar",
+      scene_text:
+        "Di dalam sanggar ada lukisan-lukisan tua dan alat musik yang jarang dipakai. Seorang pemuda penjaga sanggar menatapmu curiga.",
+      scene_choices: [
+        { text: "Bicara baik-baik dengan pemuda", next: "talk_guard" },
+        { text: "Cari ruang belakang sendiri", next: "back_room" },
+      ],
+      is_ending: false,
+      scene_image: null,
+      urutan: 5,
+    },
+    {
+      scene_key: "talk_tree",
+      scene_text:
+        "Kamu mengeluarkan kata-kata sederhana. Angin berhenti sejenak. Ada bisikan halus: 'Berikan yang hilang.'",
+      scene_choices: [
+        { text: "Coba tafsir 'yang hilang' sebagai benda", next: "check_root" },
+        { text: "Anggap itu ucapan kosong dan pergi", next: "ignore_tree" },
+      ],
+      is_ending: false,
+      scene_image: null,
+      urutan: 6,
+    },
+    {
+      scene_key: "read_box",
+      scene_text:
+        "Surat itu menceritakan penyesalan putri yang menghilang setelah konflik dengan warga. Di akhir surat ada petunjuk: 'Di balik panggung ada pintu kecil.'",
+      scene_choices: [
+        { text: "Pergi ke sanggar untuk cek panggung", next: "back_room" },
+        { text: "Bawa surat ke pemuda penjaga", next: "talk_guard" },
+      ],
+      is_ending: false,
+      scene_image: null,
+      urutan: 7,
+    },
+    {
+      scene_key: "ignore_box",
+      scene_text:
+        "Kamu meninggalkan kotak. Semalam, bisik-bisik bertambah kuat. Suasana membuatmu gelisah.",
+      scene_choices: [
+        { text: "Kembali mencari kotak", next: "check_root" },
+        { text: "Tinggalkan desa (ending netral)", next: "ending_neutral" },
+      ],
+      is_ending: false,
+      scene_image: null,
+      urutan: 8,
+    },
+    {
+      scene_key: "talk_guard",
+      scene_text:
+        "Pemuda itu awalnya tertutup, tapi setelah kamu jujur dia menunjukkan pintu kecil di belakang panggung.",
+      scene_choices: [
+        { text: "Masuk ke pintu kecil", next: "secret_passage" },
+        { text: "Minta lebih banyak cerita tentang putri", next: "guard_story" },
+      ],
+      is_ending: false,
+      scene_image: null,
+      urutan: 9,
+    },
+    {
+      scene_key: "back_room",
+      scene_text:
+        "Ruang belakang panggung sempit dan berdebu. Ada tangga turun menuju lorong gelap—seperti ruang rahasia.",
+      scene_choices: [
+        { text: "Turun ke lorong", next: "secret_passage" },
+        { text: "Kembali ke pohon Waru", next: "to_sanggar" },
+      ],
+      is_ending: false,
+      scene_image: null,
+      urutan: 10,
+    },
+    {
+      scene_key: "secret_passage",
+      scene_text:
+        "Lorong berakhir di sebuah ruangan kecil dengan sebuah patung kayu kecil bergaya putri. Ada aura berbeda: sejuk dan pilu.",
+      scene_choices: [
+        { text: "Sentuh patung dengan penuh hormat", next: "good_ending" },
+        { text: "Ratakan patung dengan niat membuktikan takhayul (brutal)", next: "bad_ending" },
+        { text: "Ambil patung dan bawa keluar tanpa memikirkannya", next: "neutral_ending" },
+        { text: "Coba menempatkan kotak dari akar pada kaki patung (rahasia)", next: "secret_ending" },
+      ],
+      is_ending: false,
+      scene_image: null,
+      urutan: 11,
+    },
+
+    // ENDINGS
+    {
+      scene_key: "good_ending",
+      scene_text:
+        "Kamu menyentuh patung dengan hormat. Angin lembut berputar, dan cahaya kecil muncul. Suara putri terasa lega. Desa merasa damai kembali. Kamu mendapatkan pengakuan dari warga dan cerita dituturkan dengan hangat.",
+      scene_choices: [],
+      is_ending: true,
+      ending_point: 100,
+      ending_type: "baik",
+      scene_image: null,
+      urutan: 100,
+    },
+    {
+      scene_key: "bad_ending",
+      scene_text:
+        "Kemarahanmu membangkitkan sesuatu yang lama terkurung. Suasana berubah tegang, pohon Waru menggugurkan daun seperti hujan tajam. Kamu tak sempat melarikan diri. Desa menyimpan trauma baru.",
+      scene_choices: [],
+      is_ending: true,
+      ending_point: 0,
+      ending_type: "buruk",
+      scene_image: null,
+      urutan: 101,
+    },
+    {
+      scene_key: "neutral_ending",
+      scene_text:
+        "Kamu membawa patung keluar; orang-orang melihat tapi tak terjadi apa-apa istimewa. Legenda tetaplah legenda—sebagai cerita di warung kopi. Kamu pergi dengan rasa penasaran yang tak sepenuhnya terjawab.",
+      scene_choices: [],
+      is_ending: true,
+      ending_point: 50,
+      ending_type: "netral",
+      scene_image: null,
+      urutan: 102,
+    },
+    {
+      scene_key: "secret_ending",
+      scene_text:
+        "Saat kotak dipasang di kaki patung, patung itu seketika menangis embun. Sebuah pintu kecil terbuka, menampakkan relief lama yang menceritakan bahwa putri memilih mengorbankan dirinya untuk menjaga desa. Kamu menemukan catatan rahasia yang memberi nama baru untuk sanggar — dan satu lagu yang tak boleh dilupakan.",
+      scene_choices: [],
+      is_ending: true,
+      ending_point: 999,
+      ending_type: "rahasia",
+      scene_image: null,
+      urutan: 103,
+    },
+
+    // Leave village (direct neutral-ish)
+    {
+      scene_key: "leave_village",
+      scene_text:
+        "Rasa takut mengalahkan rasa ingin tahu. Kamu meninggalkan desa, tetapi kadang malam kembali menghadirkan mimpi tentang Waru.",
+      scene_choices: [],
+      is_ending: true,
+      ending_point: 40,
+      ending_type: "netral",
+      scene_image: null,
+      urutan: 104,
+    },
+
+    {
+      scene_key: "ignore_tree",
+      scene_text:
+        "Kamu pergi dari pohon, tapi rasa bersalah terselip—seolah hal kecil yang kamu abaikan sebenarnya penting. Desa tetap hidup, namun hatimu selalu bertanya-tanya.",
+      scene_choices: [],
+      is_ending: true,
+      ending_point: 30,
+      ending_type: "netral",
+      scene_image: null,
+      urutan: 105,
+    },
+
+    {
+      scene_key: "guard_story",
+      scene_text:
+        "Pemuda itu bercerita lebih banyak: konflik lama, cinta yang tak berbalas, dan lagu-lagu yang pernah mengisi sanggar. Dia memperingatkan satu hal: 'Jangan mengambil sembarang barang.'",
+      scene_choices: [
+        { text: "Tetap masuk ke pintu kecil", next: "secret_passage" },
+        { text: "Hormati nasihat dan pergi (netral)", next: "leave_village" },
+      ],
+      is_ending: false,
+      scene_image: null,
+      urutan: 106,
+    },
+  ];
 
 // Data Sekolah untuk Tulungagung
 const SekolahData: Prisma.SekolahCreateInput[] = [
@@ -1055,6 +1587,76 @@ export async function main() {
     await prisma.puzzle.createMany({
       data: puzzles,
     });
+
+    await prisma.kategoriCerita.create({
+      data:{
+        NamaKategori:"Budaya",
+      }
+    })
+
+  const cerita = await prisma.ceritaInteraktif.create({
+        data: {
+          judul: "Sanggar Waru: Jejak Putri dan Pohon Waru",
+          thumbnail: "https://example.com/thumbnail_sanggar_waru.jpg",
+          deskripsi:
+            "Versi modern dari legenda Sanggar Waru. Kamu bermain sebagai remaja yang kembali ke desa untuk menyelidiki cerita lama tentang pohon Waru yang dianggap keramat.",
+          kategori: 1,
+          xp_reward: 150,
+          created_by: null,
+          created_at: new Date(),
+          is_published: true,
+        },
+  });
+
+  const cerita2 = await prisma.ceritaInteraktif.create({
+    data: {
+      judul: "Anak dan Ibu: Pilihan yang Tersisa",
+      thumbnail: "https://example.com/thumbnail-anak-ibu.jpg",
+      deskripsi:
+        "Sebuah drama emosional tentang Joko yang dihadapkan pada pilihan: taat pada tradisi, patuh pada ibu, atau mengikuti kata hatinya. Pilihan kecil menimbulkan konsekuensi besar.",
+      kategori: 1,
+      xp_reward: 300,
+      created_by: 1,
+      is_published: true,
+    },
+  })
+
+  for (const s of scenes) {
+    await prisma.scene.create({
+      data: {
+        cerita_id: cerita.cerita_id,
+        scene_key: s.scene_key,
+        scene_image: s.scene_image ?? null,
+        scene_text: s.scene_text,
+        scene_choices: s.scene_choices as any,
+        is_ending: s.is_ending,
+        ending_point: s.ending_point ?? 0,
+        ending_type: s.ending_type ?? null,
+        urutan: s.urutan ?? null,
+      },
+    });
+    console.log(`Inserted scene ${s.scene_key}`);
+  }
+
+    for (const scene of scenes2) {
+    await prisma.scene.create({
+      data: {
+        cerita_id: cerita2.cerita_id,
+        scene_key: scene.scene_key,
+        scene_text: scene.scene_text,
+        scene_choices: scene.scene_choices as any,
+        is_ending: scene.is_ending,
+        ending_point: scene.ending_point ?? 0,
+        ending_type: scene.ending_type ?? null,
+        scene_image: scene.scene_image ?? null,
+        urutan: scene.urutan ?? null,
+      },
+    })
+  }
+
+  console.log(`Seeder selesai: cerita_id = ${cerita2.cerita_id} (${cerita2.judul})`)
+
+
 
   console.log('✅ Seed puzzle berhasil dimasukkan!');
 

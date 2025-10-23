@@ -15,7 +15,8 @@ export interface SceneData {
   is_ending: boolean
   ending_point?: number
   ending_type?: string
-  scene_image?: string
+  scene_image?: string | null
+  urutan? : number | null
 }
 
 export async function saveScenesToDatabase(scenes: SceneData[], cerita_id: number) {

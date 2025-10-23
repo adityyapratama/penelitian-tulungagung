@@ -300,7 +300,7 @@ model Scene {
   scene_id      Int     @id @default(autoincrement()) @map("scene_id") // serial maps to Int @id @default(autoincrement())
   cerita_id     Int?
   scene_key     String  @db.VarChar(50)
-  scene_image         String? @db.VarChar(200)
+  scene_image   String? @db.VarChar(200)
   scene_text    String  @db.Text
   scene_choices Json?   @db.Json // jsonb maps to Json in Prisma
   is_ending     Boolean @default(false)
