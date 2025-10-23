@@ -25,7 +25,7 @@ CREATE TABLE `Session` (
 
 -- CreateTable
 CREATE TABLE `Guru` (
-    `guru_id` INTEGER NOT NULL,
+    `guru_id` INTEGER NOT NULL AUTO_INCREMENT,
     `user_id` INTEGER NULL,
     `sekolah_id` INTEGER NULL,
     `nip` VARCHAR(20) NULL,
@@ -64,7 +64,7 @@ CREATE TABLE `Member` (
     `sekolah_id` INTEGER NULL,
     `nis` VARCHAR(20) NULL,
     `total_xp` INTEGER NOT NULL DEFAULT 0,
-    `level` INTEGER NOT NULL DEFAULT 1,
+    `level` INTEGER NOT NULL DEFAULT 0,
     `foto_profil` VARCHAR(255) NULL,
     `bio` TEXT NULL,
     `tanggal_lahir` DATE NULL,
