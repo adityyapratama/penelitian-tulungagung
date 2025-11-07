@@ -7,7 +7,7 @@ import { LoginUpdate } from "@/app/(landing-page)/article/lib/actions"
 export default function GamesPage() {
   return (
     <>
-      <main className="min-h-screen bg-background">
+      <main className="min-h-screen bg-primary landing-page">
         <div className="p-6 pt-20 md:pt-24">
           <div className="mx-auto space-y-8 max-w-7xl">
             <div className="space-y-4 text-center">

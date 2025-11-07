@@ -7,17 +7,8 @@ import fs from "fs";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
 import { ProgressData } from "@/types/index";
-import { ContentType } from "@prisma/client";
-
-export type LeaderboardEntry = {
-  rank: number;
-  member_id: number;
-  username: string | null;
-  foto_profil: string | null;
-  skor: number;
-  duration: number;
-};
-
+import { ContentType } from "@/lib/generated/prisma";
+import { getMemberDetailsByIds } from "@/app/(member)/(protected)/games/lib/data";
 
 export async function GetMemberData() {
   const session = await auth();
@@ -234,54 +225,48 @@ export async function CreateProgress(_: unknown, data: ProgressData) {
   }
 
   try {
-    const completedAt = new Date();
-    const duration = data.startedAt instanceof Date
-      ? Math.max(0, Math.floor((completedAt.getTime() - data.startedAt.getTime()) / 1000))
-      : 0;
     const existingProgress = await prisma.progresMember.findFirst({
       where: {
         member_id: id,
         content_id: data.contentId,
-        content_type: data.contentType,
-      }
+      },
     });
 
-    if (!existingProgress) {
+    if (existingProgress) {
+      if (data.skor > existingProgress.skor!) {
+        const completedAt = new Date();
+        const duration = Math.floor(
+          (completedAt.getTime() - data.startedAt.getTime()) / 1000
+        );
+        await prisma.progresMember.update({
+          where: {
+            progres_id: existingProgress.progres_id,
+          },
+          data: {
+            skor: data.skor,
+            completed_at: completedAt,
+            group_id : data.group_id || null,
+            duration: duration,
+          },
+        });
+      }
+    } else {
+      const completedAt = new Date();
+      const duration = Math.floor(
+        (completedAt.getTime() - data.startedAt.getTime()) / 1000
+      );
       await prisma.progresMember.create({
         data: {
           member_id: id,
           content_id: data.contentId,
           content_type: data.contentType,
-          group_id: data.group_id || null,
+          group_id : data.group_id || null,
           skor: data.skor,
           completed_at: completedAt,
           duration: duration,
         },
       });
-    } else {
-      const currentBestScore = existingProgress.skor ?? -1;
-
-      if (data.skor > currentBestScore) {
-        await prisma.progresMember.update({
-          where: { progres_id: existingProgress.progres_id },
-          data: {
-            skor: data.skor,
-            completed_at: completedAt,
-            duration: duration,
-            group_id: data.group_id || null, 
-          },
-        });
-      } else {
-        if (data.group_id && existingProgress.group_id === null) {
-          await prisma.progresMember.update({
-            where: { progres_id: existingProgress.progres_id },
-            data: {
-              group_id: data.group_id,
-            },
-          });
-        }
-      }
-    } 
+    }
 
     const score = await GetExpMember(String(id));
     if (score !== null) {
@@ -307,146 +292,47 @@ export async function CreateProgress(_: unknown, data: ProgressData) {
   }
 }
 
-export async function GetLeaderboard() {
+export async function GetLeaderboard( ) {
   try {
-    const data = prisma.$queryRaw`SELECT 
-              u.username,
-              SUM(p.skor) AS skor,
-              m.last_active
-              FROM Member m
-              JOIN User u ON m.user_id = u.user_id
-              JOIN ProgresMember p ON p.member_id = m.member_id
-              GROUP BY u.username, m.last_active
-              ORDER BY skor DESC;
-            `;
+    const progressList = await prisma.progresMember.findMany({
+      select: {
+        member_id: true,
+        skor: true,
+        duration: true,
+      },
+      orderBy: {
+        skor: "desc",
+      },
+      take: 10,
+    });
 
-    return data;
+    if (progressList.length === 0) {
+      return [];
+    }
+
+    const memberIds = progressList
+      .map((score) => score.member_id)
+      .filter((id): id is number => id !== null);
+
+    const memberDetails = await getMemberDetailsByIds(memberIds);
+
+    const memberDetailsMap = new Map(
+      memberDetails.map((m) => [m.member_id, m])
+    );
+
+    const fullLeaderboardData = progressList.map((score) => ({
+      ...score,
+      Member: score.member_id
+        ? memberDetailsMap.get(score.member_id) || null
+        : null,
+    }));
+
+    return fullLeaderboardData;
   } catch (error) {
     console.error("Error fetching leaderboard:", error);
     return [];
   }
 }
-
-export async function GetLeaderboardByGame(
-  content_type: ContentType,
-  content_id: number,
-  take = 10
-): Promise<LeaderboardEntry[]> {
-  try {
-    const grouped = await prisma.progresMember.groupBy({
-      by: ["member_id"],
-      where: {
-        content_type,
-        content_id,
-      },
-      _max: {
-        skor: true,
-      },
-      orderBy: {
-        _max: {
-          skor: "desc",
-        },
-      },
-      take,
-    });
-
-    if (grouped.length === 0) return [];
-
-    const bestAttempts = await Promise.all(
-      grouped.map(async (g) => {
-
-        if (g.member_id == null || g._max.skor == null) return null;
-
-        const attempt = await prisma.progresMember.findFirst({
-          where: {
-            member_id: g.member_id,
-            content_type,
-            content_id,
-            skor: g._max.skor,
-          },
-          orderBy: {
-
-            duration: "asc",
-          },
-
-          select: {
-            progres_id: true,
-            member_id: true,
-            skor: true,
-            duration: true,
-          },
-        });
-
-        return (
-          attempt ?? {
-            progres_id: -1,
-            member_id: g.member_id,
-            skor: g._max.skor ?? 0,
-            duration: 0,
-          }
-        );
-      })
-    );
-
-    const attemptsFiltered = bestAttempts.filter(
-      (a): a is { progres_id: number; member_id: number; skor: number; duration: number } =>
-        a !== null && a.member_id !== null
-    );
-
-    const finalMemberIds = attemptsFiltered.map((a) => a.member_id);
-
-    const memberDetails = await prisma.member.findMany({
-      where: {
-        member_id: { in: finalMemberIds },
-      },
-      select: {
-        member_id: true,
-        foto_profil: true,
-        User: {
-          select: {
-            username: true,
-          },
-        },
-      },
-    });
-
-    const memberMap = new Map(
-      memberDetails.map((m) => [m.member_id, m])
-    );
-
-    const combined = attemptsFiltered.map((a) => {
-      const detail = memberMap.get(a.member_id) ?? null;
-      return {
-        member_id: a.member_id,
-        skor: a.skor ?? 0,
-        duration: a.duration ?? 0,
-        username: detail?.User?.username ?? null,
-        avatar: detail?.foto_profil ?? null,
-      };
-    });
-
-    combined.sort((x, y) => {
-      if (y.skor !== x.skor) return y.skor - x.skor;
-      return x.duration - y.duration;
-    });
-
-    const fullLeaderboard: LeaderboardEntry[] = combined.map((c, idx) => ({
-      rank: idx + 1,
-      member_id: c.member_id,
-      username: c.username,
-      foto_profil: c.avatar,
-      skor: c.skor,
-      duration: c.duration,
-    }));
-
-    return fullLeaderboard;
-  } catch (error) {
-    console.error("Error GetLeaderboardByGame:", error);
-    return [];
-  }
-}
-
-
 
 
 export async function GetQuizzes() {

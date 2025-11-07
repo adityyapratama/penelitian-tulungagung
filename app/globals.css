@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
 
 @custom-variant dark (&:is(.dark *));
 
@@ -10,7 +11,7 @@
   --card-foreground: #333;
   --popover: #ffffff;
   --popover-foreground: #333;
-  --primary: #2957a4; /* Gamification Blue */
+  --primary: #2894E4; /* Gamification Blue */
   --primary-foreground: #ffffff;
   --secondary: #ffcc29; /* Gamification Yellow */
   --secondary-foreground: #2957a4;
@@ -169,6 +170,11 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Landing page font utility: apply this to the landing page root to force Fredoka One */
+.landing-font {
+  font-family: 'Fredoka One', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
 }
 
 /* Added reusable component classes for gamification */

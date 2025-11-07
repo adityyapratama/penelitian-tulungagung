@@ -1,12 +1,13 @@
 "use client";
 import type { NextPage } from 'next';
 import { Button } from "@/components/ui/button";
-import { Search } from "lucide-react";
+import { Icon, Search } from "lucide-react";
 import Image from "next/image";
+import { ArticleCard } from '@/components/article-card';
 
 const HeroSection: NextPage = () => {
 	return (
-		<>
+		<div className="landing-font">
 		<section className="relative min-h-screen bg-background overflow-hidden">
 			{/* Background Decoration */}
 			<div className="absolute inset-0 bg-gradient-toNextPage-br from-primary/5 via-transparent to-secondary/5" />
@@ -105,51 +106,56 @@ const HeroSection: NextPage = () => {
 						{/* Item 1 */}
 						<div className="flex items-center gap-4">
 							<div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center">
-								<Image src="/asset/icon-kos.png" width={40} height={40} alt="" />
+								{/* <Image src="/public/ero/article.svg" width={40} height={40} alt="" /> */}
+								<span className="text-xl"> 📖</span>
+								
 							</div>
 							<div>
-								<div className="text-2xl md:text-3xl font-bold">0</div>
-								<div className="text-sm text-muted-foreground">Kos Available</div>
+								<div className="text-2xl md:text-3xl font-bold">100++</div>
+								<div className="text-sm text-muted-foreground">Jelajahi artikel sejarah</div>
 							</div>
 						</div>
 
 						{/* Item 2 */}
 						<div className="flex items-center gap-4">
 							<div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center">
-								<Image src="/asset/icon-happy.png" width={40} height={40} alt="" />
+								{/* <Image src="/asset/icon-happy.png" width={40} height={40} alt="" /> */}
+								<span className="text-xl">🌟</span>
 							</div>
 							<div>
-								<div className="text-2xl md:text-3xl font-bold">0/10</div>
-								<div className="text-sm text-muted-foreground">People Happy</div>
+								<div className="text-2xl md:text-3xl font-bold">EXP</div>
+								<div className="text-sm text-muted-foreground">kumpulkan EXP untuk setiap game</div>
 							</div>
 						</div>
 
 						{/* Item 3 */}
 						<div className="flex items-center gap-4">
 							<div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center">
-								<Image src="/asset/icon-security.png" width={40} height={40} alt="" />
+								{/* <Image src="/asset/icon-security.png" width={40} height={40} alt="" /> */}
+								<span className="text-xl">🎮</span> 
 							</div>
 							<div>
 								<div className="text-2xl md:text-3xl font-bold">100%</div>
-								<div className="text-sm text-muted-foreground">High Security</div>
+								<div className="text-sm text-muted-foreground">coba setiap game seru tentang sejarah</div>
 							</div>
 						</div>
 
 						{/* Item 4 */}
 						<div className="flex items-center gap-4">
 							<div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center">
-								<Image src="/asset/icon-country.png" width={40} height={40} alt="" />
+								{/* <Image src="/asset/icon-country.png" width={40} height={40} alt="" /> */}
+								<span className="text-xl">🏫</span> 
 							</div>
 							<div>
-								<div className="text-2xl md:text-3xl font-bold">0</div>
-								<div className="text-sm text-muted-foreground">Countries</div>
+								<div className="text-2xl md:text-3xl font-bold">lebih dari 40</div>
+								<div className="text-sm text-muted-foreground">digunakan oleh siswa SMA tulungagung </div>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
 		</section>
-		</>
+		</div>
 	);
 };
 

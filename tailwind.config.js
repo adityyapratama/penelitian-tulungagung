@@ -13,6 +13,10 @@ const config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['"Fredoka One"', 'ui-sans-serif', 'system-ui'],
+        display: ['"Fredoka One"', 'ui-sans-serif', 'system-ui'],
+      },
       borderColor: {
         DEFAULT: 'hsl(var(--border))'
       },

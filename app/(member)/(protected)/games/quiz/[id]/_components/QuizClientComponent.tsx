@@ -190,9 +190,9 @@ export function QuizClientComponent({
     };
 
     return (
-      <div className="flex items-center justify-center min-h-screen px-4 py-12 bg-gray-50">
+      <div className="flex items-center justify-center min-h-screen px-4 py-12 bg-gray-50 landing-font landing-page">
         <div className="w-full max-w-2xl p-12 mx-auto text-center bg-white shadow-lg rounded-2xl">
-          <Trophy className="w-24 h-24 mx-auto mb-4 text-blue-600" />
+          <Trophy className="w-24 h-24 mx-auto mb-4 text-primary" />
           <h2 className="mb-2 text-3xl font-bold text-gray-800">
             {isSubmitting ? "Menyimpan Progres..." : getMessage()}
           </h2>
@@ -201,7 +201,7 @@ export function QuizClientComponent({
           {!isSubmitting && (
             <>
               <div className="mb-8">
-                <p className="mb-2 text-6xl font-bold text-blue-600">
+                <p className="mb-2 text-6xl font-bold text-primary">
                   {percentage}%
                 </p>
                 <p className="text-xl text-gray-600">
@@ -219,14 +219,14 @@ export function QuizClientComponent({
 
               {/* ✅ FUNGSI KUNCI JAWABAN - Uncomment untuk aktifkan */}
 
-              {/* <div className="mb-6">
+              <div className="mb-6 landing-page">
                 <button
                   onClick={() => setShowAnswerKey(!showAnswerKey)}
-                  className="px-6 py-3 text-sm font-medium text-blue-600 transition-all duration-200 border border-blue-600 rounded-lg hover:bg-blue-50"
+                  className="px-6 py-3 text-sm font-medium text-primary transition-all duration-200 border border-blue-600 rounded-lg hover:bg-blue-50"
                 >
                   {showAnswerKey ? "Sembunyikan Kunci Jawaban" : "Lihat Kunci Jawaban"}
                 </button>
-              </div>  */}
+              </div> 
 
               {/* ✅ REVIEW JAWABAN - Tampil saat showAnswerKey aktif */}
               {showAnswerKey && (
@@ -275,7 +275,7 @@ export function QuizClientComponent({
 
               <button
                 onClick={handleRestart}
-                className="inline-flex items-center gap-2 px-8 py-4 text-base font-medium text-white transition-all duration-300 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 hover:shadow-lg"
+                className="inline-flex items-center gap-2 px-8 py-4 text-base font-medium text-white transition-all duration-300 rounded-lg bg-gradient-to-r from-primary to-blue-500 hover:shadow-lg"
               >
                 <RotateCcw className="w-5 h-5" />
                 Coba Kuis Lain
@@ -292,9 +292,9 @@ export function QuizClientComponent({
   const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
 
   return (
-    <div className="min-h-screen px-4 py-12 bg-gray-50">
+    <div className="min-h-screen px-4 py-12 bg-gray-50 landing-font">
       <div className="max-w-4xl mx-auto">
-        <h1 className="mb-2 text-4xl font-bold text-center text-transparent bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text">
+        <h1 className="mb-2 text-4xl font-bold text-center text-transparent bg-gradient-to-r from-primary to-blue-400 bg-clip-text  ">
           {quizDetails.judul}
         </h1>
         <p className="mb-8 text-center text-gray-600">
@@ -306,13 +306,13 @@ export function QuizClientComponent({
             <span className="text-sm font-medium text-gray-600">
               Pertanyaan {currentQuestionIndex + 1} dari {questions.length}
             </span>
-            <span className="text-sm font-bold text-blue-600">
+            <span className="text-sm font-bold text-primary">
               Pertanyaan {currentQuestionIndex + 1} dari {questions.length}
             </span>
           </div>
           <div className="w-full h-2 bg-gray-200 rounded-full">
             <div
-              className="h-2 transition-all duration-300 bg-blue-600 rounded-full"
+              className="h-2 transition-all duration-300 bg-primary rounded-full"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -362,7 +362,7 @@ export function QuizClientComponent({
 
           <button
             onClick={handleNext}
-            className="px-6 py-3 text-sm font-medium text-white transition-all duration-200 bg-blue-600 rounded-lg hover:bg-blue-700"
+            className="px-6 py-3 text-sm font-medium text-white transition-all duration-200 bg-primary rounded-lg hover:bg-blue-500"
           >
             {currentQuestionIndex < questions.length - 1
               ? "Selanjutnya →"

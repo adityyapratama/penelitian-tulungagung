@@ -74,7 +74,7 @@ export function GameRow({ title, description, games, href }: GameRowProps) {
   };
 
   return (
-    <section className="space-y-6">
+    <section className="space-y-6 landing-page">
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
@@ -121,12 +121,12 @@ export function GameRow({ title, description, games, href }: GameRowProps) {
                 isLocked ? "bg-gray-300 text-gray-600 cursor-not-allowed" : ""
               }`}
               style={{
-                backgroundColor: isLocked ? "#D1D5DB" : "#2957A4",
+                backgroundColor: isLocked ? "#D1D5DB" : "#2894E4",
                 boxShadow: isLocked ? "none" : `0 4px 12px #2957A440`,
               }}
               disabled={isLocked}
             >
-              <Play className="w-3 h-3" />
+              <Play className="w-3 h-3 landing-page" />
               {isLocked ? "Terkunci" : "Mainkan"}
             </Button>
           );

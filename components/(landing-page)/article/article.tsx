@@ -38,7 +38,7 @@ const ArticleCard: React.FC<{ article: Article }> = ({ article }) => {
         <p className="mt-2 text-gray-700 line-clamp-3">{article.excerpt}</p>
         <Link
           href={`/article/${article.id}`}
-          className="inline-flex items-center px-4 py-2 mt-4 font-semibold text-white transition-all bg-[#2957A4] border-2 border-[#2957A4] rounded-full hover:bg-white hover:text-[#2957A4] hover:border-[#2957A4]"
+          className="inline-flex items-center px-4 py-2 mt-4 font-semibold text-white transition-all bg-primary border-2 border-primary rounded-full hover:bg-white hover:text-[#2957A4] hover:border-primary"
         >
           Read more →
         </Link>
@@ -99,10 +99,10 @@ const ArticleGridClient: React.FC<{ articles: Article[]; limit?: number }> = ({
   };
 
   return (
-    <div className="py-16 bg-white">
+    <div className="py-16 bg-white landing-font">
       <div className="px-6 mx-auto max-w-7xl lg:px-8">
         <div className="mb-12">
-          <h2 className="text-3xl font-bold tracking-tight text-center text-[#2957A4] sm:text-4xl mb-4">
+          <h2 className="text-3xl font-bold tracking-tight text-center text-primary sm:text-4xl mb-4">
             {limit ? "Latest Articles" : "All Articles"}
           </h2>
           <p className="text-lg leading-8 text-center text-gray-600 mb-8">
@@ -130,9 +130,9 @@ const ArticleGridClient: React.FC<{ articles: Article[]; limit?: number }> = ({
           <div className="flex flex-col items-center space-y-4">
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center space-x-2 px-4 py-2 bg-[#2957A4] text-white rounded-full hover:bg-[#1e4080] transition-colors"
+              className="flex items-center space-x-2 px-4 py-2 bg-primary text-white rounded-full hover:bg-[#1e4080] transition-colors"
             >
-              <Filter className="w-4 h-4" />
+              <Filter className="w-4 h-4 " />
               <span>Filter by Category</span>
             </button>
 
@@ -215,7 +215,8 @@ const ArticleGridClient: React.FC<{ articles: Article[]; limit?: number }> = ({
             <Link href="/article">
               <button
                 type="button"
-                className="px-8 py-3 text-lg font-semibold text-white transition-all bg-[#2957A4] rounded-full shadow-lg hover:bg-[#1e4080] hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#2957A4]"
+                className="px-8 py-3 text-lg font-semibold text-white transition-all bg-primary border-2 border-primary rounded-full hover:bg-white hover:text-[#2957A4] hover:border-primary"
+                
               >
                 See All Articles
               </button>

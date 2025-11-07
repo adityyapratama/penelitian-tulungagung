@@ -10,7 +10,7 @@ export function SignInForm() {
   const [state, formAction] = useActionState(handleLogin, null);
 
   return (
-    <div className="w-full max-w-md p-8 space-y-6 bg-white shadow-lg rounded-2xl">
+  <div className="w-full max-w-md p-8 space-y-6 bg-white shadow-lg rounded-2xl landing-font">
       {/* Judul Form */}
       <div className="text-center">
         <Image

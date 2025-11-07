@@ -1,24 +1,21 @@
-
-
 import {NavbarDemo} from "@/components/(landing-page)/navbar/navbar";
-// import HeroSection from "@/components/(landing-page)/hero/hero";
 import { AnimationWrapper } from '@/components/animation-wrapper';
 import { Suspense } from 'react';
 import {MarqueeDemo} from "@/components/(landing-page)/comment/comment";
 import OurFeature from "@/components/(landing-page)/our-feature/our-feature";
-import ArticleGrid from "@/components/(landing-page)/article/article";
 import Footer from "@/components/(landing-page)/footer/footerPage";
 import ArticlePage from "@/components/(landing-page)/article/article-card";
 import { TypingAnimation } from "@/components/magicui/typing-animation";
 import {AccordionDemo} from "@/components/(landing-page)/stacked/stacked";
 import HeroSection from "@/components/(landing-page)/hero2/page";
-
+import { WhyLearn } from "@/components/(landing-page)/WhyLearn/page";
+import { WhyUs} from "@/components/(landing-page)/whyUs/page";
 
 
 
 export default function Home() {
   return (
-    <div className="min-h-screen font-sans">
+    <div className="min-h-screen landing-font">
       <NavbarDemo/>   
       
       <main className="">
@@ -30,11 +27,26 @@ export default function Home() {
           </Suspense>
         </section>
 
-
           <section id="our-feature" className="flex items-center justify-center min-h-screen">
           <Suspense fallback={<div className="w-full h-screen" />}>
             <AnimationWrapper>
               <OurFeature />
+            </AnimationWrapper>
+          </Suspense>
+        </section>
+
+        <section id="why-learn" className="flex items-center justify-center min-h-screen">
+          <Suspense fallback={<div className="w-full h-screen" />}>
+            <AnimationWrapper>
+              <WhyLearn />
+            </AnimationWrapper>
+          </Suspense>
+        </section>
+
+        <section id="why-Us" className="flex items-center justify-center min-h-screen">
+          <Suspense fallback={<div className="w-full h-screen" />}>
+            <AnimationWrapper>
+              <WhyUs />
             </AnimationWrapper>
           </Suspense>
         </section>
@@ -49,14 +61,6 @@ export default function Home() {
           </Suspense>
         </section>
 
-        {/* <section id="hero-video" className="flex items-center justify-center min-h-screen">
-          <Suspense fallback={<div className="w-full h-screen" />}>
-            <AnimationWrapper>
-              <Video />
-            </AnimationWrapper>
-          </Suspense>
-        </section> */}
-
           <section id="article" className="flex items-center justify-center min-h-screen">
           <Suspense fallback={<div className="w-full h-screen" />}>
             <AnimationWrapper>
@@ -64,7 +68,6 @@ export default function Home() {
             </AnimationWrapper>
           </Suspense>
         </section>
-
 
         <section id="stacked" className="w-full py-16 md:py-24">
                 <div className="container px-4 mx-auto">
@@ -91,10 +94,6 @@ export default function Home() {
             </AnimationWrapper>
           </Suspense>
         </section>
-
-
-
-        
       </main>
     </div>
   );
