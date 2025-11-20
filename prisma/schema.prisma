@@ -318,6 +318,7 @@ model Puzzle {
   puzzle_id  Int            @id @default(autoincrement())
   judul      String         @db.VarChar(100)
   gambar     String         @db.VarChar(255)
+  thumbnail  String?        @db.VarChar(255)
   kategori   PuzzleCategory
   xp_reward  Int            @default(80)
   created_by Int?

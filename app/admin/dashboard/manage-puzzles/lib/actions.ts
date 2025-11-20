@@ -7,6 +7,7 @@ import fs from "fs";
 import path from "path";
 import { revalidatePath } from "next/cache";
 import { v4 as uuidv4 } from "uuid";
+import { th } from "zod/v4/locales";
 
 export type PuzzleFormState = {
   errors?: {
@@ -33,6 +34,7 @@ export async function createPuzzle(
   const parse = SchemaPuzzle.safeParse({
     judul: formData.get("judul"),
     gambar: formData.get("gambar"),
+    thumbnail: formData.get("thumbnail"),
     kategori: formData.get("kategori"),
     xp_reward: formData.get("xp_reward"),
     is_published: formData.get("is_published"),
@@ -45,21 +47,33 @@ export async function createPuzzle(
     };
   }
 
-  const file = parse.data.gambar;
+  const filegambar = parse.data.gambar;
+  const filethumbnail = parse.data.thumbnail;
 
-  if (!(file instanceof File)) return { error: "Thumbnail invalid" };
+  if (!(filegambar instanceof File)) return { error: "Gambar puzzle invalid" };
+
+  if (!(filethumbnail instanceof File))
+    return { error: "Thumbnail invalid" };
 
   // Validasi tambahan (opsional)
   const allowedExt = [".jpg", ".jpeg", ".png", ".webp"];
-  const fileExt = path.extname(file.name).toLowerCase();
-  if (!allowedExt.includes(fileExt)) {
+  const fileExt = path.extname(filegambar.name).toLowerCase();
+  const thumbnailExt = path.extname(filethumbnail.name).toLowerCase();
+  if (!allowedExt.includes(fileExt) || !allowedExt.includes(thumbnailExt)) {
     return { error: "Format file tidak diizinkan" };
   }
 
-  const bytes = await file.arrayBuffer();
+  const bytes = await filegambar.arrayBuffer();
   const buffer = Buffer.from(bytes);
 
+  const bytesThumbnail = await filethumbnail.arrayBuffer();
+  const bufferThumbnail = Buffer.from(bytesThumbnail);
+
   const uploadDir = path.join(process.cwd(), "public", "puzzle");
+  const thumbnailDir = path.join(process.cwd(), "public", "puzzle", "thumbnails");
+  if (!fs.existsSync(thumbnailDir)) {
+    fs.mkdirSync(thumbnailDir, { recursive: true });
+  }
   if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
   }
@@ -68,13 +82,19 @@ export async function createPuzzle(
   const filePath = path.join(uploadDir, fileName);
   fs.writeFileSync(filePath, buffer);
 
+  const thumbnailName = `${uuidv4()}${thumbnailExt}`;
+  const thumbnailPath = path.join(thumbnailDir, thumbnailName);
+  fs.writeFileSync(thumbnailPath, bufferThumbnail);
+
   const relativePath = `/puzzle/` + fileName;
+  const relativeThumbnailPath = `/puzzle/thumbnails/` + thumbnailName;
 
   try {
     await prisma.puzzle.create({
       data: {
         judul: parse.data.judul,
         gambar: relativePath,
+        thumbnail: relativeThumbnailPath,
         kategori: parse.data.kategori,
         xp_reward: parse.data.xp_reward,
         created_by: parseInt(session.user.id!),
@@ -100,6 +120,7 @@ export async function UpdatePuzzle(
   const parse = SchemaPuzzle.safeParse({
     judul: formData.get("judul"),
     gambar: formData.get("gambar"),
+    thumbnail: formData.get("thumbnail"),
     kategori: formData.get("kategori"),
     xp_reward: formData.get("xp_reward"),
     is_published: formData.get("is_published"),
@@ -110,8 +131,42 @@ export async function UpdatePuzzle(
   }
 
   try {
+    let relativeThumbnailPath: string | undefined;
     let relativePath: string | undefined;
 
+    if (parse.data.thumbnail instanceof File && parse.data.thumbnail.size > 0) {
+      const oldThumb = await prisma.puzzle.findUnique({
+        where: { puzzle_id: parseInt(id) },
+        select: { thumbnail: true },
+      });
+
+      if (oldThumb?.thumbnail) {
+        const oldThumbPath = path.join(process.cwd(), "public", oldThumb.thumbnail);
+        if (fs.existsSync(oldThumbPath)) {
+          fs.unlinkSync(oldThumbPath);
+        }
+      }
+
+      const thumbFile = parse.data.thumbnail as File;
+      const allowedExt = [".jpg", ".jpeg", ".png", ".webp"];
+      const thumbExt = path.extname(thumbFile.name).toLowerCase();
+      if (!allowedExt.includes(thumbExt)) {
+              return { error: "Format file tidak diizinkan" };
+      }
+      const thumbBytes = await thumbFile.arrayBuffer();
+      const thumbBuffer = Buffer.from(thumbBytes);
+
+      const thumbnailDir = path.join(process.cwd(), "public", "puzzle", "thumbnails");
+      if (!fs.existsSync(thumbnailDir)) {
+        fs.mkdirSync(thumbnailDir, { recursive: true });
+      }
+
+      const thumbFileName = `${uuidv4()}${thumbExt}`;
+      const thumbFilePath = path.join(thumbnailDir, thumbFileName);
+      fs.writeFileSync(thumbFilePath, thumbBuffer);
+
+      relativeThumbnailPath = `/puzzle/thumbnails/` + thumbFileName;
+    }
     if (parse.data.gambar instanceof File && parse.data.gambar.size > 0) {
       const old = await prisma.puzzle.findUnique({
         where: { puzzle_id: parseInt(id) },
@@ -154,6 +209,7 @@ export async function UpdatePuzzle(
         xp_reward: parse.data.xp_reward,
         is_published: parse.data.is_published ,
         ...(relativePath && { gambar: relativePath }),
+        ...(relativeThumbnailPath && { thumbnail: relativeThumbnailPath }),
       },
     });
 

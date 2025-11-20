@@ -155,6 +155,7 @@ export const SchemaPuzzle = z.object({
     .string({ message: "Judul is required" })
     .min(8, { message: "Judul should have min 8 characters" }),
   gambar: fileSchema,
+  thumbnail : fileSchema,
   kategori: z.enum([
     "Tempat_Wisata",
     "Tokoh_Sejarah",

@@ -9,6 +9,7 @@ export async function getPuzzle() {
       return {
         puzzle_id: puzzle.puzzle_id,
         judul: puzzle.judul,
+        thumbnail: puzzle.thumbnail,
         gambar: puzzle.gambar,
         kategori: puzzle.kategori,
         xp_reward: puzzle.xp_reward,
