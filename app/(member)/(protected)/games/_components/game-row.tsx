@@ -1,13 +1,12 @@
 "use client";
 
-import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Trophy, Play, ArrowRight, Puzzle, LogIn } from "lucide-react";
+import { Trophy, LogIn } from "lucide-react";
 import type { GameCardData } from "../lib/data";
 import Link from "next/link";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
+import { FollowerPointerCard } from "@/components/ui/following-pointer";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -47,184 +46,163 @@ export function GameRow({ title, description, games, href }: GameRowProps) {
     return baseUrl;
   };
 
-  const getBadgeColor = (type: string) => {
+  const getBgColorClass = (type: string) => {
     switch (type) {
       case "puzzle":
-        return "#F44336";
+        return "bg-red-500";
       case "kuis":
-        return "#2957A4";
+        return "bg-blue-600";
       case "cerita":
-        return "#4CAF50";
+        return "bg-green-500";
       default:
-        return "#2957A4";
+        return "bg-blue-600";
     }
   };
 
-  const getDifficultyBadge = (difficulty: string) => {
+  const getDifficultyConfig = (difficulty: string) => {
     switch (difficulty) {
       case "Mudah":
-        return { backgroundColor: "#4CAF50", color: "white" };
+        return { label: "Mudah", className: "bg-green-500 hover:bg-green-600 text-white" };
       case "Sedang":
-        return { backgroundColor: "#FFC107", color: "#212121" };
+        return { label: "Sedang", className: "bg-yellow-500 hover:bg-yellow-600 text-white" };
       case "Sulit":
-        return { backgroundColor: "#F44336", color: "white" };
+        return { label: "Sulit", className: "bg-red-500 hover:bg-red-600 text-white" };
       default:
-        return { backgroundColor: "#607D8B", color: "white" };
+        return { label: "Normal", className: "bg-gray-500 hover:bg-gray-600 text-white" };
     }
   };
 
+  const TitleComponent = ({ title, category }: { title: string; category: string }) => (
+    <div className="flex items-center space-x-2">
+      <Badge variant="secondary" className="text-xs">
+        {category}
+      </Badge>
+      <p className="text-xs md:text-sm font-medium line-clamp-1">{title}</p>
+    </div>
+  );
+
   return (
-    <section className="space-y-6 landing-page">
+    <section className="space-y-6 landing-font">
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div
-              className="flex items-center justify-center w-10 h-10 shadow-lg rounded-xl animate-bounce-in"
-              style={{
-                backgroundColor: getBadgeColor(games[0]?.type || "puzzle"),
-                boxShadow: `0 4px 20px ${getBadgeColor(
-                  games[0]?.type || "puzzle"
-                )}40`,
-              }}
-            >
-              <Puzzle className="w-5 h-5 text-white" />
-            </div>
-            <h2 className="text-2xl font-bold" style={{ color: "#2957A4" }}>
-              {title}
-            </h2>
-          </div>
-          <Button
-            asChild
-            variant="ghost"
-            className="text-sm hover:text-primary"
+          <h2 className="text-3xl font-bold text-foreground">
+            {title}
+          </h2>
+          <Link 
+            href={href}
+            className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
           >
-            <Link href={href}>
-              Lihat Semua
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </Link>
-          </Button>
+            Lihat Semua
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </Link>
         </div>
-        <p className="text-muted-foreground">{description}</p>
+        <p className="text-muted-foreground text-lg">{description}</p>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {games.slice(0, 4).map((game, index) => {
+      <div className="grid grid-cols-2 gap-2 md:gap-4 lg:grid-cols-3">
+        {games.slice(0, 3).map((game, index) => {
           const isLocked = false;
-          const difficulties = ["Mudah", "Sedang", "Sulit", "Mudah"];
+          const difficulties = ["Mudah", "Sedang", "Sulit", "Mudah", "Sedang", "Mudah"];
           const difficulty = difficulties[index % difficulties.length];
-          const badgeStyle = getDifficultyBadge(difficulty);
+          const difficultyConfig = getDifficultyConfig(difficulty);
+          const colorClass = getBgColorClass(game.type);
 
-          const GameButton = (
-            <Button
-              size="sm"
-              className={`w-full gap-1 transition-all duration-300 text-xs h-8 text-white shadow-lg ${
-                isLocked ? "bg-gray-300 text-gray-600 cursor-not-allowed" : ""
-              }`}
-              style={{
-                backgroundColor: isLocked ? "#D1D5DB" : "#2894E4",
-                boxShadow: isLocked ? "none" : `0 4px 12px #2957A440`,
-              }}
-              disabled={isLocked}
+          const GameContent = (
+            <FollowerPointerCard
+              title={<TitleComponent title={game.title} category={game.category} />}
             >
-              <Play className="w-3 h-3 landing-page" />
-              {isLocked ? "Terkunci" : "Mainkan"}
-            </Button>
-          );
-
-          return (
-            <Card
-              key={game.id}
-              className="relative flex flex-col pt-0 overflow-hidden transition-all duration-500 border-0 group hover:shadow-2xl hover:-translate-y-2 animate-bounce-in"
-              style={{
-                animationDelay: `${index * 0.1}s`,
-                background: "linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)",
-                boxShadow: "0 4px 20px rgba(41, 87, 164, 0.1)",
-              }}
-            >
-              <div className="relative flex-shrink-0 w-full overflow-hidden rounded-t-lg h-42">
-                <Image
-                  src={
-                    game.image
-                      ? game.image.startsWith("http")
-                        ? game.image
-                        : `/${game.image
-                            .replace(/\\/g, "/")
-                            .replace(/^\/+/, "")}`
-                      : "/placeholder.svg"
-                  }
-                  alt={game.title}
-                  fill
-                />
-                <div
-                  className="absolute flex items-center px-2 py-1 text-xs font-bold rounded-full shadow-md top-2 right-2"
-                  style={{ backgroundColor: "#FFCC29", color: "#2957A4" }}
-                >
-                  <Trophy className="w-3 h-3 mr-1" />
-                  {game.xp_reward}
+              <div className="group relative h-full overflow-hidden rounded-xl md:rounded-2xl border border-zinc-100 bg-white transition duration-200 hover:shadow-xl">
+                {/* Image Section */}
+                <div className={`relative aspect-[4/3] w-full overflow-hidden rounded-tl-lg rounded-tr-lg ${colorClass}`}>
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent" />
+                  <Image
+                    src={
+                      game.image
+                        ? game.image.startsWith("http")
+                          ? game.image
+                          : `/${game.image.replace(/\\/g, "/").replace(/^\/+/, "")}`
+                        : "/placeholder.svg"
+                    }
+                    alt={game.title}
+                    fill
+                    className="object-cover transform transition duration-200 group-hover:scale-105"
+                  />
+                  {isLocked && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+                      <span className="text-4xl md:text-6xl">🔒</span>
+                    </div>
+                  )}
                 </div>
-              </div>
 
-              <div className="flex flex-col flex-grow p-4 space-y-3">
-                <div className="flex-grow space-y-2">
-                  <h3
-                    className="text-sm font-semibold line-clamp-2"
-                    style={{ color: "#2957A4" }}
-                  >
+                {/* Content Section */}
+                <div className="p-2 md:p-3 flex flex-col h-full">
+                  <h2 className="my-1 md:my-2 text-xs md:text-base font-bold text-zinc-700 line-clamp-2">
                     {game.title}
-                  </h3>
-                </div>
+                  </h2>
+                  
+                  <p className="text-[9px] md:text-xs text-gray-500 line-clamp-2 mb-1 md:mb-2">
+                    {game.description}
+                  </p>
 
-                <div className="flex items-center justify-between text-xs">
-                  <span className="mr-2 font-medium truncate text-muted-foreground">
-                    {game.category}
-                  </span>
-                  <Badge
-                    className="px-2 py-1 text-xs"
-                    style={{
-                      backgroundColor: badgeStyle.backgroundColor,
-                      color: badgeStyle.color,
-                      border: "none",
-                    }}
-                  >
-                    {difficulty}
-                  </Badge>
-                </div>
+                  <div className="mb-1 md:mb-2 flex flex-wrap gap-1">
+                    <Badge className={`text-[10px] md:text-xs font-bold ${difficultyConfig.className}`}>
+                      {difficultyConfig.label}
+                    </Badge>
+                    <Badge variant="outline" className="text-[10px] md:text-xs">
+                      <Trophy className="w-2 h-2 md:w-3 md:h-3 mr-0.5 md:mr-1" />
+                      {game.xp_reward} XP
+                    </Badge>
+                  </div>
 
-                {status === "authenticated" ? (
-                  <Link
-                    href={isLocked ? "#" : getGameUrl(game)}
-                    className={isLocked ? "pointer-events-none" : ""}
-                  >
-                    {GameButton}
-                  </Link>
-                ) : (
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      {GameButton}
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Anda Belum Login</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          Untuk memainkan game, Anda perlu login terlebih
-                          dahulu.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Nanti Saja</AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={() => router.push("/sign-in")}
-                        >
-                          <LogIn className="w-4 h-4 mr-2" />
-                          Login Sekarang
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                )}
+                  {/* Spacer to push button to bottom */}
+                  <div className="flex-grow"></div>
+
+                  {/* Button Container */}
+                  <div className="mt-1 md:mt-2 pt-1 md:pt-2 border-t border-gray-100">
+                    {status === "authenticated" ? (
+                      <Link
+                        href={isLocked ? "#" : getGameUrl(game)}
+                        className={isLocked ? "pointer-events-none" : ""}
+                      >
+                        <div className={`relative z-10 block text-center rounded-lg md:rounded-xl ${colorClass} px-3 md:px-6 py-1.5 md:py-2 text-[10px] md:text-xs font-bold text-white transition-all hover:opacity-90 w-full ${
+                          isLocked && "opacity-50 cursor-not-allowed"
+                        }`}>
+                          {isLocked ? "🔒 Terkunci" : "Mulai Main"}
+                        </div>
+                      </Link>
+                    ) : (
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <div className={`relative z-10 block text-center rounded-lg md:rounded-xl ${colorClass} px-3 md:px-6 py-1.5 md:py-2 text-[10px] md:text-xs font-bold text-white cursor-pointer transition-all hover:opacity-90 w-full`}>
+                            Mulai Main
+                          </div>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Login Diperlukan</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Anda harus login terlebih dahulu untuk dapat memainkan game ini.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Batal</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => router.push("/sign-in")}>
+                              <LogIn className="w-4 h-4 mr-2" />
+                              Login Sekarang
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    )}
+                  </div>
+                </div>
               </div>
-            </Card>
+            </FollowerPointerCard>
           );
+
+          return <div key={game.id}>{GameContent}</div>;
         })}
       </div>
     </section>

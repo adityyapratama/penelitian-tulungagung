@@ -10,13 +10,24 @@ import {AccordionDemo} from "@/components/(landing-page)/stacked/stacked";
 import HeroSection from "@/components/(landing-page)/hero2/page";
 import { WhyLearn } from "@/components/(landing-page)/WhyLearn/page";
 import { WhyUs} from "@/components/(landing-page)/whyUs/page";
+import Head from "next/head";
+
 
 
 
 export default function Home() {
   return (
     <div className="min-h-screen landing-font">
-      <NavbarDemo/>   
+       {/* favicon */}
+       <Head>
+        <title>Pusaka TulungAgung</title> 
+        <link rel="icon" href="/icon.png" type="image/png" />
+      </Head>
+
+
+      <NavbarDemo/>  
+
+     
       
       <main className="">
         <section id="hero" className="mb-40">

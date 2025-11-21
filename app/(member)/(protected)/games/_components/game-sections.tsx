@@ -16,7 +16,7 @@ export function GameSections({ puzzles, quizzes, stories }: GameSectionsProps) {
           title="Permainan Puzzle"
           description="Asah logika dan ketajaman visual dengan menyusun gambar."
           games={puzzles}
-          href="/games/puzzle"
+          href="/games/all-puzzles"
         />
       )}
 
@@ -26,7 +26,7 @@ export function GameSections({ puzzles, quizzes, stories }: GameSectionsProps) {
           title="Permainan Kuis"
           description="Uji wawasan dan pengetahuanmu dalam berbagai topik menarik."
           games={quizzes}
-          href="/games/quiz"
+          href="/games/all-quizzes"
         />
       )}
 
@@ -36,7 +36,7 @@ export function GameSections({ puzzles, quizzes, stories }: GameSectionsProps) {
           title="Cerita Interaktif"
           description="Masuki dunia petualangan di mana pilihanmu menentukan jalan cerita."
           games={stories}
-          href="/games/story"
+          href="/games/all-stories"
         />
       )}
     </div>

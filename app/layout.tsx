@@ -22,6 +22,9 @@ export const metadata: Metadata = {
     default: "Pusaka Tulungagung",
   },
   description: "Website Gamifikasi Budaya Tulungagung",
+  icons: {
+    icon: '/icon.png', 
+  },
 };
 
 export default async function RootLayout({
