@@ -81,7 +81,7 @@ export function CellActions({ row }: CellActionsProps) {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isPending}>Batal</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} disabled={isPending}>
+            <AlertDialogAction className="bg-red-500 hover:bg-red-700" onClick={handleDelete} disabled={isPending}>
               {isPending ? "Menghapus..." : "Ya, Hapus"}
             </AlertDialogAction>
           </AlertDialogFooter>

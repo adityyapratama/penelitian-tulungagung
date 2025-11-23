@@ -81,6 +81,29 @@ export async function getCategoryQuiz() {
   }
 }
 
+export async function getCategoryQuizByUserID() {
+  const userId = await getUserId();
+  if (!userId) return { error: "Not Authorized" };
+
+  try {
+    const categories = await prisma.kategoriKuis.findMany({
+      where: {
+        created_by: userId,
+      },
+      include: {
+        User: true,
+      },
+      orderBy: {
+        created_at: "desc",
+      },
+    });
+    return categories;
+  } catch (error) {
+    console.log(error);
+    return { error: error };
+  }
+}
+
 // Kategori bersifat global
 export async function getCategoryQuizById(id: string) {
   try {
@@ -124,7 +147,7 @@ export async function getQuizQuestionByQuizId(id: string) {
       },
     });
 
-    return questions; // Bisa jadi array kosong, itu valid
+    return questions; 
   } catch (error) {
     console.log("getQuizQuestionByQuizId error:", error);
     return { error: "Failed to fetch questions" };

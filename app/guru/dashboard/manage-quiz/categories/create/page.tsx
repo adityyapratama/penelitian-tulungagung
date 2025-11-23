@@ -127,7 +127,7 @@ export default function CreateQuizCategoryPage() {
                   id="nama_kategori"
                   name="nama_kategori"
                   placeholder="e.g Sejarah Lokal, Matematika Dasar"
-                  required // Added required
+                   // Added required
                 />
                 {state.errors?.nama_kategori && (
                   <p className="flex items-center gap-2 text-sm font-medium text-destructive">

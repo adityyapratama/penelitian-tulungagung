@@ -61,6 +61,104 @@ async function getGuruId(): Promise<number | null> {
   }
 }
 
+export async function GetGuruData() {
+  const session = await auth();
+
+  if (!session || !session.user?.id) {
+    return { error: "Not Authorized" };
+  }
+
+  try {
+    const data = await prisma.user.findUnique({
+      where: {
+        user_id: parseInt(session.user.id),
+      },
+      include: {
+        Guru: {
+          include: {
+            Sekolah: true, 
+          },
+        },
+      },
+    });
+
+    if (!data) return { error: "User tidak ditemukan" };
+
+    return {
+      user_id: data.user_id,
+      username: data.username,
+      email: data.email,
+      nip: data.Guru?.nip || "",
+      bidang_ajar: data.Guru?.bidang_ajar || "",
+      sekolah_id: data.Guru?.sekolah_id || null, 
+      nama_sekolah: data.Guru?.Sekolah?.nama_sekolah || "",
+    };
+  } catch (error) {
+    console.error("Error fetching guru profile:", error);
+    return { error: "Terjadi kesalahan saat mengambil data profil" };
+  }
+}
+
+export async function GetAllSekolah() {
+  try {
+    const sekolah = await prisma.sekolah.findMany({
+      orderBy: { nama_sekolah: "asc" },
+    });
+    return sekolah;
+  } catch (error) {
+    console.error("Error fetching sekolah:", error);
+    return [];
+  }
+}
+
+export async function SaveGuruProfile(
+  prevState: any, 
+  formData: FormData
+) {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Unauthorized" };
+
+  const userId = parseInt(session.user.id);
+  const nip = formData.get("nip") as string;
+  const bidang_ajar = formData.get("bidang_ajar") as string;
+  const sekolah_id = formData.get("sekolah_id");
+
+  if (!nip || !bidang_ajar || !sekolah_id) {
+    return { error: "Mohon lengkapi semua data." };
+  }
+
+  try {
+    await prisma.guru.upsert({
+      where: { user_id: userId },
+      create: {
+        user_id: userId,
+        nip,
+        bidang_ajar,
+        sekolah_id: Number(sekolah_id),
+      },
+      update: {
+        nip,
+        bidang_ajar,
+        sekolah_id: Number(sekolah_id),
+      },
+    });
+
+    revalidatePath("/guru/profile");
+    revalidatePath("/guru/dashboard");
+    
+    return { success: "Profil berhasil disimpan" };
+
+  } catch (e) {
+    console.error("SaveGuruProfile Error:", e);
+    
+    if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
+      return { error: "NIP sudah terdaftar." };
+    }
+    
+    return { error: "Gagal menyimpan data." };
+  }
+}
+
 export async function CreateGroup(_: unknown, formData: FormData) {
   const session = await auth();
   if (!session) {

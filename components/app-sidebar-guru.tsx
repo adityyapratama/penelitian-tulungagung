@@ -13,11 +13,10 @@ import {
   PuzzleIcon,
   ChevronDown,
   LucideIcon,
-  PersonStanding,
   UsersRound,
 } from "lucide-react";
 
-import { NavUser } from "@/components/nav-user";
+// Hapus import NavUser karena sudah tidak dipakai
 import {
   Sidebar,
   SidebarContent,
@@ -94,13 +93,6 @@ const guruNavData: NavItem[] = [
   },
 ];
 
-// Dummy data user (bisa diganti nanti dengan session)
-const guruUserData = {
-  name: "Guru Pengajar",
-  email: "guru@example.com",
-  avatar: "/asset/avatars/avatar-placeholder.png",
-};
-
 // Komponen utama sidebar guru
 export function GuruSidebar(props: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
@@ -112,7 +104,6 @@ export function GuruSidebar(props: React.ComponentProps<typeof Sidebar>) {
     {}
   );
 
-  // Buka submenu jika sedang di dalam salah satu halaman submenu
   React.useEffect(() => {
     const newOpenMenus: { [key: string]: boolean } = {};
     guruNavData.forEach((item) => {
@@ -172,7 +163,6 @@ export function GuruSidebar(props: React.ComponentProps<typeof Sidebar>) {
               pathname.startsWith(item.url) &&
               !(item.exact && pathname !== item.url);
 
-            // Jika punya submenu
             if (item.items) {
               return (
                 <SidebarMenuItem
@@ -241,7 +231,6 @@ export function GuruSidebar(props: React.ComponentProps<typeof Sidebar>) {
               );
             }
 
-            // Jika tidak punya submenu
             const isActive = item.exact
               ? pathname === item.url
               : pathname.startsWith(item.url);
@@ -269,9 +258,18 @@ export function GuruSidebar(props: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarContent>
 
-      {/* Footer */}
-      <SidebarFooter>
-        <NavUser user={guruUserData} />
+      {/* Footer yang Diubah */}
+      <SidebarFooter className="border-t p-4">
+        {!isCollapsed ? (
+          <div className="flex flex-col items-center justify-center text-center text-xs text-muted-foreground animate-in fade-in duration-300">
+            <p className="font-semibold">Pusaka Tulungagung</p>
+            <p>&copy; {new Date().getFullYear()}</p>
+          </div>
+        ) : (
+          <div className="flex justify-center text-xs text-muted-foreground">
+            &copy;
+          </div>
+        )}
       </SidebarFooter>
 
       <SidebarRail />

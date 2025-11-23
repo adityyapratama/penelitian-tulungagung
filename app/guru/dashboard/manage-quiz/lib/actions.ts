@@ -27,6 +27,20 @@ export type CategoryActionResult = {
   data?: any; 
 };
 
+export type QuizActionResult = {
+  success?: string;
+  error?: string;        
+  errors?: {               
+    judul?: string[];
+    deskripsi?: string[];
+    kategori_id?: string[];
+    xp_reward?: string[];
+    is_published?: string[];
+    thumbnail?: string[];
+  };
+  data?: any;              
+};
+
 type ActionResult = BaseActionResult;
 
 async function getUserId(): Promise<number | null> {
@@ -38,7 +52,7 @@ async function getUserId(): Promise<number | null> {
 export async function CreateQuiz(
   _: unknown,
   formData: FormData
-): Promise<ActionResult> {
+): Promise<QuizActionResult> {
   const userId = await getUserId();
   if (!userId) return { error: "Not Authorized" };
 
@@ -51,18 +65,30 @@ export async function CreateQuiz(
     thumbnail: formData.get("thumbnail"),
   });
 
-  if (!parse.success) return { error: parse.error.errors[0].message };
+  if (!parse.success) {
+    return { errors: parse.error.flatten().fieldErrors };
+  }
 
+  
   const file = parse.data.thumbnail;
-  if (!(file instanceof File) || file.size === 0) {
-     return { error: "Thumbnail invalid atau kosong" };
-  }
+ if (!(file instanceof File) || file.size === 0) {
+   return { 
+     errors: { 
+       thumbnail: ["Thumbnail invalid atau kosong"] 
+     } 
+   };
+}
 
-  const allowedExt = [".jpg", ".jpeg", ".png", ".webp"];
-  const fileExt = path.extname(file.name).toLowerCase();
-  if (!allowedExt.includes(fileExt)) {
-    return { error: "Format file tidak diizinkan" };
-  }
+const allowedExt = [".jpg", ".jpeg", ".png", ".webp"];
+const fileExt = path.extname(file.name).toLowerCase();
+
+if (!allowedExt.includes(fileExt)) {
+   return { 
+     errors: { 
+       thumbnail: ["Format file tidak diizinkan"] 
+     } 
+   };
+}
 
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
@@ -105,14 +131,17 @@ export async function UpdateQuiz(
   id: string,
   _: unknown,
   formData: FormData
-): Promise<ActionResult> {
+): Promise<QuizActionResult> {
   const userId = await getUserId();
   if (!userId) return { error: "Not Authorized" };
 
   const existingQuiz = await prisma.kuis.findFirst({
     where: { kuis_id: parseInt(id), created_by: userId }
   });
+
   if (!existingQuiz) return { error: "Kuis tidak ditemukan atau Anda tidak berhak." };
+
+  const isImageRemoved = formData.get("is_image_removed") === "true";
 
   const parse = SchemaQuizUpdate.safeParse({
     judul: formData.get("judul"),
@@ -123,37 +152,54 @@ export async function UpdateQuiz(
     thumbnail: formData.get("thumbnail"),
   });
 
-  if (!parse.success) return { error: parse.error.errors[0].message };
+  if (!parse.success) {
+    return { errors: parse.error.flatten().fieldErrors };
+  }
 
   let relativePath: string | undefined;
+  const file = parse.data.thumbnail;
+  const hasNewFile = file instanceof File && file.size > 0;
 
-  try {
-    const file = parse.data.thumbnail;
+  if (isImageRemoved && !hasNewFile) {
+    return { 
+      errors: { 
+        thumbnail: ["Thumbnail wajib diisi."] 
+      } 
+    };
+  }
 
-    if (file instanceof File && file.size > 0) {
-      if (existingQuiz.thumbnail) {
-        const oldPath = path.join(process.cwd(), "public", existingQuiz.thumbnail);
-        if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
-      }
+  if (hasNewFile) {
+    const allowedExt = [".jpg", ".jpeg", ".png", ".webp"];
+    const fileExt = path.extname(file.name).toLowerCase();
 
-      const allowedExt = [".jpg", ".jpeg", ".png", ".webp"];
-      const fileExt = path.extname(file.name).toLowerCase();
-      if (!allowedExt.includes(fileExt)) {
-        return { error: "Format file tidak diizinkan" };
-      }
-
-      const bytes = await file.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-      const uploadDir = path.join(process.cwd(), "public", "quiz");
-      if (!fs.existsSync(uploadDir)) {
-        fs.mkdirSync(uploadDir, { recursive: true });
-      }
-      const fileName = `${uuidv4()}${fileExt}`;
-      const filePath = path.join(uploadDir, fileName);
-      fs.writeFileSync(filePath, buffer);
-      relativePath = `/quiz/${fileName}`;
+    if (!allowedExt.includes(fileExt)) {
+      return { 
+        errors: { 
+          thumbnail: ["Format file tidak diizinkan"] 
+        } 
+      };
     }
 
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+    const uploadDir = path.join(process.cwd(), "public", "quiz");
+    
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+
+    const fileName = `${uuidv4()}${fileExt}`;
+    const filePath = path.join(uploadDir, fileName);
+    fs.writeFileSync(filePath, buffer);
+    relativePath = `/quiz/${fileName}`;
+
+    if (existingQuiz.thumbnail) {
+      const oldPath = path.join(process.cwd(), "public", existingQuiz.thumbnail);
+      if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+    }
+  }
+
+  try {
     await prisma.kuis.update({
       where: { kuis_id: parseInt(id) },
       data: {
@@ -499,7 +545,12 @@ export async function UpdateQuizCategory(
     formData: FormData
 ): Promise<CategoryActionResult> { 
   const session = await auth();
-  if (!session) return { error: "Not Authorized" };
+  if (!session || !session.user || !session.user.id) { 
+    return { error: "Not Authorized" }; 
+  }
+
+  const userId = parseInt(session.user.id); 
+  const kategoriId = parseInt(id);
 
   const parse = SchemaCategoryKuis.safeParse({
     nama_kategori: formData.get("nama_kategori"),
@@ -512,8 +563,13 @@ export async function UpdateQuizCategory(
   }
 
   try {
+    const ownershipError = await verifyCategoryOwnership(kategoriId, userId);
+    if (ownershipError) {
+      return { error: ownershipError };
+    }
+    
     const updated = await prisma.kategoriKuis.update({
-      where: { kategori_id: parseInt(id) },
+      where: { kategori_id: kategoriId },
       data: {
         nama_kategori: parse.data.nama_kategori,
         deskripsi: parse.data.deskripsi,
@@ -531,23 +587,41 @@ export async function UpdateQuizCategory(
   }
 }
 
-export async function DeleteQuizCategory(id: string): Promise<CategoryActionResult> { 
+export async function DeleteQuizCategory(id: string): Promise<CategoryActionResult> {
   const session = await auth();
-  if (!session) return { error: "Not Authorized" };
+  if (!session || !session.user || !session.user.id) { 
+    return { error: "Not Authorized" }; 
+  }
+
+  const userId = parseInt(session.user.id); 
+  const kategoriId = parseInt(id);
 
   try {
+    const ownershipError = await verifyCategoryOwnership(kategoriId, userId);
+    if (ownershipError) {
+      return { error: ownershipError };
+    }
+
+    const kuisCount = await prisma.kuis.count({
+      where: { kategori_id: kategoriId },
+    });
+
+    if (kuisCount > 0) {
+      return { 
+        error: `Gagal: Kategori ini masih digunakan oleh ${kuisCount} kuis. Hapus kuis terlebih dahulu.` 
+      };
+    }
+
     await prisma.kategoriKuis.delete({
-      where: { kategori_id: parseInt(id) },
+      where: { kategori_id: kategoriId },
     });
 
     revalidatePath("/guru/dashboard/manage-quiz/categories");
     return { success: "Kategori berhasil dihapus" };
-  } catch (error: unknown) {
+
+  } catch (error) {
     console.error("DeleteQuizCategory Error:", error);
-    if (error instanceof Error && 'code' in error && (error as any).code === 'P2003') {
-        return { error: "Gagal: Kategori ini masih digunakan oleh kuis." };
-    }
-    return { error: "Gagal menghapus kategori." };
+    return { error: "Terjadi kesalahan sistem saat menghapus kategori." };
   }
 }
 
@@ -555,12 +629,43 @@ export async function DeleteMultipleQuizCategories(
   ids: string[]
 ): Promise<CategoryActionResult> { 
   const session = await auth();
-  if (!session) return { error: "Tidak terautentikasi" };
+  if (!session || !session.user || !session.user.id) {
+    return { error: "Tidak terautentikasi" };
+  }
 
+  const userId = parseInt(session.user.id);
   const numericIds = ids.map((id) => parseInt(id)).filter((id) => !isNaN(id));
-  if (numericIds.length === 0) return { error: "Tidak ada ID valid." };
+
+  if (numericIds.length === 0) {
+    return { error: "Tidak ada ID valid yang dipilih." };
+  }
 
   try {
+    const unauthorizedCount = await prisma.kategoriKuis.count({
+      where: {
+        kategori_id: { in: numericIds }, 
+        created_by: { not: userId },     
+      },
+    });
+
+    if (unauthorizedCount > 0) {
+      return { 
+        error: `Gagal, Terdapat ${unauthorizedCount} kategori yang bukan milik Anda. Tindakan dibatalkan.` 
+      };
+    }
+
+    const kuisCount = await prisma.kuis.count({
+      where: {
+        kategori_id: { in: numericIds },
+      },
+    });
+
+    if (kuisCount > 0) {
+      return { 
+        error: `Gagal, ${kuisCount} kuis masih menggunakan kategori-kategori yang dipilih. Hapus atau pindahkan kuis terlebih dahulu.` 
+      };
+    }
+
     const deleteResult = await prisma.kategoriKuis.deleteMany({
       where: {
         kategori_id: { in: numericIds },
@@ -569,11 +674,26 @@ export async function DeleteMultipleQuizCategories(
 
     revalidatePath("/guru/dashboard/manage-quiz/categories");
     return { success: `${deleteResult.count} kategori berhasil dihapus.` };
-  } catch (error: unknown) {
+
+  } catch (error) {
     console.error("Bulk Delete Error:", error);
-     if (error instanceof Error && 'code' in error && (error as any).code === 'P2003') {
-        return { error: "Gagal: Satu atau lebih kategori masih digunakan oleh kuis." };
-    }
-    return { error: "Gagal menghapus kategori yang dipilih." };
+    return { error: "Terjadi kesalahan sistem saat menghapus kategori." };
   }
+}
+
+async function verifyCategoryOwnership(kategoriId: number, userId: number): Promise<string | null> {
+  const kategori = await prisma.kategoriKuis.findUnique({
+    where: { kategori_id: kategoriId },
+    select: { created_by: true }, 
+  });
+
+  if (!kategori) {
+    return "Kategori tidak ditemukan.";
+  }
+
+  if (kategori.created_by !== userId) {
+    return "Anda tidak memiliki izin untuk menghapus/mengedit kategori ini.";
+  }
+
+  return null;
 }

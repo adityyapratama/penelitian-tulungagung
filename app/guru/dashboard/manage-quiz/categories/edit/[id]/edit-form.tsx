@@ -108,7 +108,6 @@ export function EditCategoryForm({ category }: { category: KategoriKuis }) {
                 id="nama_kategori"
                 name="nama_kategori"
                 defaultValue={category.nama_kategori}
-                required
                 className="w-full h-10"
               />
                {/* Display Zod validation errors if available */}

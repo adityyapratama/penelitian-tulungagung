@@ -17,8 +17,14 @@ const optionalFileSchema = z.any().optional();
 
 const myBooleanSchema = z.preprocess(
   (val) => val === 'true' || val === '1',
-  z.boolean({ message: "publish option is required" })
+  z.boolean({ message: "Publish option is required" })
 );
+
+const nullableNumberParam = z.coerce
+  .number()
+  .transform((val) => (val === 0 ? null : val))
+  .nullable()
+  .optional();
 
 export const schemaSignIn = z.object({
   email: z.string({ message: "Email is required" }),
@@ -36,7 +42,7 @@ export const SchemaRegister = z.object({
     .email({ message: "Format should have @email" }),
   password: z
     .string({ message: "Password is required" })
-    .min(8, { message: "Password shoul have min 8 characters" }),
+    .min(8, { message: "Password should have min 8 characters" }),
 });
 
 export const SchemaUser = z.object({
@@ -48,7 +54,7 @@ export const SchemaUser = z.object({
     .email({ message: "Format should have @email" }),
   password: z
     .string({ message: "Password is required" })
-    .min(8, { message: "Password shoul have min 8 characters" }),
+    .min(8, { message: "Password should have min 8 characters" }),
   role: z.enum(["member", "guru", "super_admin"]),
 });
 
@@ -58,7 +64,7 @@ export const SchemaArticle = z.object({
     .min(8, { message: "Judul should have min 8 characters" }),
   konten: z
     .string({ message: "Konten is required" })
-    .min(100, { message: "Konten shoul have min 100 characters" }),
+    .min(100, { message: "Konten should have min 100 characters" }),
   kategori: z.coerce.bigint({ message: "Kategori is required" }),
   thumbnail: fileSchema,
 });
@@ -72,33 +78,43 @@ export const SchemaSekolah = z.object({
 
 export const SchemaQuiz = z.object({
   judul: z
-    .string({ message: "Judul is required" })
-    .min(8, { message: "Judul should have min 8 characters" }),
-  deskripsi: z.string({ message: "deskripsi is required" }),
-  kategori_id: z.number({ message: "kategori is required" }).int().min(1),
-  xp_reward: z.number({ message: "xp reward is required" }).int(),
+    .string({ required_error: "Judul cannot be null" }) 
+    .min(1, { message: "Judul is required" })
+    .min(8, { message: "Judul should have min 8 characters" })
+    .max(100, { message: "Judul cannot be more 100 characters" }),
+  deskripsi: z.string().optional(), 
+  kategori_id: nullableNumberParam,
+  xp_reward: z.coerce
+    .number({ message: "XP Reward is required" })
+    .int()
+    .min(1, { message: "XP Reward is required" }),
   is_published: myBooleanSchema,
   thumbnail: fileSchema,
 });
 
 export const SchemaQuizUpdate = z.object({
   judul: z
-    .string({ message: "Judul is required" })
-    .min(8, { message: "Judul should have min 8 characters" }),
-  deskripsi: z.string({ message: "deskripsi is required" }),
-  kategori_id: z.number({ message: "kategori is required" }).int().min(1),
-  xp_reward: z.number({ message: "xp reward is required" }).int(),
+    .string({ required_error: "Judul cannot be null" }) 
+    .min(1, { message: "Judul is required" })
+    .min(8, { message: "Judul should have min 8 characters" })
+    .max(100, { message: "Judul cannot be more 100 characters" }),
+  deskripsi: z.string().optional(),
+  kategori_id: nullableNumberParam,
+  xp_reward: z.coerce
+    .number({ message: "XP Reward is required" })
+    .int()
+    .min(1, { message: "XP Reward is required" }),
   is_published: myBooleanSchema,
-  thumbnail: optionalFileSchema,
+  thumbnail: optionalFileSchema, 
 });
 
 export const SchemaPilihan = z.object({
-  teks_jawaban: z.string().min(1, "Jawaban wajib diisi"),
+  teks_jawaban: z.string().min(1, "Jawaban is required"),
   score: z.number().int().default(0),
 });
 
 export const SchemaPertanyaan = z.object({
-  teks_pertanyaan: z.string().min(1, "Pertanyaan wajib diisi"),
+  teks_pertanyaan: z.string().min(1, "Pertanyaan is required"),
   tipe: z.enum(["pilihan_ganda", "benar_salah"]),
   poin: z.number().int().default(10),
   urutan: z.number().int(),
@@ -111,9 +127,9 @@ export const SchemaStory = z.object({
     .string({ message: "Judul is required" })
     .min(8, { message: "Judul should have min 8 characters" }),
   thumbnail: fileSchema,
-  category: z.string({ message: "category is required" }),
-  deskripsi: z.string({ message: "deskripsi is required" }),
-  xp_reward: z.number({ message: "xp reward is required" }).int(),
+  category: z.string({ message: "Category is required" }),
+  deskripsi: z.string({ message: "Deskripsi is required" }),
+  xp_reward: z.number({ message: "Xp reward is required" }).int(),
   is_published: myBooleanSchema
 });
 
@@ -122,31 +138,33 @@ export const SchemaStoryUpdate = z.object({
     .string({ message: "Judul is required" })
     .min(8, { message: "Judul should have min 8 characters" }),
   thumbnail: optionalFileSchema, 
-  category: z.string({ message: "category is required" }),
-  deskripsi: z.string({ message: "deskripsi is required" }),
-  xp_reward: z.number({ message: "xp reward is required" }).int(),
+  category: z.string({ message: "Category is required" }),
+  deskripsi: z.string({ message: "Deskripsi is required" }),
+  xp_reward: z.number({ message: "Xp reward is required" }).int(),
   is_published: myBooleanSchema
 });
 
 export const SchemaCategoryKuis = z.object({
   nama_kategori: z
-    .string({ message: "nama kategori is required" })
-    .min(8, { message: "Judul should have min 8 characters" }),
-  deskripsi: z.string({ message: "deskripsi is required" }),
+    .string({ required_error: "Nama kategori cannot be null" }) 
+    .min(1, { message: "Nama kategori is required" }) 
+    .min(5, { message: "Nama kategori should have min 5 karakter" })
+    .max(50, { message: "Nama kategori cannot be more than 50 character" }),
+  deskripsi: z.string({ message: "Deskripsi is required" }),
   thumbnail: optionalFileSchema,
 });
 
 export const SchemaCategoryKuisUpdate = z.object({
   nama_kategori: z
-    .string({ message: "nama kategori is required" })
+    .string({ message: "Nama kategori is required" })
     .min(8, { message: "Judul should have min 8 characters" }),
-  deskripsi: z.string({ message: "deskripsi is required" }),
+  deskripsi: z.string({ message: "Deskripsi is required" }),
   thumbnail: optionalFileSchema,
 });
 
 export const SchemaStoryCategory = z.object({
   NamaKategori: z
-    .string({ message: "nama kategori is required" })
+    .string({ message: "Nama kategori is required" })
     .min(8, { message: "Judul should have min 8 characters" }),
 });
 
@@ -165,22 +183,22 @@ export const SchemaPuzzle = z.object({
   ]),
   xp_reward: z.coerce
     .number({
-      required_error: "xp reward is required",
-      invalid_type_error: "xp reward harus berupa angka",
+      required_error: "Xp reward is required",
+      invalid_type_error: "Xp reward must be a number",
     })
-    .int({ message: "xp reward harus berupa bilangan bulat" }),
+    .int({ message: "Xp reward must be an int" }),
   is_published: myBooleanSchema
 });
 
 export const SchemaMember = z.object(
   {
-    sekolah_id: z.string({message:"sekolah is required"}),
-    nis: z.string({message:"nis is required"}),
+    sekolah_id: z.string({message:"Sekolah is required"}),
+    nis: z.string({message:"Nis is required"}),
     foto_profile: fileSchema,
-    bio: z.string({message: "bio is required"}),
+    bio: z.string({message: "Bio is required"}),
     tanggal_lahir : z.string()
     .refine((val) => !isNaN(Date.parse(val)), {
-      message: "Format tanggal tidak valid",
+      message: "Invalid date format",
     })
     .transform((val) => new Date(val)),
     jenis_kelamin: z.enum(["L","P","Lainnya"]),
@@ -190,27 +208,27 @@ export const SchemaMember = z.object(
 
 export const SchemaGroup = z.object(
   {
-    group_name : z.string({message:"group should have a name"}),
+    group_name : z.string({message:"Group should have a name"}),
     group_thumbnail : optionalFileSchema
   }
 )
 
 
 export const SchemaGroupContent = z.object({
-  group_id: z.string({ message: "group should have id" }),
+  group_id: z.string({ message: "Group should have id" }),
   contents: z.array(
     z.object({
       content_type: z.enum(["kuis", "cerita", "puzzle"]),
       content_id: z.coerce.number().int().min(0),
     })
-  ).min(1, "minimal 1 konten harus dipilih"),
+  ).min(1, "Please select at least one content item."),
 });
 
 export const SchemaGuru = z.object({
-  user_id: z.string({ message: "user tidak ditemukan" }),
-  sekolah_id: z.string({ message: "sekolah tidak ditemukan" }),
-  nip: z.string({ message: "nip tidak valid" })
-        .min(18, { message: "NIP minimal 18 digit" })
-        .max(20, { message: "NIP maksimal 20 digit" }), 
-  bidang_ajar: z.string({ message: "bidang ajar is required" })
+  user_id: z.string({ message: "User not found" }),
+  sekolah_id: z.string({ message: "Sekolah not found" }),
+  nip: z.string({ message: "Invalid NIP" })
+        .min(18, { message: "NIP must be at least 18 digits" })
+        .max(20, { message: "NIP must be at most 20 digits" }), 
+  bidang_ajar: z.string({ message: "Bidang ajar is required" })
 });

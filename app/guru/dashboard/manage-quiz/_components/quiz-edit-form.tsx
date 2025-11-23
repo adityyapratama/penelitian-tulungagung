@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useTransition, useEffect } from "react";
+import { useState, useEffect } from "react";
+import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -8,8 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ImageIcon, Star, UploadCloud, X, CheckCircle, Loader2 } from "lucide-react";
-import { UpdateQuiz } from "../lib/actions";
+import { ImageIcon, Star, UploadCloud, X, Loader2, CircleAlert } from "lucide-react";
+import { UpdateQuiz, QuizActionResult } from "../lib/actions"; 
 import Image from "next/image";
 import { toast } from "sonner";
 
@@ -50,52 +51,48 @@ function SubmitButton() {
 }
 
 export function EditQuizForm({ quiz, categories }: EditQuizFormProps) {
-  const [isPending, startTransition] = useTransition();
+  const updateQuizWithId = UpdateQuiz.bind(null, quiz.kuis_id.toString());
+  
+  const [state, formAction] = useActionState<QuizActionResult, FormData>(
+    updateQuizWithId,
+    {}
+  );
+
   const [imagePreview, setImagePreview] = useState<string | null>(quiz.thumbnail);
+  const [isImageRemoved, setIsImageRemoved] = useState(false);
   const router = useRouter();
-  const [formKey, setFormKey] = useState(Date.now());
+
+  useEffect(() => {
+    if (state.error) {
+      toast.error("Gagal update", { description: state.error });
+    }
+
+    if (state.success) {
+      toast.success("Berhasil!", { description: state.success });
+      setTimeout(() => {
+        router.push("/guru/dashboard/manage-quiz");
+        router.refresh();
+      }, 1000);
+    }
+  }, [state, router]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
-          toast.error("File terlalu besar", { description: "Ukuran maksimal 5MB." });
-          e.target.value = '';
-          return;
+        toast.error("File terlalu besar", { description: "Ukuran maksimal 5MB." });
+        e.target.value = '';
+        return;
       }
+      
+      setIsImageRemoved(false);
+      
       const reader = new FileReader();
       reader.onload = (ev) => {
         setImagePreview(ev.target?.result as string);
       };
       reader.readAsDataURL(file);
     }
-  };
-
-  const handleSubmit = async (formData: FormData) => {
-     if (!formData.get("kategori_id")) {
-         toast.error("Kategori wajib dipilih.");
-         return;
-     }
-     if (!formData.get("xp_reward")) {
-         toast.error("XP Reward / Kesulitan wajib dipilih.");
-         return;
-     }
-
-     startTransition(async () => {
-         const result = await UpdateQuiz(quiz.kuis_id.toString(), {}, formData);
-
-         if (result?.error) {
-             toast.error("Gagal Memperbarui", { description: result.error });
-         } else if (result?.success) {
-             toast.success("Berhasil!", { description: result.success });
-             setTimeout(() => {
-                 router.push("/guru/dashboard/manage-quiz");
-                 router.refresh();
-             }, 1000);
-         } else {
-             toast.error("Terjadi Kesalahan", { description: "Gagal memperbarui kuis." });
-         }
-     });
   };
 
   return (
@@ -106,19 +103,36 @@ export function EditQuizForm({ quiz, categories }: EditQuizFormProps) {
       </CardHeader>
 
       <CardContent>
-        <form
-            key={formKey}
-            action={handleSubmit}
-            className="space-y-6"
-        >
+        <form action={formAction} className="space-y-6">
+          
+          <input type="hidden" name="is_image_removed" value={isImageRemoved.toString()} />
+
           <div className="space-y-2">
             <Label htmlFor="judul">Judul Kuis</Label>
-            <Input id="judul" name="judul" defaultValue={quiz.judul} required />
+            <Input id="judul" name="judul" defaultValue={quiz.judul} />
+            {state.errors?.judul && (
+              <p className="flex items-center gap-2 text-sm font-medium text-destructive">
+                <CircleAlert className="w-4 h-4" />
+                {state.errors.judul[0]}
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="deskripsi">Deskripsi</Label>
-            <Textarea id="deskripsi" name="deskripsi" defaultValue={quiz.deskripsi ?? ""} required rows={4} />
+            <Textarea 
+              id="deskripsi" 
+              name="deskripsi" 
+              defaultValue={quiz.deskripsi ?? ""} 
+              rows={4} 
+              className="resize-none"
+            />
+             {state.errors?.deskripsi && (
+              <p className="flex items-center gap-2 text-sm font-medium text-destructive">
+                <CircleAlert className="w-4 h-4" />
+                {state.errors.deskripsi[0]}
+              </p>
+            )}
           </div>
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -129,15 +143,20 @@ export function EditQuizForm({ quiz, categories }: EditQuizFormProps) {
                  name="kategori_id"
                  defaultValue={quiz.kategori_id?.toString() ?? ""}
                  className="w-full p-2 border rounded-md bg-background"
-                 required
                >
-                 <option value="" disabled>-- Pilih Kategori --</option>
+                 <option value="" >-- Pilih Kategori --</option>
                  {categories.map((cat) => (
                    <option key={cat.kategori_id} value={cat.kategori_id}>
                      {cat.nama_kategori}
                    </option>
                  ))}
                </select>
+               {state.errors?.kategori_id && (
+                <p className="flex items-center gap-2 text-sm font-medium text-destructive">
+                  <CircleAlert className="w-4 h-4" />
+                  {state.errors.kategori_id[0]}
+                </p>
+              )}
              </div>
 
              <div className="space-y-2">
@@ -150,13 +169,18 @@ export function EditQuizForm({ quiz, categories }: EditQuizFormProps) {
                    name="xp_reward"
                    defaultValue={quiz.xp_reward?.toString() ?? ""}
                    className="w-full p-2 border rounded-md bg-background"
-                   required
                  >
                    <option value="" disabled>-- Pilih Kesulitan --</option>
                    <option value="100">Easy (100 XP)</option>
                    <option value="150">Medium (150 XP)</option>
                    <option value="200">Hard (200 XP)</option>
                  </select>
+                 {state.errors?.xp_reward && (
+                  <p className="flex items-center gap-2 text-sm font-medium text-destructive">
+                    <CircleAlert className="w-4 h-4" />
+                    {state.errors.xp_reward[0]}
+                  </p>
+                )}
                </div>
           </div>
 
@@ -167,7 +191,6 @@ export function EditQuizForm({ quiz, categories }: EditQuizFormProps) {
               name="is_published"
               defaultValue={quiz.is_published ? "true" : "false"}
               className="w-full p-2 border rounded-md bg-background"
-              required
             >
               <option value="true">Publikasikan</option>
               <option value="false">Simpan sebagai Draft</option>
@@ -181,13 +204,16 @@ export function EditQuizForm({ quiz, categories }: EditQuizFormProps) {
             </Label>
             <Label
               htmlFor="thumbnail"
-              className="relative flex items-center justify-center w-full h-48 overflow-hidden transition-colors border-2 border-dashed rounded-lg cursor-pointer border-muted-foreground/30 hover:border-primary"
+              className={`relative flex items-center justify-center w-full h-48 overflow-hidden transition-colors border-2 border-dashed rounded-lg cursor-pointer ${
+                state.errors?.thumbnail
+                  ? "border-destructive/50 bg-destructive/5"
+                  : "border-muted-foreground/30 hover:border-primary"
+              }`}
             >
               {imagePreview ? (
                 <>
                   <Image
-                    key={imagePreview}
-                    src={imagePreview || "/placeholder.svg"}
+                    src={imagePreview}
                     alt="Preview Thumbnail"
                     fill
                     className="object-contain"
@@ -202,6 +228,7 @@ export function EditQuizForm({ quiz, categories }: EditQuizFormProps) {
                       const inputFile = document.getElementById("thumbnail") as HTMLInputElement
                       if (inputFile) inputFile.value = ""
                       setImagePreview(null)
+                      setIsImageRemoved(true)
                     }}
                   >
                     <X className="w-4 h-4" />
@@ -226,6 +253,12 @@ export function EditQuizForm({ quiz, categories }: EditQuizFormProps) {
             <p className="text-sm text-muted-foreground">
               Kosongkan jika tidak ingin mengubah gambar.
             </p>
+            {state.errors?.thumbnail && (
+              <p className="flex items-center gap-2 text-sm font-medium text-destructive">
+                <CircleAlert className="w-4 h-4" />
+                {state.errors.thumbnail[0]}
+              </p>
+            )}
           </div>
 
           <div className="pt-4">
